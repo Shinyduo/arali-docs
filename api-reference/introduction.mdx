@@ -1,0 +1,144 @@
+---
+title: 'API Reference'
+description: 'Comprehensive reference for all Arali API endpoints'
+---
+
+## Base URL
+
+All API requests should be made to:
+
+```
+https://api.arali.ai
+```
+
+## API Version
+
+The current API version is `v1`. All endpoints are prefixed with `/api/v1`.
+
+## Authentication
+
+All endpoints require Bearer Token authentication:
+
+```bash
+Authorization: Bearer <your-api-token>
+```
+
+See the [Authentication](/authentication) page for more details.
+
+## Available APIs
+
+<CardGroup cols={2}>
+  <Card title="Companies" icon="building" href="/api-reference/companies/create-companies">
+    Manage company records with health scores, ARR, and custom fields
+  </Card>
+  <Card title="Accounts" icon="briefcase" href="/api-reference/accounts/create-accounts">
+    Manage account records linked to companies
+  </Card>
+  <Card title="Contacts" icon="users" href="/api-reference/contacts/create-contacts">
+    Manage contact records with emails, phones, and company associations
+  </Card>
+  <Card title="Associations" icon="link" href="/api-reference/associations/create-associations">
+    Create contact-company and contact-account relationships
+  </Card>
+  <Card title="Calls" icon="phone" href="/api-reference/calls/create-calls">
+    Create and manage call records
+  </Card>
+  <Card title="Meetings" icon="calendar" href="/api-reference/meetings/create-meeting">
+    Create and manage meeting records
+  </Card>
+  <Card title="Fields" icon="sliders" href="/api-reference/fields/list-definitions">
+    Manage custom field definitions and values
+  </Card>
+</CardGroup>
+
+## Response Format
+
+### Success Response (Single Record)
+
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+### Success Response (Batch Operation)
+
+```json
+{
+  "success": true,
+  "summary": {
+    "total": 10,
+    "success": 8,
+    "failed": 2
+  },
+  "results": [
+    {
+      "externalId": "hubspot_12345",
+      "companyId": "uuid",
+      "status": "success"
+    },
+    {
+      "externalId": "hubspot_67890",
+      "status": "skipped",
+      "reason": "Missing required field: name"
+    }
+  ]
+}
+```
+
+## Error Responses
+
+All endpoints return consistent error responses:
+
+<ResponseField name="error" type="string" required>
+  Error message describing what went wrong
+</ResponseField>
+
+<ResponseField name="details" type="string">
+  Additional details about the error
+</ResponseField>
+
+<ResponseField name="schema" type="string">
+  Reference to the schema endpoint for documentation
+</ResponseField>
+
+### HTTP Status Codes
+
+| Code | Description |
+|------|-------------|
+| `200` | Success |
+| `201` | Created |
+| `400` | Bad Request - Invalid input |
+| `401` | Unauthorized - Invalid or missing token |
+| `403` | Forbidden - Insufficient permissions |
+| `404` | Not Found - Resource doesn't exist |
+| `500` | Internal Server Error |
+
+### Example Error Response
+
+```json
+{
+  "error": "Missing required fields",
+  "details": "Request must include: companies (array)",
+  "schema": "GET /api/v1/companies/schema for full documentation"
+}
+```
+
+## Rate Limits
+
+Please contact your administrator for rate limit information.
+
+## Schema Endpoints
+
+Each API group provides a schema endpoint that returns detailed field documentation:
+
+```bash
+GET /api/v1/companies/schema
+GET /api/v1/accounts/schema
+GET /api/v1/contacts/schema
+GET /api/v1/calls/schema
+GET /api/v1/meetings/schema
+GET /api/v1/fields/schema
+GET /api/v1/associations/schema
+```

@@ -1,0 +1,111 @@
+---
+title: 'Update Account'
+api: 'PUT /api/v1/accounts/{id}'
+description: 'Update a single account'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Account UUID
+</ParamField>
+
+## Request Body
+
+<ParamField body="name" type="string">
+  Account display name
+</ParamField>
+
+<ParamField body="domain" type="string">
+  Account domain
+</ParamField>
+
+<ParamField body="accountType" type="string">
+  Account type/tier
+</ParamField>
+
+<ParamField body="healthScore" type="integer">
+  Health score (0-100)
+</ParamField>
+
+<ParamField body="arr" type="integer">
+  Annual Recurring Revenue
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Custom key-value metadata
+</ParamField>
+
+<ParamField body="properties" type="object">
+  Custom field values
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X PUT 'https://api.arali.ai/api/v1/accounts/550e8400-e29b-41d4-a716-446655440001' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Acme Enterprise Account Updated",
+    "healthScore": 92,
+    "arr": 150000
+  }'
+```
+
+```javascript Node.js
+const accountId = '550e8400-e29b-41d4-a716-446655440001';
+
+const response = await fetch(`https://api.arali.ai/api/v1/accounts/${accountId}`, {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'Acme Enterprise Account Updated',
+    healthScore: 92,
+    arr: 150000
+  })
+});
+```
+
+```python Python
+import requests
+
+account_id = '550e8400-e29b-41d4-a716-446655440001'
+
+response = requests.put(
+    f'https://api.arali.ai/api/v1/accounts/{account_id}',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'name': 'Acme Enterprise Account Updated',
+        'healthScore': 92,
+        'arr': 150000
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "name": "Acme Enterprise Account Updated",
+    "healthScore": 92,
+    "arr": 150000,
+    "updatedAt": "2024-01-16T10:00:00Z"
+  }
+}
+```
+
+```json 404 Not Found
+{
+  "error": "Account not found"
+}
+```
+</ResponseExample>

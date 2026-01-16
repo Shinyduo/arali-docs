@@ -1,0 +1,120 @@
+---
+title: 'Update Contact'
+api: 'PUT /api/v1/contacts/{id}'
+description: 'Update a single contact'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Contact UUID
+</ParamField>
+
+## Request Body
+
+<ParamField body="fullName" type="string">
+  Contact's full name
+</ParamField>
+
+<ParamField body="primaryEmail" type="string">
+  Primary email address
+</ParamField>
+
+<ParamField body="primaryPhone" type="string">
+  Primary phone number
+</ParamField>
+
+<ParamField body="title" type="string">
+  Job title
+</ParamField>
+
+<ParamField body="emails" type="array">
+  List of email objects
+</ParamField>
+
+<ParamField body="phones" type="array">
+  List of phone objects
+</ParamField>
+
+<ParamField body="attributes" type="object">
+  Custom key-value attributes
+</ParamField>
+
+<ParamField body="properties" type="object">
+  Custom field values
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X PUT 'https://api.arali.ai/api/v1/contacts/550e8400-e29b-41d4-a716-446655440002' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "fullName": "John Doe Jr.",
+    "title": "Senior VP of Engineering",
+    "phones": [
+      { "phone": "+1-555-987-6543", "isPrimary": true, "label": "Mobile" }
+    ]
+  }'
+```
+
+```javascript Node.js
+const contactId = '550e8400-e29b-41d4-a716-446655440002';
+
+const response = await fetch(`https://api.arali.ai/api/v1/contacts/${contactId}`, {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fullName: 'John Doe Jr.',
+    title: 'Senior VP of Engineering',
+    phones: [
+      { phone: '+1-555-987-6543', isPrimary: true, label: 'Mobile' }
+    ]
+  })
+});
+```
+
+```python Python
+import requests
+
+contact_id = '550e8400-e29b-41d4-a716-446655440002'
+
+response = requests.put(
+    f'https://api.arali.ai/api/v1/contacts/{contact_id}',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'fullName': 'John Doe Jr.',
+        'title': 'Senior VP of Engineering',
+        'phones': [
+            { 'phone': '+1-555-987-6543', 'isPrimary': True, 'label': 'Mobile' }
+        ]
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440002",
+    "fullName": "John Doe Jr.",
+    "title": "Senior VP of Engineering",
+    "updatedAt": "2024-01-16T10:00:00Z"
+  }
+}
+```
+
+```json 404 Not Found
+{
+  "error": "Contact not found"
+}
+```
+</ResponseExample>

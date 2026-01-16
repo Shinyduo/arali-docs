@@ -1,0 +1,152 @@
+---
+title: 'Create Meeting'
+api: 'POST /api/v1/meetings'
+description: 'Create or update a meeting record'
+---
+
+## Request Body
+
+<ParamField body="scheduledStartAt" type="string" required>
+  Scheduled start time (ISO 8601)
+</ParamField>
+
+<ParamField body="scheduledEndAt" type="string" required>
+  Scheduled end time (ISO 8601). Must be after start and in the future.
+</ParamField>
+
+<ParamField body="title" type="string" default="empty title">
+  Meeting title/subject
+</ParamField>
+
+<ParamField body="channel" type="string">
+  Meeting channel. Options: `gmeet`, `zoom`, `teams`, `offline`
+</ParamField>
+
+<ParamField body="joinUrl" type="string">
+  URL to join the meeting
+</ParamField>
+
+<ParamField body="status" type="string" default="scheduled">
+  Meeting status. Options: `scheduled`, `skip`, `in_progress`, `cancelled`, `completed`, `deleted`, `error`
+</ParamField>
+
+<ParamField body="externalMeetingId" type="string">
+  External unique ID from calendar source (used for upsert)
+</ParamField>
+
+<ParamField body="hostEmail" type="string">
+  Email of meeting host/organizer
+</ParamField>
+
+<ParamField body="participantEmails" type="array">
+  Array of participant email addresses
+</ParamField>
+
+<ParamField body="orgUnitIds" type="array">
+  Array of org unit UUIDs this meeting belongs to
+</ParamField>
+
+<ParamField body="orgUnitId" type="string">
+  Single org unit UUID (alternative to orgUnitIds)
+</ParamField>
+
+<ParamField body="recurringMeetingId" type="string">
+  Recurring meeting reference ID
+</ParamField>
+
+<ParamField body="type" type="string">
+  Meeting type. Options: `external`, `internal` (auto-determined from participant domains if not provided)
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Additional metadata
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST 'https://api.arali.ai/api/v1/meetings' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "Weekly Team Sync",
+    "channel": "gmeet",
+    "joinUrl": "https://meet.google.com/abc-defg-hij",
+    "scheduledStartAt": "2024-01-20T10:00:00Z",
+    "scheduledEndAt": "2024-01-20T11:00:00Z",
+    "status": "scheduled",
+    "externalMeetingId": "calendar_event_abc123",
+    "hostEmail": "john@example.com",
+    "participantEmails": ["john@example.com", "jane@example.com"],
+    "type": "internal"
+  }'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.arali.ai/api/v1/meetings', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    title: 'Weekly Team Sync',
+    channel: 'gmeet',
+    joinUrl: 'https://meet.google.com/abc-defg-hij',
+    scheduledStartAt: '2024-01-20T10:00:00Z',
+    scheduledEndAt: '2024-01-20T11:00:00Z',
+    status: 'scheduled',
+    externalMeetingId: 'calendar_event_abc123',
+    hostEmail: 'john@example.com',
+    participantEmails: ['john@example.com', 'jane@example.com'],
+    type: 'internal'
+  })
+});
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.arali.ai/api/v1/meetings',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'title': 'Weekly Team Sync',
+        'channel': 'gmeet',
+        'joinUrl': 'https://meet.google.com/abc-defg-hij',
+        'scheduledStartAt': '2024-01-20T10:00:00Z',
+        'scheduledEndAt': '2024-01-20T11:00:00Z',
+        'status': 'scheduled',
+        'externalMeetingId': 'calendar_event_abc123',
+        'hostEmail': 'john@example.com',
+        'participantEmails': ['john@example.com', 'jane@example.com'],
+        'type': 'internal'
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440004",
+    "title": "Weekly Team Sync",
+    "channel": "gmeet",
+    "status": "scheduled",
+    "scheduledStartAt": "2024-01-20T10:00:00Z",
+    "scheduledEndAt": "2024-01-20T11:00:00Z",
+    "createdAt": "2024-01-16T10:00:00Z"
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "error": "Scheduled end time must be after start time"
+}
+```
+</ResponseExample>

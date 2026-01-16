@@ -1,0 +1,142 @@
+---
+title: 'Authentication'
+description: 'Secure your API requests with Bearer Token authentication'
+---
+
+## Overview
+
+All Arali API endpoints require authentication via Bearer Token. The token is passed in the `Authorization` header of every request.
+
+```bash
+Authorization: Bearer <your-api-token>
+```
+
+## Token Information
+
+Your API token automatically provides the following context:
+
+| Property | Description |
+|----------|-------------|
+| `enterpriseId` | Your enterprise identifier |
+| `integrationAccountId` | Integration account context |
+| `scopes` | Authorized permissions for this token |
+
+## Available Scopes
+
+Scopes control what actions your API token can perform. When creating a token, select only the scopes you need.
+
+<AccordionGroup>
+  <Accordion title="Companies" icon="building">
+    | Scope | Permission |
+    |-------|------------|
+    | `companies:read` | List and view companies |
+    | `companies:write` | Create and update companies |
+    | `companies:delete` | Delete companies |
+  </Accordion>
+  
+  <Accordion title="Accounts" icon="briefcase">
+    | Scope | Permission |
+    |-------|------------|
+    | `accounts:read` | List and view accounts |
+    | `accounts:write` | Create and update accounts |
+    | `accounts:delete` | Delete accounts |
+  </Accordion>
+  
+  <Accordion title="Contacts" icon="users">
+    | Scope | Permission |
+    |-------|------------|
+    | `contacts:read` | List and view contacts |
+    | `contacts:write` | Create and update contacts |
+    | `contacts:delete` | Delete contacts |
+  </Accordion>
+  
+  <Accordion title="Calls" icon="phone">
+    | Scope | Permission |
+    |-------|------------|
+    | `calls:read` | List and view call records |
+    | `calls:write` | Create call records |
+  </Accordion>
+  
+  <Accordion title="Meetings" icon="calendar">
+    | Scope | Permission |
+    |-------|------------|
+    | `meetings:read` | List and view meetings |
+    | `meetings:write` | Create and update meetings |
+    | `meetings:delete` | Delete/cancel meetings |
+  </Accordion>
+  
+  <Accordion title="Fields" icon="sliders">
+    | Scope | Permission |
+    |-------|------------|
+    | `fields:read` | List field definitions and values |
+    | `fields:write` | Create field definitions and set values |
+    | `fields:delete` | Delete field definitions |
+  </Accordion>
+  
+  <Accordion title="Associations" icon="link">
+    | Scope | Permission |
+    |-------|------------|
+    | `associations:write` | Create contact-company/account associations |
+  </Accordion>
+</AccordionGroup>
+
+## Error Responses
+
+### 401 Unauthorized
+
+Returned when the token is missing or invalid.
+
+```json
+{
+  "error": "Invalid token"
+}
+```
+
+<Warning>
+  If you receive a 401 error, check that:
+  - Your token is correctly formatted
+  - The token has not expired or been revoked
+  - There are no extra spaces or characters
+</Warning>
+
+### 403 Forbidden
+
+Returned when the token lacks the required scope for the operation.
+
+```json
+{
+  "error": "Insufficient permissions. Required scope: companies:write"
+}
+```
+
+<Tip>
+  If you receive a 403 error, you'll need to generate a new token with the required scopes.
+</Tip>
+
+## Security Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Keep Tokens Secret" icon="shield">
+    Never expose your API token in client-side code, public repositories, or logs.
+  </Card>
+  <Card title="Use Minimal Scopes" icon="minimize">
+    Only request the scopes you actually need. This limits potential damage if a token is compromised.
+  </Card>
+  <Card title="Rotate Regularly" icon="rotate">
+    Rotate your API tokens periodically, especially if team members leave or tokens may have been exposed.
+  </Card>
+  <Card title="Use Environment Variables" icon="terminal">
+    Store tokens in environment variables rather than hardcoding them in your application.
+  </Card>
+</CardGroup>
+
+## Example: Validating Your Token
+
+Test your token by fetching the companies list:
+
+```bash
+curl -X GET 'https://api.arali.ai/api/v1/companies' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN'
+```
+
+A successful response indicates your token is valid and has the `companies:read` scope.

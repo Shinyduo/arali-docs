@@ -1,0 +1,27 @@
+<svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-gradient-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent-gradient-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818CF8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A78BFA;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="800" height="400" fill="url(#bg-gradient-dark)"/>
+  
+  <!-- Abstract shapes -->
+  <circle cx="650" cy="100" r="150" fill="url(#accent-gradient-dark)" opacity="0.15"/>
+  <circle cx="700" cy="350" r="100" fill="url(#accent-gradient-dark)" opacity="0.2"/>
+  <circle cx="100" cy="300" r="80" fill="url(#accent-gradient-dark)" opacity="0.15"/>
+  
+  <!-- Logo -->
+  <circle cx="100" cy="200" r="50" fill="url(#accent-gradient-dark)"/>
+  <text x="100" y="215" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="white" text-anchor="middle">A</text>
+  
+  <!-- Text -->
+  <text x="180" y="195" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#f1f5f9">Arali</text>
+  <text x="180" y="235" font-family="Arial, sans-serif" font-size="20" fill="#94a3b8">Customer Intelligence Platform</text>
+</svg>

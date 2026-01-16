@@ -1,0 +1,1340 @@
+openapi: 3.0.3
+info:
+  title: Arali API
+  description: API for managing customer relationships, tracking interactions, and gaining insights
+  version: 1.0.0
+  contact:
+    name: Arali Support
+    email: support@arali.ai
+    url: https://arali.ai
+
+servers:
+  - url: https://api.arali.ai
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Enter your API token"
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        details:
+          type: string
+          description: Additional error details
+        schema:
+          type: string
+          description: Reference to schema endpoint
+
+    BatchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        summary:
+          type: object
+          properties:
+            total:
+              type: integer
+            success:
+              type: integer
+            failed:
+              type: integer
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              externalId:
+                type: string
+              status:
+                type: string
+                enum: [success, skipped, failed]
+              reason:
+                type: string
+
+    Company:
+      type: object
+      required:
+        - name
+        - externalId
+      properties:
+        name:
+          type: string
+          description: Company display name
+          example: "Acme Corporation"
+        externalId:
+          type: string
+          description: Primary External ID. Used for integration mapping lookup.
+          example: "hubspot_12345"
+        externalCompanyId:
+          type: string
+          nullable: true
+          description: Secondary External ID. Stored on the record. Defaults to externalId if not provided.
+          example: "CRM_001"
+        domain:
+          type: string
+          nullable: true
+          description: Company website domain
+          example: "acme.com"
+        lifecycleStage:
+          type: string
+          enum: [lead, prospect, customer, expansion, churned, lost, partner, other]
+          default: lead
+          description: Company lifecycle stage
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Owner user ID
+        healthScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+          nullable: true
+          description: Health score (0-100)
+        healthScoreComputedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: When health score was computed
+        healthScoreBreakdown:
+          type: object
+          nullable: true
+          description: Health score component breakdown
+        arr:
+          type: integer
+          nullable: true
+          description: Annual Recurring Revenue
+        attributes:
+          type: object
+          description: Custom key-value attributes
+        properties:
+          type: object
+          description: Custom field values
+
+    Account:
+      type: object
+      required:
+        - name
+        - externalId
+        - externalCompanyId
+      properties:
+        name:
+          type: string
+          description: Account display name
+          example: "Acme Enterprise Account"
+        externalId:
+          type: string
+          description: Primary External ID. Used for integration mapping lookup.
+          example: "vitally_acc_12345"
+        externalAccountId:
+          type: string
+          nullable: true
+          description: Secondary External ID. Stored on the record. Defaults to externalId if not provided.
+          example: "CRM_ACC_001"
+        externalCompanyId:
+          type: string
+          description: External ID of the parent company
+          example: "hubspot_12345"
+        domain:
+          type: string
+          nullable: true
+          description: Account domain
+        accountType:
+          type: string
+          nullable: true
+          description: Account type/tier
+          example: "enterprise"
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Owner user ID
+        healthScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+          nullable: true
+          description: Health score (0-100)
+        healthScoreComputedAt:
+          type: string
+          format: date-time
+          nullable: true
+        healthScoreBreakdown:
+          type: object
+          nullable: true
+        arr:
+          type: integer
+          nullable: true
+          description: Annual Recurring Revenue
+        metadata:
+          type: object
+          description: Custom key-value metadata
+        properties:
+          type: object
+          description: Custom field values
+
+    Contact:
+      type: object
+      required:
+        - externalId
+      properties:
+        externalId:
+          type: string
+          description: External unique ID from integration source
+          example: "hubspot_contact_12345"
+        fullName:
+          type: string
+          nullable: true
+          description: Contact's full name
+          example: "John Doe"
+        primaryEmail:
+          type: string
+          nullable: true
+          description: Primary email address
+          example: "john.doe@acme.com"
+        primaryPhone:
+          type: string
+          nullable: true
+          description: Primary phone number
+          example: "+1-555-123-4567"
+        title:
+          type: string
+          nullable: true
+          description: Job title
+          example: "VP of Engineering"
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+        emails:
+          type: array
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+              isPrimary:
+                type: boolean
+                default: false
+              label:
+                type: string
+        phones:
+          type: array
+          items:
+            type: object
+            properties:
+              phone:
+                type: string
+              isPrimary:
+                type: boolean
+                default: false
+              label:
+                type: string
+        companies:
+          type: array
+          items:
+            type: object
+            properties:
+              companyId:
+                type: string
+                format: uuid
+              relation:
+                type: string
+                enum: [employee, consultant, agency, partner, contractor, other]
+                default: employee
+              isPrimary:
+                type: boolean
+                default: false
+              attributes:
+                type: object
+        attributes:
+          type: object
+        properties:
+          type: object
+
+    Association:
+      type: object
+      properties:
+        contactId:
+          type: string
+          format: uuid
+          description: Internal UUID of the contact
+        externalContactId:
+          type: string
+          description: External ID of the contact
+        companyId:
+          type: string
+          format: uuid
+          description: Internal UUID of the company
+        externalCompanyId:
+          type: string
+          description: External ID of the company
+        accountId:
+          type: string
+          format: uuid
+          description: Internal UUID of the account
+        externalAccountId:
+          type: string
+          description: External ID of the account
+        relation:
+          type: string
+          enum: [employee, consultant, contractor, partner, agency, other]
+          default: employee
+        isPrimary:
+          type: boolean
+          default: false
+        role:
+          type: string
+          description: Role for contact_account association
+
+    Call:
+      type: object
+      required:
+        - externalCallId
+      properties:
+        externalCallId:
+          type: string
+          description: External unique ID from call provider
+          example: "aircall_call_12345"
+        direction:
+          type: string
+          enum: [inbound, outbound, unknown]
+          default: unknown
+        status:
+          type: string
+          enum: [completed, missed, voicemail, failed, busy, cancelled, unknown]
+          default: completed
+        fromNumber:
+          type: string
+          nullable: true
+          description: Phone number the call originated from
+        toNumber:
+          type: string
+          nullable: true
+          description: Phone number the call was made to
+        durationSeconds:
+          type: number
+          nullable: true
+          description: Call duration in seconds
+        ringDurationSeconds:
+          type: number
+          nullable: true
+        startTimestamp:
+          type: string
+          format: date-time
+          nullable: true
+        endTimestamp:
+          type: string
+          format: date-time
+          nullable: true
+        recordingUrl:
+          type: string
+          nullable: true
+          description: URL to call recording
+        customer:
+          type: object
+          properties:
+            phone:
+              type: string
+            email:
+              type: string
+            name:
+              type: string
+        orgUnitIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        orgUnitId:
+          type: string
+          format: uuid
+        metadata:
+          type: object
+        title:
+          type: string
+          nullable: true
+
+    Meeting:
+      type: object
+      required:
+        - scheduledStartAt
+        - scheduledEndAt
+      properties:
+        scheduledStartAt:
+          type: string
+          format: date-time
+          description: Scheduled start time
+        scheduledEndAt:
+          type: string
+          format: date-time
+          description: Scheduled end time
+        title:
+          type: string
+          description: Meeting title/subject
+          default: "empty title"
+        channel:
+          type: string
+          enum: [gmeet, zoom, teams, offline]
+        joinUrl:
+          type: string
+          nullable: true
+          description: URL to join the meeting
+        status:
+          type: string
+          enum: [scheduled, skip, in_progress, cancelled, completed, deleted, error]
+          default: scheduled
+        externalMeetingId:
+          type: string
+          nullable: true
+          description: External unique ID from calendar source
+        hostEmail:
+          type: string
+          nullable: true
+          description: Email of meeting host/organizer
+        participantEmails:
+          type: array
+          items:
+            type: string
+        orgUnitIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        orgUnitId:
+          type: string
+          format: uuid
+        recurringMeetingId:
+          type: string
+          nullable: true
+        type:
+          type: string
+          enum: [external, internal]
+        metadata:
+          type: object
+
+    FieldDefinition:
+      type: object
+      required:
+        - fieldKey
+        - fieldName
+        - fieldType
+        - entityType
+      properties:
+        fieldKey:
+          type: string
+          description: Unique key for the field
+          example: "contract_start_date"
+        fieldName:
+          type: string
+          description: Display name for the field
+          example: "Contract Start Date"
+        fieldType:
+          type: string
+          enum: [text, number, date, boolean, json, enum]
+        entityType:
+          type: string
+          enum: [company, account, contact]
+        enumOptions:
+          type: array
+          items:
+            type: string
+          description: Valid options for enum field type
+        isRequired:
+          type: boolean
+          default: false
+        displayOrder:
+          type: integer
+          description: Order for UI display
+
+    FieldValue:
+      type: object
+      required:
+        - fieldKey
+        - value
+      properties:
+        fieldKey:
+          type: string
+          description: Key of the field definition
+        value:
+          description: Value matching the field type
+
+paths:
+  # Companies
+  /api/v1/companies:
+    post:
+      operationId: createCompanies
+      summary: Create/Update Companies
+      description: Batch create or update company records
+      tags:
+        - Companies
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - companies
+              properties:
+                companies:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Company'
+      responses:
+        '200':
+          description: Batch operation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires companies:write scope
+
+    get:
+      operationId: listCompanies
+      summary: List Companies
+      description: Get all companies for your enterprise
+      tags:
+        - Companies
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of companies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Company'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires companies:read scope
+
+  /api/v1/companies/{id}:
+    get:
+      operationId: getCompany
+      summary: Get Company
+      description: Get a single company by ID
+      tags:
+        - Companies
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Company UUID
+      responses:
+        '200':
+          description: Company details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Company'
+        '404':
+          description: Company not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires companies:read scope
+
+    put:
+      operationId: updateCompany
+      summary: Update Company
+      description: Update a single company
+      tags:
+        - Companies
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Company UUID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+      responses:
+        '200':
+          description: Company updated
+        '404':
+          description: Company not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires companies:write scope
+
+    delete:
+      operationId: deleteCompany
+      summary: Delete Company
+      description: Delete a company
+      tags:
+        - Companies
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Company UUID
+      responses:
+        '200':
+          description: Company deleted
+        '404':
+          description: Company not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires companies:delete scope
+
+  # Accounts
+  /api/v1/accounts:
+    post:
+      operationId: createAccounts
+      summary: Create/Update Accounts
+      description: Batch create or update account records
+      tags:
+        - Accounts
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - accounts
+              properties:
+                accounts:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Account'
+      responses:
+        '200':
+          description: Batch operation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires accounts:write scope
+
+    get:
+      operationId: listAccounts
+      summary: List Accounts
+      description: Get all accounts for your enterprise
+      tags:
+        - Accounts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of accounts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires accounts:read scope
+
+  /api/v1/accounts/{id}:
+    get:
+      operationId: getAccount
+      summary: Get Account
+      description: Get a single account by ID
+      tags:
+        - Accounts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Account UUID
+      responses:
+        '200':
+          description: Account details
+        '404':
+          description: Account not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires accounts:read scope
+
+    put:
+      operationId: updateAccount
+      summary: Update Account
+      description: Update a single account
+      tags:
+        - Accounts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Account UUID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+      responses:
+        '200':
+          description: Account updated
+        '404':
+          description: Account not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires accounts:write scope
+
+    delete:
+      operationId: deleteAccount
+      summary: Delete Account
+      description: Delete an account
+      tags:
+        - Accounts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Account UUID
+      responses:
+        '200':
+          description: Account deleted
+        '404':
+          description: Account not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires accounts:delete scope
+
+  # Contacts
+  /api/v1/contacts:
+    post:
+      operationId: createContacts
+      summary: Create/Update Contacts
+      description: Batch create or update contact records
+      tags:
+        - Contacts
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - contacts
+              properties:
+                contacts:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Contact'
+      responses:
+        '200':
+          description: Batch operation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires contacts:write scope
+
+    get:
+      operationId: listContacts
+      summary: List Contacts
+      description: Get all contacts for your enterprise
+      tags:
+        - Contacts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of contacts
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires contacts:read scope
+
+  /api/v1/contacts/{id}:
+    get:
+      operationId: getContact
+      summary: Get Contact
+      description: Get a single contact by ID (includes emails, phones, companies)
+      tags:
+        - Contacts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Contact UUID
+      responses:
+        '200':
+          description: Contact details
+        '404':
+          description: Contact not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires contacts:read scope
+
+    put:
+      operationId: updateContact
+      summary: Update Contact
+      description: Update a single contact
+      tags:
+        - Contacts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Contact UUID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        '200':
+          description: Contact updated
+        '404':
+          description: Contact not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires contacts:write scope
+
+    delete:
+      operationId: deleteContact
+      summary: Delete Contact
+      description: Delete a contact
+      tags:
+        - Contacts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Contact UUID
+      responses:
+        '200':
+          description: Contact deleted
+        '404':
+          description: Contact not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires contacts:delete scope
+
+  # Associations
+  /api/v1/associations:
+    post:
+      operationId: createAssociations
+      summary: Create/Update Associations
+      description: Batch create contact-company and contact-account relationships
+      tags:
+        - Associations
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - associations
+              properties:
+                associations:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Association'
+      responses:
+        '200':
+          description: Batch operation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires associations:write scope
+
+  # Calls
+  /api/v1/calls:
+    post:
+      operationId: createCalls
+      summary: Create Calls
+      description: Batch create call records
+      tags:
+        - Calls
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - calls
+              properties:
+                calls:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Call'
+      responses:
+        '200':
+          description: Batch operation completed
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires calls:write scope
+
+    get:
+      operationId: listCalls
+      summary: List Calls
+      description: Get all call records for your enterprise
+      tags:
+        - Calls
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of calls
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires calls:read scope
+
+  /api/v1/calls/{id}:
+    get:
+      operationId: getCall
+      summary: Get Call
+      description: Get a single call record by ID
+      tags:
+        - Calls
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Call UUID
+      responses:
+        '200':
+          description: Call details
+        '404':
+          description: Call not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires calls:read scope
+
+  # Meetings
+  /api/v1/meetings:
+    post:
+      operationId: createMeeting
+      summary: Create/Update Meeting
+      description: Create or update a meeting record
+      tags:
+        - Meetings
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Meeting'
+      responses:
+        '200':
+          description: Meeting created/updated
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires meetings:write scope
+
+    get:
+      operationId: listMeetings
+      summary: List Meetings
+      description: Get all meetings for your enterprise
+      tags:
+        - Meetings
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of meetings
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires meetings:read scope
+
+  /api/v1/meetings/{id}:
+    get:
+      operationId: getMeeting
+      summary: Get Meeting
+      description: Get a single meeting by ID
+      tags:
+        - Meetings
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Meeting UUID
+      responses:
+        '200':
+          description: Meeting details
+        '404':
+          description: Meeting not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires meetings:read scope
+
+    delete:
+      operationId: deleteMeeting
+      summary: Delete/Cancel Meeting
+      description: Delete or cancel a meeting
+      tags:
+        - Meetings
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Meeting UUID
+      responses:
+        '200':
+          description: Meeting deleted/cancelled
+        '404':
+          description: Meeting not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires meetings:delete scope
+
+  # Fields
+  /api/v1/fields/definitions:
+    get:
+      operationId: listFieldDefinitions
+      summary: List Field Definitions
+      description: Get all field definitions for an entity type
+      tags:
+        - Fields
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: entityType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [company, account, contact]
+          description: Entity type to get definitions for
+      responses:
+        '200':
+          description: List of field definitions
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires fields:read scope
+
+    post:
+      operationId: createFieldDefinition
+      summary: Create Field Definition
+      description: Create a new custom field definition
+      tags:
+        - Fields
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FieldDefinition'
+      responses:
+        '201':
+          description: Field definition created
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires fields:write scope
+
+  /api/v1/fields/definitions/{id}:
+    delete:
+      operationId: deleteFieldDefinition
+      summary: Delete Field Definition
+      description: Delete a field definition
+      tags:
+        - Fields
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Field definition UUID
+      responses:
+        '200':
+          description: Field definition deleted
+        '404':
+          description: Field definition not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires fields:delete scope
+
+  /api/v1/fields/values:
+    get:
+      operationId: getFieldValues
+      summary: Get Field Values
+      description: Get field values for an entity
+      tags:
+        - Fields
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: entityType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [company, account, contact]
+        - name: entityId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Entity UUID
+      responses:
+        '200':
+          description: Field values for the entity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires fields:read scope
+
+    post:
+      operationId: setFieldValues
+      summary: Set Field Values
+      description: Set field values for an entity
+      tags:
+        - Fields
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - entityType
+                - entityId
+                - fields
+              properties:
+                entityType:
+                  type: string
+                  enum: [company, account, contact]
+                entityId:
+                  type: string
+                  format: uuid
+                fields:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/FieldValue'
+      responses:
+        '200':
+          description: Field values set
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires fields:write scope
+
+  /api/v1/fields/values/batch:
+    post:
+      operationId: batchSetFieldValues
+      summary: Batch Set Field Values
+      description: Set field values for multiple entities
+      tags:
+        - Fields
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - entityType
+                - entities
+              properties:
+                entityType:
+                  type: string
+                  enum: [company, account, contact]
+                entities:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - entityId
+                      - fields
+                    properties:
+                      entityId:
+                        type: string
+                        format: uuid
+                      fields:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/FieldValue'
+      responses:
+        '200':
+          description: Batch operation completed
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires fields:write scope
+
+tags:
+  - name: Companies
+    description: Manage company records
+  - name: Accounts
+    description: Manage account records
+  - name: Contacts
+    description: Manage contact records
+  - name: Associations
+    description: Create contact-company/account relationships
+  - name: Calls
+    description: Manage call records
+  - name: Meetings
+    description: Manage meeting records
+  - name: Fields
+    description: Custom field definitions and values

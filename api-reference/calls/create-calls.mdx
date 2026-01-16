@@ -1,0 +1,186 @@
+---
+title: 'Create Calls'
+api: 'POST /api/v1/calls'
+description: 'Batch create call records'
+---
+
+## Request Body
+
+<ParamField body="calls" type="array" required>
+  Array of call objects
+  
+  <Expandable title="Call Object">
+    <ParamField body="externalCallId" type="string" required>
+      External unique ID from call provider
+    </ParamField>
+    
+    <ParamField body="direction" type="string" default="unknown">
+      Call direction. Options: `inbound`, `outbound`, `unknown`
+    </ParamField>
+    
+    <ParamField body="status" type="string" default="completed">
+      Call status. Options: `completed`, `missed`, `voicemail`, `failed`, `busy`, `cancelled`, `unknown`
+    </ParamField>
+    
+    <ParamField body="fromNumber" type="string">
+      Phone number the call originated from
+    </ParamField>
+    
+    <ParamField body="toNumber" type="string">
+      Phone number the call was made to
+    </ParamField>
+    
+    <ParamField body="durationSeconds" type="number">
+      Call duration in seconds
+    </ParamField>
+    
+    <ParamField body="ringDurationSeconds" type="number">
+      Ring duration before answer
+    </ParamField>
+    
+    <ParamField body="startTimestamp" type="string">
+      Call start time (ISO 8601)
+    </ParamField>
+    
+    <ParamField body="endTimestamp" type="string">
+      Call end time (ISO 8601)
+    </ParamField>
+    
+    <ParamField body="recordingUrl" type="string">
+      URL to call recording
+    </ParamField>
+    
+    <ParamField body="customer" type="object">
+      Customer info with `phone`, `email`, and `name` fields
+    </ParamField>
+    
+    <ParamField body="orgUnitIds" type="array">
+      Array of org unit UUIDs this call belongs to
+    </ParamField>
+    
+    <ParamField body="orgUnitId" type="string">
+      Single org unit UUID (alternative to orgUnitIds)
+    </ParamField>
+    
+    <ParamField body="metadata" type="object">
+      Additional metadata
+    </ParamField>
+    
+    <ParamField body="title" type="string">
+      Call title (auto-generated if not provided)
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST 'https://api.arali.ai/api/v1/calls' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "calls": [
+      {
+        "externalCallId": "call_12345",
+        "direction": "inbound",
+        "status": "completed",
+        "fromNumber": "+1-555-123-4567",
+        "toNumber": "+1-555-987-6543",
+        "durationSeconds": 300,
+        "startTimestamp": "2024-01-15T10:00:00Z",
+        "endTimestamp": "2024-01-15T10:05:00Z",
+        "recordingUrl": "https://recordings.example.com/call_12345.mp3",
+        "customer": {
+          "phone": "+1-555-123-4567",
+          "name": "John Doe",
+          "email": "john.doe@acme.com"
+        },
+        "title": "Sales Follow-up Call"
+      }
+    ]
+  }'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.arali.ai/api/v1/calls', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    calls: [
+      {
+        externalCallId: 'call_12345',
+        direction: 'inbound',
+        status: 'completed',
+        fromNumber: '+1-555-123-4567',
+        toNumber: '+1-555-987-6543',
+        durationSeconds: 300,
+        startTimestamp: '2024-01-15T10:00:00Z',
+        endTimestamp: '2024-01-15T10:05:00Z',
+        recordingUrl: 'https://recordings.example.com/call_12345.mp3',
+        customer: {
+          phone: '+1-555-123-4567',
+          name: 'John Doe',
+          email: 'john.doe@acme.com'
+        },
+        title: 'Sales Follow-up Call'
+      }
+    ]
+  })
+});
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.arali.ai/api/v1/calls',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'calls': [
+            {
+                'externalCallId': 'call_12345',
+                'direction': 'inbound',
+                'status': 'completed',
+                'fromNumber': '+1-555-123-4567',
+                'toNumber': '+1-555-987-6543',
+                'durationSeconds': 300,
+                'startTimestamp': '2024-01-15T10:00:00Z',
+                'endTimestamp': '2024-01-15T10:05:00Z',
+                'recordingUrl': 'https://recordings.example.com/call_12345.mp3',
+                'customer': {
+                    'phone': '+1-555-123-4567',
+                    'name': 'John Doe',
+                    'email': 'john.doe@acme.com'
+                },
+                'title': 'Sales Follow-up Call'
+            }
+        ]
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "summary": {
+    "total": 1,
+    "success": 1,
+    "failed": 0
+  },
+  "results": [
+    {
+      "externalCallId": "call_12345",
+      "callId": "550e8400-e29b-41d4-a716-446655440003",
+      "status": "success"
+    }
+  ]
+}
+```
+</ResponseExample>

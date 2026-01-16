@@ -1,0 +1,83 @@
+---
+title: Introduction
+description: 'Welcome to the Arali API documentation'
+---
+
+<img
+  className="block dark:hidden"
+  src="/images/hero-light.svg"
+  alt="Arali Hero Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hero-dark.svg"
+  alt="Arali Hero Dark"
+/>
+
+## Welcome to Arali
+
+Arali provides a powerful API for managing customer relationships, tracking interactions, and gaining insights into your business relationships. Our APIs enable you to seamlessly integrate customer data management into your applications.
+
+<CardGroup cols={2}>
+  <Card
+    title="Quick Start"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Get up and running with Arali API in minutes
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/introduction"
+  >
+    Explore all available API endpoints
+  </Card>
+  <Card
+    title="Authentication"
+    icon="lock"
+    href="/authentication"
+  >
+    Learn how to authenticate your API requests
+  </Card>
+  <Card
+    title="SDKs & Libraries"
+    icon="puzzle-piece"
+    href="#"
+  >
+    Coming soon
+  </Card>
+</CardGroup>
+
+## Core Features
+
+<AccordionGroup>
+  <Accordion title="Companies & Accounts" icon="building">
+    Manage company records and accounts linked to your enterprise. Track health scores, ARR, lifecycle stages, and custom fields.
+  </Accordion>
+  <Accordion title="Contacts" icon="users">
+    Create and manage contact records with multiple emails, phone numbers, and company associations.
+  </Accordion>
+  <Accordion title="Interactions" icon="phone">
+    Track calls and meetings, including recordings, participants, and metadata.
+  </Accordion>
+  <Accordion title="Custom Fields" icon="sliders">
+    Define custom field schemas and store custom data for any entity type.
+  </Accordion>
+</AccordionGroup>
+
+## Base URL
+
+All API requests should be made to:
+
+```
+https://api.arali.ai
+```
+
+## API Version
+
+The current API version is `v1`. All endpoints are prefixed with `/api/v1`.
+
+<Note>
+  This documentation covers the public API endpoints. For webhook integrations (Aircall, HubSpot, Slack, WhatsApp), please contact support.
+</Note>

@@ -1,0 +1,131 @@
+---
+title: 'Batch Set Field Values'
+api: 'POST /api/v1/fields/values/batch'
+description: 'Set field values for multiple entities'
+---
+
+## Request Body
+
+<ParamField body="entityType" type="string" required>
+  Entity type. Options: `company`, `account`, `contact`
+</ParamField>
+
+<ParamField body="entities" type="array" required>
+  Array of entity field value objects
+  
+  <Expandable title="Entity Object">
+    <ParamField body="entityId" type="string" required>
+      Entity UUID
+    </ParamField>
+    
+    <ParamField body="fields" type="array" required>
+      Array of field value objects with `fieldKey` and `value`
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST 'https://api.arali.ai/api/v1/fields/values/batch' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "entityType": "company",
+    "entities": [
+      {
+        "entityId": "550e8400-e29b-41d4-a716-446655440000",
+        "fields": [
+          { "fieldKey": "tier", "value": "enterprise" }
+        ]
+      },
+      {
+        "entityId": "550e8400-e29b-41d4-a716-446655440001",
+        "fields": [
+          { "fieldKey": "tier", "value": "startup" }
+        ]
+      }
+    ]
+  }'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.arali.ai/api/v1/fields/values/batch', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    entityType: 'company',
+    entities: [
+      {
+        entityId: '550e8400-e29b-41d4-a716-446655440000',
+        fields: [
+          { fieldKey: 'tier', value: 'enterprise' }
+        ]
+      },
+      {
+        entityId: '550e8400-e29b-41d4-a716-446655440001',
+        fields: [
+          { fieldKey: 'tier', value: 'startup' }
+        ]
+      }
+    ]
+  })
+});
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.arali.ai/api/v1/fields/values/batch',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'entityType': 'company',
+        'entities': [
+            {
+                'entityId': '550e8400-e29b-41d4-a716-446655440000',
+                'fields': [
+                    { 'fieldKey': 'tier', 'value': 'enterprise' }
+                ]
+            },
+            {
+                'entityId': '550e8400-e29b-41d4-a716-446655440001',
+                'fields': [
+                    { 'fieldKey': 'tier', 'value': 'startup' }
+                ]
+            }
+        ]
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "summary": {
+    "total": 2,
+    "success": 2,
+    "failed": 0
+  },
+  "results": [
+    {
+      "entityId": "550e8400-e29b-41d4-a716-446655440000",
+      "status": "success",
+      "updatedFields": ["tier"]
+    },
+    {
+      "entityId": "550e8400-e29b-41d4-a716-446655440001",
+      "status": "success",
+      "updatedFields": ["tier"]
+    }
+  ]
+}
+```
+</ResponseExample>

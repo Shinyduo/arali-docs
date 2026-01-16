@@ -1,0 +1,160 @@
+---
+title: 'Create Associations'
+api: 'POST /api/v1/associations'
+description: 'Batch create contact-company and contact-account relationships'
+---
+
+## Overview
+
+Create contact-company and contact-account relationships. Supports both external IDs (via integration mappings) and direct internal database IDs.
+
+<Info>
+  **Validation Rules:**
+  1. **Contact Identifier:** Must provide either `contactId` OR `externalContactId`
+  2. **Company/Account Identifier:** Must provide at least one of:
+     - `companyId` or `externalCompanyId` (for company-only associations)
+     - `accountId` or `externalAccountId` (for account-based associations)
+     - Both (for associations with both company and account)
+</Info>
+
+### Association Flows
+
+| Flow | Required Fields | Creates |
+|------|-----------------|---------|
+| **Company-only** | `contactId` or `externalContactId` + `companyId` or `externalCompanyId` | `customer_company` |
+| **Account-based** | `contactId` or `externalContactId` + `accountId` or `externalAccountId` | `contact_account`, `customer_company` (from account.companyId) |
+| **Account + Company** | `contactId` or `externalContactId` + `accountId` or `externalAccountId` + `companyId` or `externalCompanyId` | `contact_account`, `customer_company` (for both companies) |
+
+## Request Body
+
+<ParamField body="associations" type="array" required>
+  Array of association objects
+  
+  <Expandable title="Association Object">
+    <ParamField body="contactId" type="string" format="uuid">
+      Internal UUID of the contact (bypasses mapping lookup; optional if `externalContactId` provided)
+    </ParamField>
+  
+    <ParamField body="externalContactId" type="string">
+      External ID of the contact (via integration mapping; optional if `contactId` provided)
+    </ParamField>
+    
+    <ParamField body="companyId" type="string" format="uuid">
+      Internal UUID of the company (bypasses mapping lookup; optional if `externalCompanyId` provided)
+    </ParamField>
+
+    <ParamField body="externalCompanyId" type="string">
+      External ID of the company (creates `customer_company` relationship)
+    </ParamField>
+    
+    <ParamField body="accountId" type="string" format="uuid">
+      Internal UUID of the account (bypasses mapping lookup and auto-resolves company; optional if `externalAccountId` provided)
+    </ParamField>
+
+    <ParamField body="externalAccountId" type="string">
+      External ID of the account (creates `contact_account` relationship and auto-resolves company)
+    </ParamField>
+    
+    <ParamField body="relation" type="string" default="employee">
+      Relationship type. Options: `employee`, `consultant`, `contractor`, `partner`, `agency`, `other`
+    </ParamField>
+    
+    <ParamField body="isPrimary" type="boolean" default="false">
+      Is this the primary company for the contact
+    </ParamField>
+    
+    <ParamField body="role" type="string">
+      Role for the contact_account association
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<RequestExample>
+```bash cURL (External IDs)
+curl -X POST 'https://api.arali.ai/api/v1/associations' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "associations": [
+      {
+        "externalContactId": "contact_12345",
+        "externalCompanyId": "company_67890",
+        "relation": "employee",
+        "isPrimary": true
+      },
+      {
+        "externalContactId": "contact_12345",
+        "externalAccountId": "acc_abc123",
+        "role": "decision_maker"
+      }
+    ]
+  }'
+```
+
+```bash cURL (Internal IDs)
+curl -X POST 'https://api.arali.ai/api/v1/associations' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "associations": [
+      {
+        "contactId": "550e8400-e29b-41d4-a716-446655440000",
+        "companyId": "660e8400-e29b-41d4-a716-446655440111",
+        "relation": "employee",
+        "isPrimary": true
+      },
+      {
+        "contactId": "550e8400-e29b-41d4-a716-446655440000",
+        "accountId": "770e8400-e29b-41d4-a716-446655440222",
+        "role": "decision_maker"
+      }
+    ]
+  }'
+```
+
+```bash cURL (Mixed IDs)
+curl -X POST 'https://api.arali.ai/api/v1/associations' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "associations": [
+      {
+        "externalContactId": "contact_12345",
+        "companyId": "660e8400-e29b-41d4-a716-446655440111"
+      }
+    ]
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "summary": {
+    "total": 2,
+    "success": 2,
+    "failed": 0
+  },
+  "results": [
+    {
+      "externalContactId": "hubspot_contact_12345",
+      "externalCompanyId": "hubspot_company_67890",
+      "status": "success"
+    },
+    {
+      "externalContactId": "hubspot_contact_12345",
+      "externalAccountId": "vitally_acc_abc123",
+      "status": "success"
+    }
+  ]
+}
+```
+
+```json 400 Bad Request
+{
+  "error": "Missing required fields",
+  "details": "Each association must include externalContactId and at least one of externalCompanyId or externalAccountId"
+}
+```
+</ResponseExample>

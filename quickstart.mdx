@@ -1,0 +1,136 @@
+---
+title: 'Quickstart'
+description: 'Start integrating with Arali API in under 5 minutes'
+---
+
+## Get Your API Token
+
+<Steps>
+  <Step title="Access the Dashboard">
+    Navigate to [app.arali.ai](https://app.arali.ai) and log in to your account.
+  </Step>
+  <Step title="Generate API Token">
+    Go to **Settings** → **API Tokens** and click **Create New Token**.
+  </Step>
+  <Step title="Select Scopes">
+    Choose the appropriate scopes for your integration:
+    - `companies:read`, `companies:write`, `companies:delete`
+    - `accounts:read`, `accounts:write`, `accounts:delete`
+    - `contacts:read`, `contacts:write`, `contacts:delete`
+    - `calls:read`, `calls:write`
+    - `meetings:read`, `meetings:write`, `meetings:delete`
+    - `fields:read`, `fields:write`, `fields:delete`
+    - `associations:write`
+  </Step>
+  <Step title="Copy Your Token">
+    Copy and securely store your API token. You won't be able to see it again.
+  </Step>
+</Steps>
+
+## Make Your First API Call
+
+Let's create a company to verify your setup:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST 'https://api.arali.ai/api/v1/companies' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "companies": [
+      {
+        "name": "Acme Corporation",
+        "externalId": "acme-001",
+        "domain": "acme.com",
+        "lifecycleStage": "prospect"
+      }
+    ]
+  }'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.arali.ai/api/v1/companies', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    companies: [
+      {
+        name: 'Acme Corporation',
+        externalId: 'acme-001',
+        domain: 'acme.com',
+        lifecycleStage: 'prospect'
+      }
+    ]
+  })
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.arali.ai/api/v1/companies',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'companies': [
+            {
+                'name': 'Acme Corporation',
+                'externalId': 'acme-001',
+                'domain': 'acme.com',
+                'lifecycleStage': 'prospect'
+            }
+        ]
+    }
+)
+
+print(response.json())
+```
+
+</CodeGroup>
+
+### Expected Response
+
+```json
+{
+  "success": true,
+  "summary": {
+    "total": 1,
+    "success": 1,
+    "failed": 0
+  },
+  "results": [
+    {
+      "externalId": "acme-001",
+      "companyId": "550e8400-e29b-41d4-a716-446655440000",
+      "status": "success"
+    }
+  ]
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication Deep Dive" icon="lock" href="/authentication">
+    Learn about scopes, token management, and security best practices
+  </Card>
+  <Card title="API Reference" icon="book" href="/api-reference/introduction">
+    Explore all available endpoints
+  </Card>
+  <Card title="Companies API" icon="building" href="/api-reference/companies/create-companies">
+    Create and manage company records
+  </Card>
+  <Card title="Contacts API" icon="users" href="/api-reference/contacts/create-contacts">
+    Create and manage contact records
+  </Card>
+</CardGroup>

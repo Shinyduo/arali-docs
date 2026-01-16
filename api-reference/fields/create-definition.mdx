@@ -1,0 +1,113 @@
+---
+title: 'Create Field Definition'
+api: 'POST /api/v1/fields/definitions'
+description: 'Create a new custom field definition'
+---
+
+## Request Body
+
+<ParamField body="fieldKey" type="string" required>
+  Unique key for the field (snake_case recommended)
+</ParamField>
+
+<ParamField body="fieldName" type="string" required>
+  Display name for the field
+</ParamField>
+
+<ParamField body="fieldType" type="string" required>
+  Field type. Options: `text`, `number`, `date`, `boolean`, `json`, `enum`
+</ParamField>
+
+<ParamField body="entityType" type="string" required>
+  Entity type this field applies to. Options: `company`, `account`, `contact`
+</ParamField>
+
+<ParamField body="enumOptions" type="array">
+  Valid options for enum field type (required if fieldType is `enum`)
+</ParamField>
+
+<ParamField body="isRequired" type="boolean" default="false">
+  Is this field required
+</ParamField>
+
+<ParamField body="displayOrder" type="integer">
+  Order for UI display
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST 'https://api.arali.ai/api/v1/fields/definitions' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "fieldKey": "contract_start_date",
+    "fieldName": "Contract Start Date",
+    "fieldType": "date",
+    "entityType": "company",
+    "isRequired": false,
+    "displayOrder": 1
+  }'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.arali.ai/api/v1/fields/definitions', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fieldKey: 'contract_start_date',
+    fieldName: 'Contract Start Date',
+    fieldType: 'date',
+    entityType: 'company',
+    isRequired: false,
+    displayOrder: 1
+  })
+});
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.arali.ai/api/v1/fields/definitions',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'fieldKey': 'contract_start_date',
+        'fieldName': 'Contract Start Date',
+        'fieldType': 'date',
+        'entityType': 'company',
+        'isRequired': False,
+        'displayOrder': 1
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 201 Created
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440010",
+    "fieldKey": "contract_start_date",
+    "fieldName": "Contract Start Date",
+    "fieldType": "date",
+    "entityType": "company",
+    "isRequired": false,
+    "displayOrder": 1,
+    "createdAt": "2024-01-16T10:00:00Z"
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "error": "Field key already exists for this entity type"
+}
+```
+</ResponseExample>

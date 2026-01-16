@@ -1,0 +1,160 @@
+---
+title: 'Create Contacts'
+api: 'POST /api/v1/contacts'
+description: 'Batch create or update contact records'
+---
+
+## Request Body
+
+<ParamField body="contacts" type="array" required>
+  Array of contact objects to create or update
+  
+  <Expandable title="Contact Object">
+    <ParamField body="externalId" type="string" required>
+      External unique ID from integration source
+    </ParamField>
+    
+    <ParamField body="fullName" type="string">
+      Contact's full name
+    </ParamField>
+    
+    <ParamField body="primaryEmail" type="string">
+      Primary email address
+    </ParamField>
+    
+    <ParamField body="primaryPhone" type="string">
+      Primary phone number
+    </ParamField>
+    
+    <ParamField body="title" type="string">
+      Job title
+    </ParamField>
+    
+    <ParamField body="ownerUserId" type="string">
+      Owner user UUID
+    </ParamField>
+    
+    <ParamField body="emails" type="array">
+      List of email objects with `email`, `isPrimary`, and `label` fields
+    </ParamField>
+    
+    <ParamField body="phones" type="array">
+      List of phone objects with `phone`, `isPrimary`, and `label` fields
+    </ParamField>
+    
+    <ParamField body="companies" type="array">
+      List of company association objects with `companyId`, `relation`, `isPrimary`, and `attributes` fields
+    </ParamField>
+    
+    <ParamField body="attributes" type="object">
+      Custom key-value attributes
+    </ParamField>
+    
+    <ParamField body="properties" type="object">
+      Custom field values
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST 'https://api.arali.ai/api/v1/contacts' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "contacts": [
+      {
+        "externalId": "contact_12345",
+        "fullName": "John Doe",
+        "primaryEmail": "john.doe@acme.com",
+        "primaryPhone": "+1-555-123-4567",
+        "title": "VP of Engineering",
+        "emails": [
+          { "email": "john.doe@acme.com", "isPrimary": true, "label": "Work" },
+          { "email": "johndoe@gmail.com", "isPrimary": false, "label": "Personal" }
+        ],
+        "phones": [
+          { "phone": "+1-555-123-4567", "isPrimary": true, "label": "Mobile" }
+        ],
+        "attributes": {
+          "linkedin": "https://linkedin.com/in/johndoe",
+          "timezone": "America/New_York"
+        }
+      }
+    ]
+  }'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.arali.ai/api/v1/contacts', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    contacts: [
+      {
+        externalId: 'contact_12345',
+        fullName: 'John Doe',
+        primaryEmail: 'john.doe@acme.com',
+        primaryPhone: '+1-555-123-4567',
+        title: 'VP of Engineering',
+        emails: [
+          { email: 'john.doe@acme.com', isPrimary: true, label: 'Work' }
+        ],
+        phones: [
+          { phone: '+1-555-123-4567', isPrimary: true, label: 'Mobile' }
+        ]
+      }
+    ]
+  })
+});
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.arali.ai/api/v1/contacts',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'contacts': [
+            {
+                'externalId': 'contact_12345',
+                'fullName': 'John Doe',
+                'primaryEmail': 'john.doe@acme.com',
+                'primaryPhone': '+1-555-123-4567',
+                'title': 'VP of Engineering',
+                'emails': [
+                    { 'email': 'john.doe@acme.com', 'isPrimary': True, 'label': 'Work' }
+                ]
+            }
+        ]
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "summary": {
+    "total": 1,
+    "success": 1,
+    "failed": 0
+  },
+  "results": [
+    {
+      "externalId": "contact_12345",
+      "contactId": "550e8400-e29b-41d4-a716-446655440002",
+      "status": "success"
+    }
+  ]
+}
+```
+</ResponseExample>

@@ -1,0 +1,57 @@
+---
+title: 'Delete Account'
+api: 'DELETE /api/v1/accounts/{id}'
+description: 'Delete an account'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Account UUID
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X DELETE 'https://api.arali.ai/api/v1/accounts/550e8400-e29b-41d4-a716-446655440001' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN'
+```
+
+```javascript Node.js
+const accountId = '550e8400-e29b-41d4-a716-446655440001';
+
+const response = await fetch(`https://api.arali.ai/api/v1/accounts/${accountId}`, {
+  method: 'DELETE',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN'
+  }
+});
+```
+
+```python Python
+import requests
+
+account_id = '550e8400-e29b-41d4-a716-446655440001'
+
+response = requests.delete(
+    f'https://api.arali.ai/api/v1/accounts/{account_id}',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN'
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Account deleted successfully"
+}
+```
+
+```json 404 Not Found
+{
+  "error": "Account not found"
+}
+```
+</ResponseExample>

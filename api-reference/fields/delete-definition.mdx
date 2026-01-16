@@ -1,0 +1,61 @@
+---
+title: 'Delete Field Definition'
+api: 'DELETE /api/v1/fields/definitions/{id}'
+description: 'Delete a field definition'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Field definition UUID
+</ParamField>
+
+<Warning>
+  Deleting a field definition will also delete all associated field values for all entities.
+</Warning>
+
+<RequestExample>
+```bash cURL
+curl -X DELETE 'https://api.arali.ai/api/v1/fields/definitions/550e8400-e29b-41d4-a716-446655440010' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN'
+```
+
+```javascript Node.js
+const fieldDefId = '550e8400-e29b-41d4-a716-446655440010';
+
+const response = await fetch(`https://api.arali.ai/api/v1/fields/definitions/${fieldDefId}`, {
+  method: 'DELETE',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN'
+  }
+});
+```
+
+```python Python
+import requests
+
+field_def_id = '550e8400-e29b-41d4-a716-446655440010'
+
+response = requests.delete(
+    f'https://api.arali.ai/api/v1/fields/definitions/{field_def_id}',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN'
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Field definition deleted successfully"
+}
+```
+
+```json 404 Not Found
+{
+  "error": "Field definition not found"
+}
+```
+</ResponseExample>

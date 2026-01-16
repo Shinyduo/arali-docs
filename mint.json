@@ -1,0 +1,135 @@
+{
+    "$schema": "https://mintlify.com/schema.json",
+    "name": "Arali API Documentation",
+    "logo": {
+        "dark": "/dark_logo.png",
+        "light": "/logo.png"
+    },
+    "favicon": "/favicon.ico",
+    "colors": {
+        "primary": "#6366F1",
+        "light": "#818CF8",
+        "dark": "#4F46E5",
+        "anchors": {
+            "from": "#6366F1",
+            "to": "#8B5CF6"
+        }
+    },
+    "topbarLinks": [
+        {
+            "name": "Support",
+            "url": "mailto:devesh@arali.ai"
+        }
+    ],
+    "topbarCtaButton": {
+        "name": "Dashboard",
+        "url": "https://app.arali.ai"
+    },
+    "tabs": [
+        {
+            "name": "API Reference",
+            "url": "api-reference"
+        }
+    ],
+    "anchors": [
+        {
+            "name": "API Status",
+            "icon": "signal",
+            "url": "https://status.arali.ai"
+        }
+    ],
+    "navigation": [
+        {
+            "group": "Get Started",
+            "pages": [
+                "introduction",
+                "quickstart",
+                "authentication"
+            ]
+        },
+        {
+            "group": "API Reference",
+            "pages": [
+                "api-reference/introduction"
+            ]
+        },
+        {
+            "group": "Companies",
+            "pages": [
+                "api-reference/companies/create-companies",
+                "api-reference/companies/list-companies",
+                "api-reference/companies/get-company",
+                "api-reference/companies/update-company",
+                "api-reference/companies/delete-company"
+            ]
+        },
+        {
+            "group": "Accounts",
+            "pages": [
+                "api-reference/accounts/create-accounts",
+                "api-reference/accounts/list-accounts",
+                "api-reference/accounts/get-account",
+                "api-reference/accounts/update-account",
+                "api-reference/accounts/delete-account"
+            ]
+        },
+        {
+            "group": "Contacts",
+            "pages": [
+                "api-reference/contacts/create-contacts",
+                "api-reference/contacts/list-contacts",
+                "api-reference/contacts/get-contact",
+                "api-reference/contacts/update-contact",
+                "api-reference/contacts/delete-contact"
+            ]
+        },
+        {
+            "group": "Associations",
+            "pages": [
+                "api-reference/associations/create-associations"
+            ]
+        },
+        {
+            "group": "Calls",
+            "pages": [
+                "api-reference/calls/create-calls",
+                "api-reference/calls/list-calls",
+                "api-reference/calls/get-call"
+            ]
+        },
+        {
+            "group": "Meetings",
+            "pages": [
+                "api-reference/meetings/create-meeting",
+                "api-reference/meetings/list-meetings",
+                "api-reference/meetings/get-meeting",
+                "api-reference/meetings/delete-meeting"
+            ]
+        },
+        {
+            "group": "Fields",
+            "pages": [
+                "api-reference/fields/list-definitions",
+                "api-reference/fields/create-definition",
+                "api-reference/fields/delete-definition",
+                "api-reference/fields/get-values",
+                "api-reference/fields/set-values",
+                "api-reference/fields/batch-set-values"
+            ]
+        }
+    ],
+    "footerSocials": {
+        "twitter": "https://twitter.com/arali_ai",
+        "linkedin": "https://linkedin.com/company/arali-ai"
+    },
+    "api": {
+        "baseUrl": "https://api.arali.ai",
+        "auth": {
+            "method": "bearer"
+        },
+        "playground": {
+            "mode": "show"
+        }
+    },
+    "openapi": "openapi.yaml"
+}

@@ -1,0 +1,102 @@
+---
+title: 'Set Field Values'
+api: 'POST /api/v1/fields/values'
+description: 'Set field values for an entity'
+---
+
+## Request Body
+
+<ParamField body="entityType" type="string" required>
+  Entity type. Options: `company`, `account`, `contact`
+</ParamField>
+
+<ParamField body="entityId" type="string" required>
+  Entity UUID
+</ParamField>
+
+<ParamField body="fields" type="array" required>
+  Array of field value objects
+  
+  <Expandable title="Field Value Object">
+    <ParamField body="fieldKey" type="string" required>
+      Key of the field definition
+    </ParamField>
+    
+    <ParamField body="value" type="any" required>
+      Value matching the field type
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X POST 'https://api.arali.ai/api/v1/fields/values' \
+  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "entityType": "company",
+    "entityId": "550e8400-e29b-41d4-a716-446655440000",
+    "fields": [
+      { "fieldKey": "contract_start_date", "value": "2024-01-15" },
+      { "fieldKey": "tier", "value": "enterprise" }
+    ]
+  }'
+```
+
+```javascript Node.js
+const response = await fetch('https://api.arali.ai/api/v1/fields/values', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    entityType: 'company',
+    entityId: '550e8400-e29b-41d4-a716-446655440000',
+    fields: [
+      { fieldKey: 'contract_start_date', value: '2024-01-15' },
+      { fieldKey: 'tier', value: 'enterprise' }
+    ]
+  })
+});
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.arali.ai/api/v1/fields/values',
+    headers={
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'entityType': 'company',
+        'entityId': '550e8400-e29b-41d4-a716-446655440000',
+        'fields': [
+            { 'fieldKey': 'contract_start_date', 'value': '2024-01-15' },
+            { 'fieldKey': 'tier', 'value': 'enterprise' }
+        ]
+    }
+)
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "entityType": "company",
+    "entityId": "550e8400-e29b-41d4-a716-446655440000",
+    "updatedFields": ["contract_start_date", "tier"]
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "error": "Invalid value for field 'tier'. Must be one of: starter, professional, enterprise"
+}
+```
+</ResponseExample>
