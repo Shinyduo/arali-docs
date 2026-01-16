@@ -4,6 +4,71 @@ api: 'POST /api/v1/accounts'
 description: 'Batch create or update account records'
 ---
 
+## Linking Accounts to Companies
+
+There are **two ways** to link an account to its parent company:
+
+<AccordionGroup>
+  <Accordion title="Option 1: Using companyId (Internal UUID)" icon="database">
+    Use this when you already know the **internal company UUID** from your database.
+    
+    ```json
+    {
+      "accounts": [
+        {
+          "name": "Acme Enterprise Account",
+          "companyId": "550e8400-e29b-41d4-a716-446655440000",
+          "externalId": "vitally_acc_12345",
+          "domain": "acme.com",
+          "accountType": "enterprise",
+          "arr": 120000,
+          "healthScore": 85
+        }
+      ]
+    }
+    ```
+    
+    - `companyId`: The internal UUID of the company (from creating the company or querying your database)
+    - `externalId`: The unique ID from your integration source (e.g., Vitally, Salesforce)
+    - This **directly links** the account to the company without needing to look up the company
+  </Accordion>
+
+  <Accordion title="Option 2: Using externalCompanyId (External Reference)" icon="link">
+    Use this when you only know the **external ID** of the company from your integration.
+    
+    ```json
+    {
+      "accounts": [
+        {
+          "name": "Acme Enterprise Account",
+          "externalCompanyId": "hubspot_company_12345",
+          "externalId": "vitally_acc_12345",
+          "externalAccountId": "SF_ACC_001",
+          "domain": "acme.com",
+          "accountType": "enterprise",
+          "arr": 120000,
+          "healthScore": 85,
+          "metadata": {
+            "tier": "premium",
+            "contract_start": "2024-01-01"
+          }
+        }
+      ]
+    }
+    ```
+    
+    - `externalCompanyId`: The external ID of the parent company (e.g., "hubspot_company_12345")
+    - The API will look this up in `integration_object_mapping` to find the internal company UUID
+    - The company **must already exist** with this external ID
+    - `externalId`: The unique ID for this account from your integration (stored in mapping table)
+    - `externalAccountId`: Optional secondary ID stored directly on the account record (used for upsert)
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+  You must use **either** `companyId` **or** `externalCompanyId` to link the account to a company. The parent company must exist before creating the account.
+</Warning>
+
 ## Request Body
 
 <ParamField body="accounts" type="array" required>
@@ -14,6 +79,14 @@ description: 'Batch create or update account records'
       Account display name
     </ParamField>
     
+    <ParamField body="companyId" type="string">
+      **Internal company UUID**. Use when you have the internal database ID. Mutually exclusive with `externalCompanyId`.
+    </ParamField>
+    
+    <ParamField body="externalCompanyId" type="string">
+      **External company ID**. Use when syncing from integrations. Mutually exclusive with `companyId`.
+    </ParamField>
+    
     <ParamField body="externalId" type="string" required>
       **Primary External ID**. Used for integration mapping lookup.
     </ParamField>
@@ -21,16 +94,12 @@ description: 'Batch create or update account records'
     <ParamField body="externalAccountId" type="string">
       **Secondary External ID**. Stored on the record. Defaults to `externalId` if not provided.
     </ParamField>
-    
-    <ParamField body="externalCompanyId" type="string" required>
-      External ID of the **parent company**.
-    </ParamField>
 
     <Info>
       **Upsert Logic:**
       1. **Mapping Lookup**: Checks for mapping using `externalId`.
       2. **DB Constraint**: Validates/Upserts on `externalAccountId` (defaults to `externalId`).
-      3. **Company Link**: Must resolve `externalCompanyId` to an existing parent company.
+      3. **Company Link**: Must resolve either `companyId` or `externalCompanyId` to an existing parent company.
     </Info>
     
     <ParamField body="domain" type="string">

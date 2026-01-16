@@ -495,6 +495,18 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Company'
+            example:
+              companies:
+                - name: "Acme Corporation"
+                  externalId: "hubspot_12345"
+                  externalCompanyId: "CRM_001"
+                  domain: "acme.com"
+                  lifecycleStage: "customer"
+                  healthScore: 85
+                  arr: 120000
+                  attributes:
+                    industry: "Technology"
+                    employee_count: 500
       responses:
         '200':
           description: Batch operation completed
@@ -657,6 +669,19 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Account'
+            example:
+              accounts:
+                - name: "Acme Enterprise Account"
+                  externalId: "vitally_acc_12345"
+                  externalAccountId: "CRM_ACC_001"
+                  externalCompanyId: "hubspot_12345"
+                  domain: "acme.com"
+                  accountType: "enterprise"
+                  healthScore: 85
+                  arr: 120000
+                  metadata:
+                    tier: "premium"
+                    contract_start: "2024-01-01"
       responses:
         '200':
           description: Batch operation completed
@@ -806,6 +831,24 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Contact'
+            example:
+              contacts:
+                - externalId: "contact_12345"
+                  fullName: "John Doe"
+                  primaryEmail: "john.doe@acme.com"
+                  primaryPhone: "+1-555-123-4567"
+                  title: "VP of Engineering"
+                  emails:
+                    - email: "john.doe@acme.com"
+                      isPrimary: true
+                      label: "Work"
+                  phones:
+                    - phone: "+1-555-123-4567"
+                      isPrimary: true
+                      label: "Mobile"
+                  attributes:
+                    linkedin: "https://linkedin.com/in/johndoe"
+                    timezone: "America/New_York"
       responses:
         '200':
           description: Batch operation completed
@@ -944,6 +987,12 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Association'
+            example:
+              associations:
+                - externalContactId: "contact_12345"
+                  externalCompanyId: "company_67890"
+                  relation: "employee"
+                  isPrimary: true
       responses:
         '200':
           description: Batch operation completed
@@ -981,6 +1030,22 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Call'
+            example:
+              calls:
+                - externalCallId: "call_12345"
+                  direction: "inbound"
+                  status: "completed"
+                  fromNumber: "+1-555-123-4567"
+                  toNumber: "+1-555-987-6543"
+                  durationSeconds: 300
+                  startTimestamp: "2024-01-15T10:00:00Z"
+                  endTimestamp: "2024-01-15T10:05:00Z"
+                  recordingUrl: "https://recordings.example.com/call_12345.mp3"
+                  customer:
+                    phone: "+1-555-123-4567"
+                    name: "John Doe"
+                    email: "john.doe@acme.com"
+                  title: "Sales Follow-up Call"
       responses:
         '200':
           description: Batch operation completed
@@ -1050,6 +1115,19 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Meeting'
+            example:
+              title: "Weekly Team Sync"
+              channel: "gmeet"
+              joinUrl: "https://meet.google.com/abc-defg-hij"
+              scheduledStartAt: "2024-01-20T10:00:00Z"
+              scheduledEndAt: "2024-01-20T11:00:00Z"
+              status: "scheduled"
+              externalMeetingId: "calendar_event_abc123"
+              hostEmail: "john@example.com"
+              participantEmails:
+                - "john@example.com"
+                - "jane@example.com"
+              type: "internal"
       responses:
         '200':
           description: Meeting created/updated
