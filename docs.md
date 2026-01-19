@@ -484,7 +484,6 @@ Create and manage call records.
 
 | Method | Endpoint | Description | Required Scope |
 |--------|----------|-------------|----------------|
-| POST | `/api/v1/calls` | Batch create call records | `calls:write` |
 | GET | `/api/v1/calls` | List all calls | `calls:read` |
 | GET | `/api/v1/calls/:id` | Get single call | `calls:read` |
 | GET | `/api/v1/calls/schema` | Get API schema | - |
@@ -511,37 +510,6 @@ Create and manage call records.
 
 ### cURL Examples
 
-#### Create Calls (Batch)
-
-```bash
-curl -X POST 'https://your-api-domain.com/api/v1/calls' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "calls": [
-      {
-        "externalCallId": "call_12345",
-        "direction": "inbound",
-        "status": "completed",
-        "fromNumber": "+1-555-123-4567",
-        "toNumber": "+1-555-987-6543",
-        "durationSeconds": 300,
-        "startTimestamp": "2024-01-15T10:00:00Z",
-        "endTimestamp": "2024-01-15T10:05:00Z",
-        "recordingUrl": "https://recordings.example.com/call_12345.mp3",
-        "customer": {
-          "phone": "+1-555-123-4567",
-          "name": "John Doe",
-          "email": "john.doe@acme.com"
-        },
-        "title": "Sales Follow-up Call"
-      }
-    ]
-  }'
-```
-
-> **Note:** `providerKey` is optional and defaults to `"api"` if not provided.
-
 #### List All Calls
 
 ```bash
@@ -566,7 +534,6 @@ Create and manage meeting records.
 
 | Method | Endpoint | Description | Required Scope |
 |--------|----------|-------------|----------------|
-| POST | `/api/v1/meetings` | Create/update a meeting | `meetings:write` |
 | GET | `/api/v1/meetings` | List all meetings | `meetings:read` |
 | GET | `/api/v1/meetings/:id` | Get single meeting | `meetings:read` |
 | DELETE | `/api/v1/meetings/:id` | Delete/cancel a meeting | `meetings:delete` |
@@ -592,26 +559,6 @@ Create and manage meeting records.
 | `metadata` | object | No | Additional metadata |
 
 ### cURL Examples
-
-#### Create/Update Meeting
-
-```bash
-curl -X POST 'https://your-api-domain.com/api/v1/meetings' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "title": "Weekly Team Sync",
-    "channel": "gmeet",
-    "joinUrl": "https://meet.google.com/abc-defg-hij",
-    "scheduledStartAt": "2024-01-20T10:00:00Z",
-    "scheduledEndAt": "2024-01-20T11:00:00Z",
-    "status": "scheduled",
-    "externalMeetingId": "calendar_event_abc123",
-    "hostEmail": "john@example.com",
-    "participantEmails": ["john@example.com", "jane@example.com"],
-    "type": "internal"
-  }'
-```
 
 #### List All Meetings
 
