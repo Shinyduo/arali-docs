@@ -92,7 +92,6 @@
         {
             "group": "Calls",
             "pages": [
-                "api-reference/calls/create-calls",
                 "api-reference/calls/list-calls",
                 "api-reference/calls/get-call"
             ]
@@ -100,7 +99,6 @@
         {
             "group": "Meetings",
             "pages": [
-                "api-reference/meetings/create-meeting",
                 "api-reference/meetings/list-meetings",
                 "api-reference/meetings/get-meeting",
                 "api-reference/meetings/delete-meeting"
