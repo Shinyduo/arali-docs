@@ -1,0 +1,54 @@
+---
+title: 'Update Role Assignment'
+api: 'PUT /api/v1/key-role-assignments/{assignmentId}'
+description: 'Update a specific role assignment'
+---
+
+## Path Parameters
+
+<ParamField path="assignmentId" type="string" required>
+  The unique ID of the role assignment to update
+</ParamField>
+
+## Request Body
+
+<ParamField body="userEmail" type="string">
+  Updated user email address
+</ParamField>
+
+<ParamField body="roleKey" type="string">
+  Updated role key
+</ParamField>
+
+<ParamField body="tenure" type="object">
+  Updated tenure period
+  
+  <Expandable title="Tenure Object">
+    <ParamField body="startDate" type="string">
+      Updated start date in YYYY-MM-DD format
+    </ParamField>
+    
+    <ParamField body="endDate" type="string">
+      Updated end date in YYYY-MM-DD format
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userEmail": "new.user@acme.com",
+    "tenure": {
+      "startDate": "2024-02-01",
+      "endDate": "2024-12-31"
+    }
+  }'
+```
+
+## Response
+
+Returns the updated role assignment record.

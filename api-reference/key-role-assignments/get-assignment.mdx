@@ -1,0 +1,30 @@
+---
+title: 'Get Role Assignment'
+api: 'GET /api/v1/key-role-assignments/{assignmentId}'
+description: 'Retrieve a specific role assignment by ID'
+---
+
+## Path Parameters
+
+<ParamField path="assignmentId" type="string" required>
+  The unique ID of the role assignment to retrieve
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X GET https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns the role assignment record with full details including:
+- Assignment ID
+- Role key
+- Entity type (company or account)
+- External entity ID
+- User email
+- Tenure start date
+- Tenure end date (if applicable)
+- Created and updated timestamps

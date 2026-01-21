@@ -1,0 +1,103 @@
+---
+title: 'Create/Update Subscriptions'
+api: 'POST /api/v1/subscriptions'
+description: 'Batch create or update subscription records'
+---
+
+## Request Body
+
+<ParamField body="subscriptions" type="array" required>
+  Array of subscription objects to create or update
+  
+  <Expandable title="Subscription Object">
+    <ParamField body="externalCompanyId" type="string" required>
+      External ID of the company
+    </ParamField>
+    
+    <ParamField body="externalAccountId" type="string">
+      External ID of the account (optional)
+    </ParamField>
+    
+    <ParamField body="planKey" type="string" required>
+      The key of the plan this subscription is for
+    </ParamField>
+    
+    <ParamField body="status" type="string" required>
+      Subscription status: `trialing`, `active`, `past_due`, `paused`, `cancelled`, or `ended`
+    </ParamField>
+    
+    <ParamField body="currency" type="string">
+      Currency code (e.g., "USD", "EUR")
+    </ParamField>
+    
+    <ParamField body="billingInterval" type="string">
+      Billing frequency: `month`, `year`, or `one_time`
+    </ParamField>
+    
+    <ParamField body="billingIntervalCount" type="number">
+      Number of billing intervals. Default: 1
+    </ParamField>
+    
+    <ParamField body="contractValue" type="number">
+      Contract value in major currency units (automatically converted to minor units)
+    </ParamField>
+    
+    <ParamField body="currentPeriodStartAt" type="string">
+      ISO 8601 timestamp for the current period start
+    </ParamField>
+    
+    <ParamField body="currentPeriodEndAt" type="string">
+      ISO 8601 timestamp for the current period end
+    </ParamField>
+    
+    <ParamField body="externalSubscriptionId" type="string">
+      External subscription ID from billing provider (e.g., Stripe)
+    </ParamField>
+    
+    <ParamField body="cancelledAt" type="string">
+      ISO 8601 timestamp when the subscription was cancelled
+    </ParamField>
+    
+    <ParamField body="metadata" type="object">
+      Custom key-value metadata
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/subscriptions \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subscriptions": [
+      {
+        "externalCompanyId": "acme-corp",
+        "externalAccountId": "acme-enterprise-account",
+        "planKey": "premium",
+        "status": "active",
+        "currency": "USD",
+        "billingInterval": "month",
+        "billingIntervalCount": 1,
+        "contractValue": 99.99,
+        "currentPeriodStartAt": "2024-01-01T00:00:00Z",
+        "currentPeriodEndAt": "2024-02-01T00:00:00Z",
+        "externalSubscriptionId": "stripe_sub_123",
+        "metadata": {
+          "source": "stripe",
+          "customField": "value"
+        }
+      }
+    ]
+  }'
+```
+
+## Response
+
+Returns the created/updated subscription records.
+
+## Notes
+
+- Contract values are automatically converted to minor currency units (cents for USD, no conversion for JPY)
+- Example: USD 99.99 → stored as 9999 cents

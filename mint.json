@@ -114,6 +114,61 @@
                 "api-reference/fields/set-values",
                 "api-reference/fields/batch-set-values"
             ]
+        },
+        {
+            "group": "Billing & Usage",
+            "pages": [
+                "api-reference/billing-overview"
+            ]
+        },
+        {
+            "group": "Products",
+            "pages": [
+                "api-reference/products/create-products",
+                "api-reference/products/list-products",
+                "api-reference/products/get-product",
+                "api-reference/products/update-product",
+                "api-reference/products/delete-product"
+            ]
+        },
+        {
+            "group": "Plans",
+            "pages": [
+                "api-reference/plans/create-plans",
+                "api-reference/plans/list-plans",
+                "api-reference/plans/get-plan",
+                "api-reference/plans/update-plan",
+                "api-reference/plans/add-product",
+                "api-reference/plans/remove-product"
+            ]
+        },
+        {
+            "group": "Subscriptions",
+            "pages": [
+                "api-reference/subscriptions/create-subscriptions",
+                "api-reference/subscriptions/list-subscriptions",
+                "api-reference/subscriptions/get-subscription",
+                "api-reference/subscriptions/update-subscription",
+                "api-reference/subscriptions/delete-subscription"
+            ]
+        },
+        {
+            "group": "Usage",
+            "pages": [
+                "api-reference/usage/report-usage",
+                "api-reference/usage/query-usage"
+            ]
+        },
+        {
+            "group": "Key Role Assignments",
+            "pages": [
+                "api-reference/roles-overview",
+                "api-reference/key-role-assignments/create-assignments",
+                "api-reference/key-role-assignments/list-assignments",
+                "api-reference/key-role-assignments/get-assignment",
+                "api-reference/key-role-assignments/update-assignment",
+                "api-reference/key-role-assignments/delete-assignment"
+            ]
         }
     ],
     "footerSocials": {

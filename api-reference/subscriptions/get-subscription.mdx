@@ -1,0 +1,33 @@
+---
+title: 'Get Subscription'
+api: 'GET /api/v1/subscriptions/{subscriptionId}'
+description: 'Retrieve a specific subscription by ID'
+---
+
+## Path Parameters
+
+<ParamField path="subscriptionId" type="string" required>
+  The unique ID of the subscription to retrieve
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X GET https://api.arali.ai/api/v1/subscriptions/{subscriptionId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns the subscription record with full details including:
+- Subscription ID
+- External company and account IDs
+- Plan key and details
+- Status (trialing, active, past_due, paused, cancelled, ended)
+- Currency and billing interval
+- Contract value
+- Current period start and end dates
+- External subscription ID
+- Cancellation date (if applicable)
+- Metadata
+- Created and updated timestamps

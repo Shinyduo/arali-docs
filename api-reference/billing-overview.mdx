@@ -1,0 +1,140 @@
+---
+title: 'Billing & Usage APIs Overview'
+description: 'Manage products, plans, subscriptions, and usage tracking'
+---
+
+## Overview
+
+The Arali Billing & Usage APIs provide a comprehensive solution for managing your product catalog, subscription plans, customer subscriptions, and usage-based billing. These APIs are designed to integrate seamlessly with your existing billing infrastructure.
+
+## Key Concepts
+
+### Products
+Products represent billable items or features in your system. Each product has:
+- **Key**: Unique identifier (e.g., "image-analysis")
+- **Kind**: Type classification
+  - `core_product`: Main product offerings
+  - `feature`: Individual features
+  - `addon`: Optional add-ons
+  - `metric_only`: Usage tracking without direct billing
+- **Billable Candidate**: Whether the product can generate charges
+
+### Plans
+Plans are subscription tiers that bundle products together with pricing information:
+- Combine multiple products into packages
+- Define pricing structure (base price, currency, billing interval)
+- Support monthly, yearly, or one-time billing
+- Link products with default inclusion settings
+
+### Subscriptions
+Subscriptions represent customer commitments to specific plans:
+- Link companies or accounts to plans
+- Track subscription lifecycle (trialing, active, cancelled, etc.)
+- Store billing metadata from external providers (e.g., Stripe)
+- Manage subscription periods and contract values
+
+### Usage
+Usage tracking captures consumption of products and features:
+- Report daily usage metrics per product
+- Track multiple metrics per product
+- Query usage data with flexible filtering
+- Support both company and account-level tracking
+
+## Currency Handling
+
+Contract values are automatically converted to minor currency units for precision:
+- **USD**: 99.99 → stored as 9999 cents
+- **JPY**: 1000 → stored as 1000 (no conversion for zero-decimal currencies)
+
+This ensures accurate financial calculations without floating-point errors.
+
+## Valid Enum Values
+
+### Product Kind
+- `core_product`
+- `feature`
+- `addon`
+- `metric_only`
+
+### Product/Plan Status
+- `active`
+- `archived`
+
+### Subscription Status
+- `trialing` - Trial period
+- `active` - Active subscription
+- `past_due` - Payment overdue
+- `paused` - Temporarily paused
+- `cancelled` - Cancelled but not yet ended
+- `ended` - Fully terminated
+
+### Billing Interval
+- `month` - Monthly billing
+- `year` - Annual billing
+- `one_time` - One-time payment
+
+## Common Workflows
+
+### 1. Setting Up a Product Catalog
+```bash
+# Create products
+POST /api/v1/products
+
+# Create plans that bundle products
+POST /api/v1/plans
+```
+
+### 2. Managing Customer Subscriptions
+```bash
+# Create subscription for a customer
+POST /api/v1/subscriptions
+
+# Query subscriptions by company
+GET /api/v1/subscriptions?externalCompanyId=acme-corp
+
+# Update subscription status
+PUT /api/v1/subscriptions/{subscriptionId}
+```
+
+### 3. Tracking Usage
+```bash
+# Report daily usage
+POST /api/v1/usage
+
+# Query usage for billing period
+GET /api/v1/usage?externalCompanyId=acme-corp&startDate=2024-01-01&endDate=2024-01-31
+```
+
+## API Schema Documentation
+
+Each API provides a schema endpoint for reference:
+- `GET /api/v1/products/schema`
+- `GET /api/v1/plans/schema`
+- `GET /api/v1/subscriptions/schema`
+- `GET /api/v1/usage/schema`
+
+## Best Practices
+
+1. **Use Keys for Identifiers**: Product and plan keys should be stable, readable identifiers
+2. **Batch Operations**: Use batch endpoints for bulk imports to reduce API calls
+3. **Idempotency**: Batch create/update operations are idempotent based on keys
+4. **Date Formats**: Always use ISO 8601 format for timestamps and YYYY-MM-DD for dates
+5. **Currency Precision**: Provide prices in major currency units; the API handles conversion
+6. **Status Management**: Update subscription status as the lifecycle progresses
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Products API" icon="box" href="/api-reference/products/create-products">
+    Manage your product catalog
+  </Card>
+  <Card title="Plans API" icon="rectangle-list" href="/api-reference/plans/create-plans">
+    Create subscription plans
+  </Card>
+  <Card title="Subscriptions API" icon="credit-card" href="/api-reference/subscriptions/create-subscriptions">
+    Manage customer subscriptions
+  </Card>
+  <Card title="Usage API" icon="chart-line" href="/api-reference/usage/report-usage">
+    Track product usage
+  </Card>
+</CardGroup>

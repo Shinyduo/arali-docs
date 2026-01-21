@@ -1,0 +1,30 @@
+---
+title: 'Get Plan'
+api: 'GET /api/v1/plans/{planId}'
+description: 'Retrieve a specific plan by ID'
+---
+
+## Path Parameters
+
+<ParamField path="planId" type="string" required>
+  The unique ID of the plan to retrieve
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X GET https://api.arali.ai/api/v1/plans/{planId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns the plan record with full details including:
+- Plan ID
+- Key
+- Name
+- Description
+- Status
+- Pricing configuration
+- Associated products
+- Created and updated timestamps

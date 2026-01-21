@@ -1,0 +1,72 @@
+---
+title: 'Update Subscription'
+api: 'PUT /api/v1/subscriptions/{subscriptionId}'
+description: 'Update a specific subscription'
+---
+
+## Path Parameters
+
+<ParamField path="subscriptionId" type="string" required>
+  The unique ID of the subscription to update
+</ParamField>
+
+## Request Body
+
+<ParamField body="status" type="string">
+  Updated status: `trialing`, `active`, `past_due`, `paused`, `cancelled`, or `ended`
+</ParamField>
+
+<ParamField body="planKey" type="string">
+  Updated plan key
+</ParamField>
+
+<ParamField body="currency" type="string">
+  Updated currency code
+</ParamField>
+
+<ParamField body="billingInterval" type="string">
+  Updated billing frequency: `month`, `year`, or `one_time`
+</ParamField>
+
+<ParamField body="billingIntervalCount" type="number">
+  Updated billing interval count
+</ParamField>
+
+<ParamField body="contractValue" type="number">
+  Updated contract value in major currency units
+</ParamField>
+
+<ParamField body="currentPeriodStartAt" type="string">
+  Updated current period start (ISO 8601 timestamp)
+</ParamField>
+
+<ParamField body="currentPeriodEndAt" type="string">
+  Updated current period end (ISO 8601 timestamp)
+</ParamField>
+
+<ParamField body="cancelledAt" type="string">
+  Cancellation timestamp (ISO 8601)
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Updated metadata
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X PUT https://api.arali.ai/api/v1/subscriptions/{subscriptionId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "cancelled",
+    "cancelledAt": "2024-01-15T10:30:00Z",
+    "metadata": {
+      "cancellationReason": "customer request"
+    }
+  }'
+```
+
+## Response
+
+Returns the updated subscription record.

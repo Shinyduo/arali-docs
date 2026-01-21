@@ -1,0 +1,160 @@
+---
+title: 'Key Role Assignments Overview'
+description: 'Manage stakeholder roles and relationships'
+---
+
+## Overview
+
+The Key Role Assignments API helps you track important stakeholders and their roles within customer organizations. This is essential for understanding decision-making structures and maintaining strong customer relationships.
+
+## What are Key Roles?
+
+Key roles identify important individuals in your customer organizations who influence product adoption, renewal decisions, or act as advocates. Examples include:
+
+- **Champions**: Internal advocates who promote your product
+- **Decision Makers**: Executives with purchasing authority
+- **Technical Contacts**: Primary technical points of contact
+- **Economic Buyers**: Budget holders
+- **End Users**: Primary product users
+
+## Entity Types
+
+Role assignments can be associated with:
+
+### Company Level
+Roles at the company level apply across the entire organization:
+```json
+{
+  "entityType": "company",
+  "externalEntityId": "acme-corp"
+}
+```
+
+### Account Level
+Roles at the account level are specific to a particular business unit or division:
+```json
+{
+  "entityType": "account",
+  "externalEntityId": "acme-enterprise-account"
+}
+```
+
+## Tenure Tracking
+
+The tenure object tracks when someone holds a particular role:
+
+```json
+{
+  "tenure": {
+    "startDate": "2024-01-01",
+    "endDate": "2024-12-31"
+  }
+}
+```
+
+- **startDate**: When the person took on this role
+- **endDate**: When they left the role (optional - omit for current roles)
+
+This historical tracking helps you:
+- Identify relationship changes over time
+- Track role transitions during reorganizations
+- Maintain historical context for customer relationships
+
+## Use Cases
+
+### 1. Track Champions
+Identify and monitor product champions within customer organizations:
+```bash
+POST /api/v1/key-role-assignments
+{
+  "assignments": [{
+    "roleKey": "champion",
+    "entityType": "company",
+    "externalEntityId": "acme-corp",
+    "userEmail": "sarah.johnson@acme.com",
+    "tenure": {
+      "startDate": "2024-01-15"
+    }
+  }]
+}
+```
+
+### 2. Map Decision Makers
+Understand the approval chain for renewals:
+```bash
+GET /api/v1/key-role-assignments?roleKey=decision_maker&entityType=company&externalEntityId=acme-corp
+```
+
+### 3. Track Role Changes
+Update assignments when stakeholders change positions:
+```bash
+PUT /api/v1/key-role-assignments/{assignmentId}
+{
+  "tenure": {
+    "endDate": "2024-06-30"
+  }
+}
+```
+
+## Common Workflows
+
+### Setting Up Role Assignments
+
+1. **Identify Key Stakeholders**: Determine who should be tracked
+2. **Define Role Keys**: Establish consistent role identifiers (e.g., "champion", "decision_maker")
+3. **Create Assignments**: Use batch endpoints to create multiple assignments
+4. **Link to Entities**: Associate roles with companies or specific accounts
+
+### Querying Role Information
+
+```bash
+# Get all roles for a company
+GET /api/v1/key-role-assignments?entityType=company&externalEntityId=acme-corp
+
+# Get all champions across all customers
+GET /api/v1/key-role-assignments?roleKey=champion
+
+# Get account-specific roles
+GET /api/v1/key-role-assignments?entityType=account&externalEntityId=acme-enterprise-account
+```
+
+### Maintaining Historical Data
+
+When stakeholders change:
+1. Set `endDate` on the current assignment
+2. Create a new assignment for the replacement
+3. Both records remain for historical tracking
+
+## Integration with CRM
+
+Key role assignments complement your CRM data by:
+- Providing structured role tracking
+- Supporting multi-level organizational hierarchies
+- Maintaining temporal history
+- Enabling relationship analytics
+
+## Best Practices
+
+1. **Consistent Role Keys**: Use standardized role identifiers across your organization
+2. **Regular Updates**: Keep tenure information current as stakeholders change
+3. **Multi-Level Tracking**: Assign roles at both company and account levels where appropriate
+4. **Historical Preservation**: Never delete old assignments; set end dates instead
+5. **Email Accuracy**: Use verified email addresses for reliable stakeholder identification
+
+## Example Role Keys
+
+While you can define custom roles, here are common examples:
+
+- `champion` - Product advocate
+- `decision_maker` - Purchasing authority
+- `technical_contact` - Primary technical liaison
+- `economic_buyer` - Budget holder
+- `end_user` - Primary user
+- `executive_sponsor` - C-level sponsor
+- `procurement` - Procurement contact
+
+## Next Steps
+
+<Card title="Create Role Assignments" icon="users" href="/api-reference/key-role-assignments/create-assignments">
+  Start tracking key stakeholders in your customer organizations
+</Card>

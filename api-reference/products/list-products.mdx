@@ -1,0 +1,24 @@
+---
+title: 'List Products'
+api: 'GET /api/v1/products'
+description: 'Retrieve all products'
+---
+
+## Example Request
+
+```bash
+curl -X GET https://api.arali.ai/api/v1/products \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns an array of all product records with their details including:
+- Product ID
+- Key
+- Name
+- Description
+- Kind (core_product, feature, addon, metric_only)
+- Status (active, archived)
+- Billable candidate status
+- Timestamps

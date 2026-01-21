@@ -1,0 +1,55 @@
+---
+title: 'List Role Assignments'
+api: 'GET /api/v1/key-role-assignments'
+description: 'Retrieve all role assignments or filter by entity'
+---
+
+## Query Parameters
+
+<ParamField query="entityType" type="string">
+  Filter by entity type: `company` or `account`
+</ParamField>
+
+<ParamField query="externalEntityId" type="string">
+  Filter by specific entity's external ID (requires entityType to be set)
+</ParamField>
+
+<ParamField query="roleKey" type="string">
+  Filter by specific role key
+</ParamField>
+
+## Example Requests
+
+### Get All Role Assignments
+```bash
+curl -X GET https://api.arali.ai/api/v1/key-role-assignments \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+### Get Role Assignments by Company
+```bash
+curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?entityType=company&externalEntityId=acme-corp" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+### Get Role Assignments by Account
+```bash
+curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?entityType=account&externalEntityId=acme-enterprise-account" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+### Get Assignments by Role
+```bash
+curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=champion" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns an array of role assignment records with:
+- Assignment ID
+- Role key
+- Entity type and ID
+- User email
+- Tenure start and end dates
+- Timestamps

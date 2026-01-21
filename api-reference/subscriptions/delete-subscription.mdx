@@ -1,0 +1,22 @@
+---
+title: 'Delete Subscription'
+api: 'DELETE /api/v1/subscriptions/{subscriptionId}'
+description: 'Delete a specific subscription'
+---
+
+## Path Parameters
+
+<ParamField path="subscriptionId" type="string" required>
+  The unique ID of the subscription to delete
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X DELETE https://api.arali.ai/api/v1/subscriptions/{subscriptionId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns a success confirmation upon deletion.

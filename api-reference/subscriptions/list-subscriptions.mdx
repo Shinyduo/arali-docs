@@ -1,0 +1,39 @@
+---
+title: 'List Subscriptions'
+api: 'GET /api/v1/subscriptions'
+description: 'Retrieve all subscriptions or filter by company'
+---
+
+## Query Parameters
+
+<ParamField query="externalCompanyId" type="string">
+  Filter subscriptions by company's external ID
+</ParamField>
+
+## Example Requests
+
+### Get All Subscriptions
+```bash
+curl -X GET https://api.arali.ai/api/v1/subscriptions \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+### Get Subscriptions by Company
+```bash
+curl -X GET "https://api.arali.ai/api/v1/subscriptions?externalCompanyId=acme-corp" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns an array of subscription records with their details including:
+- Subscription ID
+- External company and account IDs
+- Plan details
+- Status
+- Billing information
+- Contract value
+- Period dates
+- External subscription ID
+- Metadata
+- Timestamps

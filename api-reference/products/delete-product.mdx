@@ -1,0 +1,22 @@
+---
+title: 'Delete Product'
+api: 'DELETE /api/v1/products/{productId}'
+description: 'Delete a specific product'
+---
+
+## Path Parameters
+
+<ParamField path="productId" type="string" required>
+  The unique ID of the product to delete
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X DELETE https://api.arali.ai/api/v1/products/{productId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns a success confirmation upon deletion.

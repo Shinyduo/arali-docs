@@ -1,0 +1,22 @@
+---
+title: 'Delete Role Assignment'
+api: 'DELETE /api/v1/key-role-assignments/{assignmentId}'
+description: 'Delete a specific role assignment'
+---
+
+## Path Parameters
+
+<ParamField path="assignmentId" type="string" required>
+  The unique ID of the role assignment to delete
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X DELETE https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns a success confirmation upon deletion.

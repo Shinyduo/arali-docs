@@ -1,0 +1,115 @@
+---
+title: 'Create/Update Plans'
+api: 'POST /api/v1/plans'
+description: 'Batch create or update plan records'
+---
+
+## Request Body
+
+<ParamField body="plans" type="array" required>
+  Array of plan objects to create or update
+  
+  <Expandable title="Plan Object">
+    <ParamField body="key" type="string" required>
+      Unique identifier for the plan (e.g., "premium", "basic")
+    </ParamField>
+    
+    <ParamField body="name" type="string" required>
+      Display name of the plan
+    </ParamField>
+    
+    <ParamField body="description" type="string">
+      Detailed description of the plan
+    </ParamField>
+    
+    <ParamField body="status" type="string" required>
+      Plan status: `active` or `archived`
+    </ParamField>
+    
+    <ParamField body="pricingJson" type="object">
+      Pricing configuration object
+      
+      <Expandable title="Pricing Object">
+        <ParamField body="basePrice" type="number">
+          Base price in major currency units (e.g., 99.99 for $99.99)
+        </ParamField>
+        
+        <ParamField body="currency" type="string">
+          Currency code (e.g., "USD", "EUR")
+        </ParamField>
+        
+        <ParamField body="billingInterval" type="string">
+          Billing frequency: `month`, `year`, or `one_time`
+        </ParamField>
+      </Expandable>
+    </ParamField>
+    
+    <ParamField body="products" type="array">
+      Array of products included in this plan
+      
+      <Expandable title="Product Reference">
+        <ParamField body="productKey" type="string">
+          The key of the product to include
+        </ParamField>
+        
+        <ParamField body="isIncludedByDefault" type="boolean">
+          Whether the product is included by default
+        </ParamField>
+      </Expandable>
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/plans \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "plans": [
+      {
+        "key": "premium",
+        "name": "Premium Plan",
+        "description": "Our premium tier with all features",
+        "status": "active",
+        "pricingJson": {
+          "basePrice": 99.99,
+          "currency": "USD",
+          "billingInterval": "month"
+        },
+        "products": [
+          {
+            "productKey": "image-analysis",
+            "isIncludedByDefault": true
+          },
+          {
+            "productKey": "advanced-search",
+            "isIncludedByDefault": true
+          }
+        ]
+      },
+      {
+        "key": "basic",
+        "name": "Basic Plan",
+        "description": "Starter plan",
+        "status": "active",
+        "pricingJson": {
+          "basePrice": 29.99,
+          "currency": "USD",
+          "billingInterval": "month"
+        },
+        "products": [
+          {
+            "productKey": "image-analysis",
+            "isIncludedByDefault": true
+          }
+        ]
+      }
+    ]
+  }'
+```
+
+## Response
+
+Returns the created/updated plan records with their generated IDs and associated products.

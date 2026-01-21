@@ -1,0 +1,78 @@
+---
+title: 'Create/Update Role Assignments'
+api: 'POST /api/v1/key-role-assignments'
+description: 'Batch create or update key role assignments'
+---
+
+## Request Body
+
+<ParamField body="assignments" type="array" required>
+  Array of role assignment objects to create or update
+  
+  <Expandable title="Assignment Object">
+    <ParamField body="roleKey" type="string" required>
+      The key identifying the role (e.g., "champion", "decision_maker")
+    </ParamField>
+    
+    <ParamField body="entityType" type="string" required>
+      Type of entity: `company` or `account`
+    </ParamField>
+    
+    <ParamField body="externalEntityId" type="string" required>
+      External ID of the company or account
+    </ParamField>
+    
+    <ParamField body="userEmail" type="string" required>
+      Email address of the user assigned to this role
+    </ParamField>
+    
+    <ParamField body="tenure" type="object">
+      Period during which this assignment is valid
+      
+      <Expandable title="Tenure Object">
+        <ParamField body="startDate" type="string">
+          Start date in YYYY-MM-DD format
+        </ParamField>
+        
+        <ParamField body="endDate" type="string">
+          End date in YYYY-MM-DD format (optional, omit for ongoing assignments)
+        </ParamField>
+      </Expandable>
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/key-role-assignments \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "assignments": [
+      {
+        "roleKey": "champion",
+        "entityType": "company",
+        "externalEntityId": "acme-corp",
+        "userEmail": "john.doe@acme.com",
+        "tenure": {
+          "startDate": "2024-01-01",
+          "endDate": "2024-12-31"
+        }
+      },
+      {
+        "roleKey": "decision_maker",
+        "entityType": "account",
+        "externalEntityId": "acme-enterprise-account",
+        "userEmail": "jane.smith@acme.com",
+        "tenure": {
+          "startDate": "2024-01-01"
+        }
+      }
+    ]
+  }'
+```
+
+## Response
+
+Returns the created/updated role assignment records with their IDs.

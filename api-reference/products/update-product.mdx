@@ -1,0 +1,52 @@
+---
+title: 'Update Product'
+api: 'PUT /api/v1/products/{productId}'
+description: 'Update a specific product'
+---
+
+## Path Parameters
+
+<ParamField path="productId" type="string" required>
+  The unique ID of the product to update
+</ParamField>
+
+## Request Body
+
+<ParamField body="name" type="string">
+  Updated display name of the product
+</ParamField>
+
+<ParamField body="description" type="string">
+  Updated description
+</ParamField>
+
+<ParamField body="status" type="string">
+  Updated status: `active` or `archived`
+</ParamField>
+
+<ParamField body="kind" type="string">
+  Updated product type: `core_product`, `feature`, `addon`, or `metric_only`
+</ParamField>
+
+<ParamField body="isBillableCandidate" type="boolean">
+  Updated billable candidate status
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X PUT https://api.arali.ai/api/v1/products/{productId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Product Name",
+    "description": "Updated description",
+    "status": "active",
+    "kind": "addon",
+    "isBillableCandidate": false
+  }'
+```
+
+## Response
+
+Returns the updated product record.

@@ -1,0 +1,24 @@
+---
+title: 'List Plans'
+api: 'GET /api/v1/plans'
+description: 'Retrieve all plans'
+---
+
+## Example Request
+
+```bash
+curl -X GET https://api.arali.ai/api/v1/plans \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns an array of all plan records with their details including:
+- Plan ID
+- Key
+- Name
+- Description
+- Status (active, archived)
+- Pricing configuration
+- Associated products
+- Timestamps

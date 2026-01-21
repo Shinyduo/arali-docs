@@ -1,0 +1,37 @@
+---
+title: 'Add Product to Plan'
+api: 'POST /api/v1/plans/{planId}/products'
+description: 'Add a product to a specific plan'
+---
+
+## Path Parameters
+
+<ParamField path="planId" type="string" required>
+  The unique ID of the plan
+</ParamField>
+
+## Request Body
+
+<ParamField body="productKey" type="string" required>
+  The key of the product to add to the plan
+</ParamField>
+
+<ParamField body="isIncludedByDefault" type="boolean">
+  Whether the product is included by default. Default: `true`
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/plans/{planId}/products \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "productKey": "advanced-search",
+    "isIncludedByDefault": true
+  }'
+```
+
+## Response
+
+Returns the updated plan with the newly added product.

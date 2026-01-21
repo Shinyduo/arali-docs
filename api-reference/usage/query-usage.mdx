@@ -1,0 +1,62 @@
+---
+title: 'Query Usage Data'
+api: 'GET /api/v1/usage'
+description: 'Query usage data with flexible filtering'
+---
+
+## Query Parameters
+
+<ParamField query="externalCompanyId" type="string">
+  Filter by company's external ID
+</ParamField>
+
+<ParamField query="externalAccountId" type="string">
+  Filter by account's external ID
+</ParamField>
+
+<ParamField query="productKey" type="string">
+  Filter by product key
+</ParamField>
+
+<ParamField query="metricKey" type="string">
+  Filter by metric key
+</ParamField>
+
+<ParamField query="startDate" type="string">
+  Start date in YYYY-MM-DD format
+</ParamField>
+
+<ParamField query="endDate" type="string">
+  End date in YYYY-MM-DD format
+</ParamField>
+
+## Example Requests
+
+### Query by Company and Date Range
+```bash
+curl -X GET "https://api.arali.ai/api/v1/usage?externalCompanyId=acme-corp&startDate=2024-01-01&endDate=2024-01-31" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+### Query by Account and Product
+```bash
+curl -X GET "https://api.arali.ai/api/v1/usage?externalAccountId=acme-enterprise-account&productKey=image-analysis&startDate=2024-01-01&endDate=2024-01-31" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+### Query by Specific Metric
+```bash
+curl -X GET "https://api.arali.ai/api/v1/usage?externalCompanyId=acme-corp&productKey=image-analysis&metricKey=api_calls&startDate=2024-01-01&endDate=2024-01-31" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns an array of usage records matching the filter criteria with:
+- Usage ID
+- External company and account IDs
+- Product key
+- Metric key
+- Date
+- Value
+- Timestamps

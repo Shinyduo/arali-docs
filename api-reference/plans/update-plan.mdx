@@ -1,0 +1,65 @@
+---
+title: 'Update Plan'
+api: 'PUT /api/v1/plans/{planId}'
+description: 'Update a specific plan'
+---
+
+## Path Parameters
+
+<ParamField path="planId" type="string" required>
+  The unique ID of the plan to update
+</ParamField>
+
+## Request Body
+
+<ParamField body="name" type="string">
+  Updated display name of the plan
+</ParamField>
+
+<ParamField body="description" type="string">
+  Updated description
+</ParamField>
+
+<ParamField body="status" type="string">
+  Updated status: `active` or `archived`
+</ParamField>
+
+<ParamField body="pricingJson" type="object">
+  Updated pricing configuration
+  
+  <Expandable title="Pricing Object">
+    <ParamField body="basePrice" type="number">
+      Base price in major currency units
+    </ParamField>
+    
+    <ParamField body="currency" type="string">
+      Currency code
+    </ParamField>
+    
+    <ParamField body="billingInterval" type="string">
+      Billing frequency: `month`, `year`, or `one_time`
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X PUT https://api.arali.ai/api/v1/plans/{planId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Premium Plan",
+    "description": "New description",
+    "status": "active",
+    "pricingJson": {
+      "basePrice": 149.99,
+      "currency": "USD",
+      "billingInterval": "month"
+    }
+  }'
+```
+
+## Response
+
+Returns the updated plan record.
