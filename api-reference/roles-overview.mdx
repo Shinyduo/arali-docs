@@ -1,47 +1,62 @@
 ---
 title: 'Key Role Assignments Overview'
-description: 'Manage stakeholder roles and relationships'
+description: 'Assign internal team members to customer companies and accounts'
 ---
 
 ## Overview
 
-The Key Role Assignments API helps you track important stakeholders and their roles within customer organizations. This is essential for understanding decision-making structures and maintaining strong customer relationships.
+The Key Role Assignments API helps you manage the assignment of your internal team members to customer companies and accounts. This is essential for tracking ownership, ensuring accountability, and maintaining clear lines of responsibility across your customer base.
 
-## What are Key Roles?
+## What are Key Role Assignments?
 
-Key roles identify important individuals in your customer organizations who influence product adoption, renewal decisions, or act as advocates. Examples include:
+Key role assignments map your internal team members to customer entities (companies or accounts). Each assignment specifies:
 
-- **Champions**: Internal advocates who promote your product
-- **Decision Makers**: Executives with purchasing authority
-- **Technical Contacts**: Primary technical points of contact
-- **Economic Buyers**: Budget holders
-- **End Users**: Primary product users
+- **Who**: An internal team member (identified by email)
+- **What**: Their role (CSM, AE, Onboarding Manager, etc.)
+- **Where**: Which customer company or account they're assigned to
+- **When**: The tenure period of this assignment
+
+## Common Internal Roles
+
+Typical roles you might assign include:
+
+- **CSM** (Customer Success Manager): Primary point of contact for ongoing customer success
+- **AE** (Account Executive): Sales representative managing the account
+- **Onboarding Manager**: Team member responsible for customer onboarding
+- **Technical Account Manager**: Technical point of contact for the account
+- **Implementation Specialist**: Handles product implementation
+- **Support Lead**: Primary support contact
+- **Account Owner**: Overall account ownership
 
 ## Entity Types
 
-Role assignments can be associated with:
+Assignments can be made at two levels:
 
 ### Company Level
-Roles at the company level apply across the entire organization:
+Assign team members to entire customer organizations:
 ```json
 {
+  "roleKey": "csm",
   "entityType": "company",
-  "externalEntityId": "acme-corp"
+  "externalEntityId": "acme-corp",
+  "userEmail": "sarah.jones@yourcompany.com"
 }
 ```
 
 ### Account Level
-Roles at the account level are specific to a particular business unit or division:
+Assign team members to specific accounts within a company:
 ```json
 {
+  "roleKey": "ae",
   "entityType": "account",
-  "externalEntityId": "acme-enterprise-account"
+  "externalEntityId": "acme-enterprise-account",
+  "userEmail": "john.smith@yourcompany.com"
 }
 ```
 
 ## Tenure Tracking
 
-The tenure object tracks when someone holds a particular role:
+Track when team members are assigned and unassigned:
 
 ```json
 {
@@ -52,26 +67,27 @@ The tenure object tracks when someone holds a particular role:
 }
 ```
 
-- **startDate**: When the person took on this role
-- **endDate**: When they left the role (optional - omit for current roles)
+- **startDate**: When the team member was assigned to this role
+- **endDate**: When they were unassigned (optional - omit for current assignments)
 
 This historical tracking helps you:
-- Identify relationship changes over time
-- Track role transitions during reorganizations
-- Maintain historical context for customer relationships
+- Maintain accountability records
+- Track team member workload over time
+- Analyze customer handoffs and transitions
+- Generate historical ownership reports
 
 ## Use Cases
 
-### 1. Track Champions
-Identify and monitor product champions within customer organizations:
+### 1. Assign CSM to Customer
+Assign a Customer Success Manager to a company:
 ```bash
 POST /api/v1/key-role-assignments
 {
   "assignments": [{
-    "roleKey": "champion",
+    "roleKey": "csm",
     "entityType": "company",
     "externalEntityId": "acme-corp",
-    "userEmail": "sarah.johnson@acme.com",
+    "userEmail": "sarah.jones@yourcompany.com",
     "tenure": {
       "startDate": "2024-01-15"
     }
@@ -79,82 +95,105 @@ POST /api/v1/key-role-assignments
 }
 ```
 
-### 2. Map Decision Makers
-Understand the approval chain for renewals:
+### 2. Find All Accounts for a CSM
+Query all companies assigned to a specific CSM:
 ```bash
-GET /api/v1/key-role-assignments?roleKey=decision_maker&entityType=company&externalEntityId=acme-corp
+GET /api/v1/key-role-assignments?roleKey=csm&userEmail=sarah.jones@yourcompany.com
 ```
 
-### 3. Track Role Changes
-Update assignments when stakeholders change positions:
+### 3. View Complete Team for a Company
+See all team members assigned to a customer:
 ```bash
+GET /api/v1/key-role-assignments?entityType=company&externalEntityId=acme-corp
+```
+
+### 4. Handle CSM Transition
+When a CSM transitions off an account:
+```bash
+# End the current CSM's assignment
 PUT /api/v1/key-role-assignments/{assignmentId}
 {
   "tenure": {
     "endDate": "2024-06-30"
   }
 }
+
+# Create new assignment for replacement CSM
+POST /api/v1/key-role-assignments
+{
+  "assignments": [{
+    "roleKey": "csm",
+    "entityType": "company",
+    "externalEntityId": "acme-corp",
+    "userEmail": "new.csm@yourcompany.com",
+    "tenure": {
+      "startDate": "2024-07-01"
+    }
+  }]
+}
 ```
 
 ## Common Workflows
 
-### Setting Up Role Assignments
+### Initial Setup
 
-1. **Identify Key Stakeholders**: Determine who should be tracked
-2. **Define Role Keys**: Establish consistent role identifiers (e.g., "champion", "decision_maker")
-3. **Create Assignments**: Use batch endpoints to create multiple assignments
-4. **Link to Entities**: Associate roles with companies or specific accounts
+1. **Define Role Keys**: Establish standard role identifiers (e.g., "csm", "ae", "onboarding_manager")
+2. **Batch Import**: Use batch endpoints to create initial assignments for all customers
+3. **Verify Coverage**: Query to ensure all customers have required roles assigned
 
-### Querying Role Information
+### Ongoing Management
 
 ```bash
-# Get all roles for a company
+# Get all current CSM assignments
+GET /api/v1/key-role-assignments?roleKey=csm
+
+# Get team coverage for a specific company
 GET /api/v1/key-role-assignments?entityType=company&externalEntityId=acme-corp
 
-# Get all champions across all customers
-GET /api/v1/key-role-assignments?roleKey=champion
-
-# Get account-specific roles
-GET /api/v1/key-role-assignments?entityType=account&externalEntityId=acme-enterprise-account
+# Update assignment when team members change
+PUT /api/v1/key-role-assignments/{assignmentId}
 ```
 
-### Maintaining Historical Data
+### Reporting and Analytics
 
-When stakeholders change:
-1. Set `endDate` on the current assignment
-2. Create a new assignment for the replacement
-3. Both records remain for historical tracking
+- Track team member workload by counting assignments
+- Identify customers without key role assignments
+- Analyze assignment history for handoff patterns
+- Generate coverage reports by role type
 
-## Integration with CRM
+## Integration Scenarios
 
-Key role assignments complement your CRM data by:
-- Providing structured role tracking
-- Supporting multi-level organizational hierarchies
-- Maintaining temporal history
-- Enabling relationship analytics
+Key role assignments integrate with:
+
+- **CRM Systems**: Sync ownership information
+- **Ticketing Tools**: Route support tickets to assigned team members
+- **Business Intelligence**: Generate team utilization reports
+- **Workflow Automation**: Trigger notifications on assignment changes
 
 ## Best Practices
 
-1. **Consistent Role Keys**: Use standardized role identifiers across your organization
-2. **Regular Updates**: Keep tenure information current as stakeholders change
-3. **Multi-Level Tracking**: Assign roles at both company and account levels where appropriate
-4. **Historical Preservation**: Never delete old assignments; set end dates instead
-5. **Email Accuracy**: Use verified email addresses for reliable stakeholder identification
+1. **Consistent Role Keys**: Use standardized role identifiers across all assignments (e.g., "csm", not "customer_success_manager" or "cs_manager")
+2. **Complete Coverage**: Ensure every active customer has critical roles assigned (especially CSM)
+3. **Historical Preservation**: Never delete assignments; set end dates to maintain history
+4. **Regular Audits**: Periodically review assignments to ensure they're current
+5. **Team Email Addresses**: Use verified work email addresses for all team members
+6. **Multi-Level Assignments**: Use both company and account levels appropriately based on your org structure
 
 ## Example Role Keys
 
-While you can define custom roles, here are common examples:
+Standardize on role keys that match your organizational structure:
 
-- `champion` - Product advocate
-- `decision_maker` - Purchasing authority
-- `technical_contact` - Primary technical liaison
-- `economic_buyer` - Budget holder
-- `end_user` - Primary user
-- `executive_sponsor` - C-level sponsor
-- `procurement` - Procurement contact
+- `csm` - Customer Success Manager
+- `ae` - Account Executive
+- `onboarding_manager` - Onboarding Manager
+- `tam` - Technical Account Manager
+- `implementation_specialist` - Implementation Specialist
+- `support_lead` - Support Lead
+- `sales_engineer` - Sales Engineer
+- `account_owner` - Account Owner
 
 ## Next Steps
 
 <Card title="Create Role Assignments" icon="users" href="/api-reference/key-role-assignments/create-assignments">
-  Start tracking key stakeholders in your customer organizations
+  Start assigning your team members to customer companies and accounts
 </Card>

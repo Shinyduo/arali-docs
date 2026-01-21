@@ -1,7 +1,7 @@
 ---
 title: 'List Role Assignments'
 api: 'GET /api/v1/key-role-assignments'
-description: 'Retrieve all role assignments or filter by entity'
+description: 'Retrieve all internal team assignments or filter by entity or role'
 ---
 
 ## Query Parameters
@@ -11,11 +11,15 @@ description: 'Retrieve all role assignments or filter by entity'
 </ParamField>
 
 <ParamField query="externalEntityId" type="string">
-  Filter by specific entity's external ID (requires entityType to be set)
+  Filter by specific customer entity's external ID (requires entityType to be set)
 </ParamField>
 
 <ParamField query="roleKey" type="string">
-  Filter by specific role key
+  Filter by specific role key (e.g., "csm", "ae")
+</ParamField>
+
+<ParamField query="userEmail" type="string">
+  Filter by specific team member's email address
 </ParamField>
 
 ## Example Requests
@@ -26,21 +30,27 @@ curl -X GET https://api.arali.ai/api/v1/key-role-assignments \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
 
-### Get Role Assignments by Company
+### Get All Team Members Assigned to a Company
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?entityType=company&externalEntityId=acme-corp" \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
 
-### Get Role Assignments by Account
+### Get All Team Members Assigned to an Account
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?entityType=account&externalEntityId=acme-enterprise-account" \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
 
-### Get Assignments by Role
+### Get All CSM Assignments
 ```bash
-curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=champion" \
+curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+### Get All Companies Assigned to a Specific CSM
+```bash
+curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm&userEmail=sarah.jones@yourcompany.com" \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
 
@@ -49,7 +59,7 @@ curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=champion" 
 Returns an array of role assignment records with:
 - Assignment ID
 - Role key
-- Entity type and ID
-- User email
+- Entity type and external ID
+- User email (internal team member)
 - Tenure start and end dates
 - Timestamps

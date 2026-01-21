@@ -1,7 +1,7 @@
 ---
 title: 'Update Role Assignment'
 api: 'PUT /api/v1/key-role-assignments/{assignmentId}'
-description: 'Update a specific role assignment'
+description: 'Update a specific internal team assignment'
 ---
 
 ## Path Parameters
@@ -13,7 +13,7 @@ description: 'Update a specific role assignment'
 ## Request Body
 
 <ParamField body="userEmail" type="string">
-  Updated user email address
+  Updated internal team member email address
 </ParamField>
 
 <ParamField body="roleKey" type="string">
@@ -29,22 +29,34 @@ description: 'Update a specific role assignment'
     </ParamField>
     
     <ParamField body="endDate" type="string">
-      Updated end date in YYYY-MM-DD format
+      Updated end date in YYYY-MM-DD format (set to end an assignment)
     </ParamField>
   </Expandable>
 </ParamField>
 
-## Example Request
+## Example Requests
 
+### End a CSM Assignment (Team Member Transition)
 ```bash
 curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "userEmail": "new.user@acme.com",
     "tenure": {
-      "startDate": "2024-02-01",
-      "endDate": "2024-12-31"
+      "endDate": "2024-06-30"
+    }
+  }'
+```
+
+### Change Assigned Team Member
+```bash
+curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userEmail": "new.csm@yourcompany.com",
+    "tenure": {
+      "startDate": "2024-07-01"
     }
   }'
 ```
@@ -52,3 +64,10 @@ curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
 ## Response
 
 Returns the updated role assignment record.
+
+## Notes
+
+Common use cases:
+- Set `endDate` when a team member transitions off an account
+- Update `userEmail` when reassigning to a different team member
+- Maintain historical records by setting end dates rather than deleting assignments

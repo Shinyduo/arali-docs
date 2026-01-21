@@ -1,7 +1,7 @@
 ---
 title: 'Create/Update Role Assignments'
 api: 'POST /api/v1/key-role-assignments'
-description: 'Batch create or update key role assignments'
+description: 'Batch create or update internal team assignments to customer entities'
 ---
 
 ## Request Body
@@ -11,7 +11,7 @@ description: 'Batch create or update key role assignments'
   
   <Expandable title="Assignment Object">
     <ParamField body="roleKey" type="string" required>
-      The key identifying the role (e.g., "champion", "decision_maker")
+      The key identifying the internal role (e.g., "csm", "ae", "onboarding_manager")
     </ParamField>
     
     <ParamField body="entityType" type="string" required>
@@ -19,11 +19,11 @@ description: 'Batch create or update key role assignments'
     </ParamField>
     
     <ParamField body="externalEntityId" type="string" required>
-      External ID of the company or account
+      External ID of the customer company or account
     </ParamField>
     
     <ParamField body="userEmail" type="string" required>
-      Email address of the user assigned to this role
+      Email address of the internal team member being assigned
     </ParamField>
     
     <ParamField body="tenure" type="object">
@@ -51,22 +51,32 @@ curl -X POST https://api.arali.ai/api/v1/key-role-assignments \
   -d '{
     "assignments": [
       {
-        "roleKey": "champion",
+        "roleKey": "csm",
         "entityType": "company",
         "externalEntityId": "acme-corp",
-        "userEmail": "john.doe@acme.com",
+        "userEmail": "sarah.jones@yourcompany.com",
         "tenure": {
           "startDate": "2024-01-01",
           "endDate": "2024-12-31"
         }
       },
       {
-        "roleKey": "decision_maker",
+        "roleKey": "ae",
         "entityType": "account",
         "externalEntityId": "acme-enterprise-account",
-        "userEmail": "jane.smith@acme.com",
+        "userEmail": "john.smith@yourcompany.com",
         "tenure": {
           "startDate": "2024-01-01"
+        }
+      },
+      {
+        "roleKey": "onboarding_manager",
+        "entityType": "company",
+        "externalEntityId": "acme-corp",
+        "userEmail": "mike.williams@yourcompany.com",
+        "tenure": {
+          "startDate": "2024-01-15",
+          "endDate": "2024-03-15"
         }
       }
     ]
@@ -76,3 +86,10 @@ curl -X POST https://api.arali.ai/api/v1/key-role-assignments \
 ## Response
 
 Returns the created/updated role assignment records with their IDs.
+
+## Notes
+
+- Assignments map your internal team members (CSM, AE, etc.) to customer companies or accounts
+- Use consistent role keys across your organization (e.g., "csm", "ae", "onboarding_manager")
+- Omit `endDate` for ongoing assignments
+- Set `endDate` when team members transition off accounts to maintain historical records
