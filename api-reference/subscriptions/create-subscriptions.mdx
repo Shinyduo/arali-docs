@@ -1,13 +1,21 @@
 ---
-title: 'Create/Update Subscriptions'
+title: 'Create Subscriptions'
 api: 'POST /api/v1/subscriptions'
-description: 'Batch create or update subscription records'
+description: 'Create new subscription records with smart conflict handling'
 ---
+
+## Overview
+
+The POST endpoint creates new subscriptions with built-in duplicate prevention. Use the `onExistingSubscription` parameter to control behavior when active subscriptions already exist.
+
+<Note>
+  For updating existing subscriptions by ID, use the [PUT endpoint](/api-reference/subscriptions/update-subscription).
+</Note>
 
 ## Request Body
 
 <ParamField body="subscriptions" type="array" required>
-  Array of subscription objects to create or update
+  Array of subscription objects to create
   
   <Expandable title="Subscription Object">
     <ParamField body="externalCompanyId" type="string" required>
@@ -15,11 +23,21 @@ description: 'Batch create or update subscription records'
     </ParamField>
     
     <ParamField body="externalAccountId" type="string">
-      External ID of the account (optional)
+      External ID of the account (optional, for account-level subscriptions)
     </ParamField>
     
     <ParamField body="planKey" type="string" required>
       The key of the plan this subscription is for
+    </ParamField>
+    
+    <ParamField body="onExistingSubscription" type="string" default="reject">
+      Controls behavior when an active subscription already exists in the same scope:
+      
+      - **`reject`** (default): Reject creation and return existing subscription details
+      - **`cancel_and_create`**: Cancel all existing active subscriptions and create new one
+      - **`allow_multiple`**: Skip duplicate check and allow multiple active subscriptions
+      
+      <Tip>Use `cancel_and_create` for plan upgrades/downgrades, `allow_multiple` for add-ons</Tip>
     </ParamField>
     
     <ParamField body="status" type="string" required>
@@ -98,7 +116,197 @@ description: 'Batch create or update subscription records'
   </Expandable>
 </ParamField>
 
-## Example Request
+## Example Requests
+
+### 1. Create Initial Subscription (Default Behavior)
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/subscriptions \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subscriptions": [
+      {
+        "externalCompanyId": "acme-corp",
+        "planKey": "basic",
+        "status": "active",
+        "currency": "USD",
+        "billingInterval": "month",
+        "contractValue": 49.99,
+        "currentPeriodStartAt": "2026-01-22T00:00:00Z",
+        "currentPeriodEndAt": "2026-02-22T00:00:00Z"
+      }
+    ]
+  }'
+```
+
+**Response (Success):**
+```json
+{
+  "success": true,
+  "summary": { "total": 1, "success": 1, "failed": 0 },
+  "results": [{
+    "status": "success",
+    "subscription": {
+      "id": "sub-abc-123",
+      "companyId": "comp-456",
+      "planId": "plan-789",
+      "status": "active",
+      "contractValueCents": 4999
+    }
+  }]
+}
+```
+
+---
+
+### 2. Reject Duplicate Subscription (Default)
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/subscriptions \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subscriptions": [
+      {
+        "externalCompanyId": "acme-corp",
+        "planKey": "premium",
+        "status": "active"
+      }
+    ]
+  }'
+```
+
+**Response (Rejection):**
+```json
+{
+  "success": true,
+  "summary": { "total": 1, "success": 0, "failed": 1 },
+  "results": [{
+    "status": "error",
+    "error": "Active subscription already exists",
+    "existingSubscription": {
+      "id": "sub-abc-123",
+      "planId": "plan-789",
+      "status": "active",
+      "startAt": "2026-01-01T00:00:00Z",
+      "contractValueCents": 4999
+    }
+  }]
+}
+```
+
+<Info>
+  Use the returned `existingSubscription.id` with the [PUT endpoint](/api-reference/subscriptions/update-subscription) to update the subscription instead.
+</Info>
+
+---
+
+### 3. Upgrade Plan (Cancel & Create)
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/subscriptions \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subscriptions": [
+      {
+        "externalCompanyId": "acme-corp",
+        "planKey": "premium",
+        "status": "active",
+        "currency": "USD",
+        "billingInterval": "month",
+        "contractValue": 199.99,
+        "onExistingSubscription": "cancel_and_create",
+        "currentPeriodStartAt": "2026-01-22T00:00:00Z",
+        "currentPeriodEndAt": "2026-02-22T00:00:00Z"
+      }
+    ]
+  }'
+```
+
+**Behavior:**
+1. Finds all active subscriptions for `acme-corp` (company-level scope)
+2. Sets their status to `cancelled` and records `cancelledAt` timestamp
+3. Creates new premium subscription
+4. Logs: "Auto-cancelled 1 existing subscription(s) for scope"
+
+**Response:**
+```json
+{
+  "success": true,
+  "summary": { "total": 1, "success": 1, "failed": 0 },
+  "results": [{
+    "status": "success",
+    "subscription": {
+      "id": "sub-xyz-789",
+      "companyId": "comp-456",
+      "planId": "plan-premium-001",
+      "status": "active",
+      "contractValueCents": 19999
+    }
+  }]
+}
+```
+
+<Tip>
+  **Use case:** Plan upgrades, downgrades, or migrations where only one subscription should be active
+</Tip>
+
+---
+
+### 4. Add-on Subscription (Allow Multiple)
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/subscriptions \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subscriptions": [
+      {
+        "externalCompanyId": "acme-corp",
+        "planKey": "analytics-addon",
+        "status": "active",
+        "currency": "USD",
+        "billingInterval": "month",
+        "contractValue": 29.99,
+        "onExistingSubscription": "allow_multiple",
+        "currentPeriodStartAt": "2026-01-22T00:00:00Z",
+        "currentPeriodEndAt": "2026-02-22T00:00:00Z"
+      }
+    ]
+  }'
+```
+
+**Behavior:**
+- Skips duplicate check entirely
+- Creates subscription alongside existing ones
+- Allows multiple active subscriptions for the company
+
+**Response:**
+```json
+{
+  "success": true,
+  "summary": { "total": 1, "success": 1, "failed": 0 },
+  "results": [{
+    "status": "success",
+    "subscription": {
+      "id": "sub-addon-999",
+      "companyId": "comp-456",
+      "planId": "plan-addon-123",
+      "status": "active"
+    }
+  }]
+}
+```
+
+<Tip>
+  **Use case:** Multi-product subscriptions, add-ons, department-level plans
+</Tip>
+
+---
+
+### 5. Advanced: With Entitlements Override
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/subscriptions \
@@ -109,54 +317,223 @@ curl -X POST https://api.arali.ai/api/v1/subscriptions \
       {
         "externalCompanyId": "acme-corp",
         "externalAccountId": "acme-enterprise-account",
-        "planKey": "premium",
+        "planKey": "enterprise",
         "status": "active",
         "currency": "USD",
-        "billingInterval": "month",
-        "billingIntervalCount": 1,
-        "contractValue": 99.99,
-        "currentPeriodStartAt": "2024-01-01T00:00:00Z",
-        "currentPeriodEndAt": "2024-02-01T00:00:00Z",
-        "externalSubscriptionId": "stripe_sub_123",
+        "billingInterval": "year",
+        "contractValue": 9999.99,
+        "onExistingSubscription": "cancel_and_create",
+        "currentPeriodStartAt": "2026-01-22T00:00:00Z",
+        "currentPeriodEndAt": "2027-01-22T00:00:00Z",
+        "externalSubscriptionId": "stripe_sub_enterprise_123",
         "entitlementsOverrideJson": [
           {
             "product_key": "image-analysis",
-            "quantity": 50000
+            "quantity": 100000
           },
           {
             "product_key": "video-processing",
-            "quantity": 1000,
+            "quantity": 5000,
             "overage_allowed": true,
-            "overage_rate": 0.05
+            "overage_rate": 0.03
           }
         ],
         "metadata": {
           "source": "stripe",
-          "customField": "value"
+          "deal_id": "DEAL-2026-001"
         }
-      },
-      {
-        "externalCompanyId": "basic-customer",
-        "planKey": "basic",
-        "status": "active",
-        "currency": "USD",
-        "billingInterval": "month",
-        "currentPeriodStartAt": "2024-01-01T00:00:00Z",
-        "currentPeriodEndAt": "2024-02-01T00:00:00Z"
       }
     ]
   }'
 ```
 
-## Response
+**Behavior:**
+- Checks for existing subscriptions at **account-level** scope (since `externalAccountId` is provided)
+- Cancels any existing subscriptions for this specific account
+- Creates new enterprise subscription with custom entitlements
 
-Returns the created/updated subscription records.
+**Behavior:**
+- Checks for existing subscriptions at **account-level** scope (since `externalAccountId` is provided)
+- Cancels any existing subscriptions for this specific account
+- Creates new enterprise subscription with custom entitlements
+
+---
+
+## Subscription Scopes
+
+The API automatically detects the correct scope for duplicate checking:
+
+### Company-Level Subscriptions
+When **no** `externalAccountId` is provided:
+- Checks: Other company-level subscriptions
+- SQL: `WHERE companyId=X AND accountId IS NULL`
+- Use for: Organization-wide plans
+
+### Account-Level Subscriptions
+When `externalAccountId` **is** provided:
+- Checks: Other subscriptions for that specific account only
+- SQL: `WHERE companyId=X AND accountId=Y`
+- Use for: Per-account or per-team plans
+
+<Info>
+  Company-level and account-level subscriptions are in **separate scopes** and won't conflict with each other.
+</Info>
+
+---
+
+## Active Statuses
+
+The duplicate check considers these statuses as "active":
+- `trialing` - Trial period
+- `active` - Fully active subscription
+- `past_due` - Payment overdue but not cancelled
+- `paused` - Temporarily paused (can resume)
+
+**Ignored statuses** (won't trigger duplicate detection):
+- `cancelled` - Explicitly cancelled
+- `ended` - Naturally ended
+
+---
+
+## Workflow Examples
+
+### Workflow: New Customer Onboarding
+```bash
+# Step 1: Create initial subscription
+POST /api/v1/subscriptions
+{
+  "subscriptions": [{
+    "externalCompanyId": "new-customer",
+    "planKey": "basic",
+    "status": "trialing"
+  }]
+}
+# ✅ Success: Creates trial subscription
+```
+
+---
+
+### Workflow: Trial to Paid Conversion
+```bash
+# Step 2: Upgrade to paid (cancel trial)
+POST /api/v1/subscriptions
+{
+  "subscriptions": [{
+    "externalCompanyId": "new-customer",
+    "planKey": "basic",
+    "status": "active",
+    "contractValue": 49.99,
+    "onExistingSubscription": "cancel_and_create"
+  }]
+}
+# ✅ Success: Cancels trial, creates active subscription
+```
+
+---
+
+### Workflow: Plan Upgrade
+```bash
+# Step 3: Upgrade to premium
+POST /api/v1/subscriptions
+{
+  "subscriptions": [{
+    "externalCompanyId": "new-customer",
+    "planKey": "premium",
+    "status": "active",
+    "contractValue": 199.99,
+    "onExistingSubscription": "cancel_and_create"
+  }]
+}
+# ✅ Success: Cancels basic, creates premium
+```
+
+---
+
+### Workflow: Add-on Purchase
+```bash
+# Step 4: Add analytics module
+POST /api/v1/subscriptions
+{
+  "subscriptions": [{
+    "externalCompanyId": "new-customer",
+    "planKey": "analytics-addon",
+    "status": "active",
+    "contractValue": 29.99,
+    "onExistingSubscription": "allow_multiple"
+  }]
+}
+# ✅ Success: Creates alongside premium subscription
+```
+
+---
+
+### Workflow: Update Existing Subscription
+```bash
+# Step 5: Change contract terms (use PUT instead)
+PUT /api/v1/subscriptions/sub-abc-123
+{
+  "contractValue": 179.99,
+  "currentPeriodEndAt": "2027-01-22T00:00:00Z",
+  "metadata": { "discount": "early_adopter" }
+}
+# ✅ Success: Updates without creating new subscription
+```
+
+---
+
+## Response Format
+
+```json
+{
+  "success": true,
+  "summary": {
+    "total": 2,
+    "success": 1,
+    "failed": 1
+  },
+  "results": [
+    {
+      "status": "success",
+      "subscription": {
+        "id": "sub-123",
+        "companyId": "comp-456",
+        "accountId": null,
+        "planId": "plan-789",
+        "status": "active",
+        "contractValueCents": 19999,
+        "createdAt": "2026-01-22T10:30:00Z"
+      }
+    },
+    {
+      "status": "error",
+      "error": "Active subscription already exists",
+      "existingSubscription": {
+        "id": "sub-existing-999",
+        "planId": "plan-basic-001",
+        "status": "active"
+      }
+    }
+  ]
+}
+```
+
+---
 
 ## Notes
 
-- Contract values are automatically converted to minor currency units (cents for USD, no conversion for JPY)
-- Example: USD 99.99 → stored as 9999 cents
+- **Contract values** are automatically converted to minor currency units (cents for USD, no conversion for JPY)
+  - Example: USD 99.99 → stored as 9999 cents
 - **`entitlementsOverrideJson` is optional**: If omitted, the subscription uses the plan's default entitlements
 - **Entitlement overrides are partial**: You only need to specify the fields you want to override (e.g., just `quantity`)
 - **`product_key` is required** in each override item to identify which product's entitlements to modify
 - Other fields inherit from the plan-product configuration if not specified
+- **Batch operations**: All subscriptions in the request are processed independently; one failure doesn't block others
+
+---
+
+## Related Endpoints
+
+- **[Update Subscription (PUT)](/api-reference/subscriptions/update-subscription)** - Update an existing subscription by ID
+- **[Get Subscription](/api-reference/subscriptions/get-subscription)** - Retrieve subscription details
+- **[List Subscriptions](/api-reference/subscriptions/list-subscriptions)** - Query all subscriptions
+- **[Delete Subscription](/api-reference/subscriptions/delete-subscription)** - Permanently delete a subscription

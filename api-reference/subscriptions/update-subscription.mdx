@@ -1,8 +1,16 @@
 ---
 title: 'Update Subscription'
 api: 'PUT /api/v1/subscriptions/{subscriptionId}'
-description: 'Update a specific subscription'
+description: 'Update an existing subscription by ID without creating a new one'
 ---
+
+## Overview
+
+Use PUT to modify an existing subscription's properties (status, contract value, metadata, etc.) when you already know the subscription ID.
+
+<Note>
+  For creating new subscriptions or replacing old ones, use the [POST endpoint](/api-reference/subscriptions/create-subscriptions) with `onExistingSubscription` parameter.
+</Note>
 
 ## Path Parameters
 
@@ -52,21 +60,160 @@ description: 'Update a specific subscription'
   Updated metadata
 </ParamField>
 
-## Example Request
+<ParamField body="entitlementsOverrideJson" type="array">
+  Updated entitlements overrides for this subscription
+  
+  <Expandable title="Entitlement Override Item">
+    <ParamField body="product_key" type="string" required>
+      The product key to override
+    </ParamField>
+    
+    <ParamField body="usage_key" type="string">
+      Override the usage metric key
+    </ParamField>
+    
+    <ParamField body="quantity" type="number">
+      Override the quantity limit
+    </ParamField>
+    
+    <ParamField body="validity_interval" type="string">
+      Override time unit: `month`, `year`, or `one_time`
+    </ParamField>
+    
+    <ParamField body="validity_interval_count" type="number">
+      Override number of intervals between resets
+    </ParamField>
+    
+    <ParamField body="overage_allowed" type="boolean">
+      Override whether usage can exceed the limit
+    </ParamField>
+    
+    <ParamField body="overage_rate" type="number">
+      Override price per unit for overage
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+---
+
+## Example Requests
+
+### 1. Cancel a Subscription
 
 ```bash
-curl -X PUT https://api.arali.ai/api/v1/subscriptions/{subscriptionId} \
+curl -X PUT https://api.arali.ai/api/v1/subscriptions/sub-abc-123 \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "status": "cancelled",
-    "cancelledAt": "2024-01-15T10:30:00Z",
+    "cancelledAt": "2026-01-22T10:30:00Z",
     "metadata": {
       "cancellationReason": "customer request"
     }
   }'
 ```
 
+---
+
+### 2. Update Contract Value
+
+```bash
+curl -X PUT https://api.arali.ai/api/v1/subscriptions/sub-abc-123 \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contractValue": 149.99,
+    "metadata": {
+      "discount": "loyalty_program"
+    }
+  }'
+```
+
+---
+
+### 3. Extend Subscription Period
+
+```bash
+curl -X PUT https://api.arali.ai/api/v1/subscriptions/sub-abc-123 \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "currentPeriodEndAt": "2026-12-31T23:59:59Z",
+    "metadata": {
+      "extension_reason": "customer retention"
+    }
+  }'
+```
+
+---
+
+### 4. Update Entitlements
+
+```bash
+curl -X PUT https://api.arali.ai/api/v1/subscriptions/sub-abc-123 \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entitlementsOverrideJson": [
+      {
+        "product_key": "image-analysis",
+        "quantity": 100000
+      },
+      {
+        "product_key": "video-processing",
+        "quantity": 2000,
+        "overage_allowed": true,
+        "overage_rate": 0.04
+      }
+    ]
+  }'
+```
+
 ## Response
 
-Returns the updated subscription record.
+Returns the updated subscription record:
+
+```json
+{
+  "id": "sub-abc-123",
+  "companyId": "comp-456",
+  "accountId": null,
+  "planId": "plan-789",
+  "status": "active",
+  "currency": "USD",
+  "contractValueCents": 14999,
+  "currentPeriodStartAt": "2026-01-01T00:00:00Z",
+  "currentPeriodEndAt": "2026-12-31T23:59:59Z",
+  "metadata": {
+    "extension_reason": "customer retention"
+  },
+  "updatedAt": "2026-01-22T10:30:00Z"
+}
+```
+
+---
+
+## When to Use PUT vs POST
+
+| Scenario | Use | Endpoint |
+|----------|-----|----------|
+| Change subscription status | PUT | `PUT /api/v1/subscriptions/{id}` |
+| Update contract value | PUT | `PUT /api/v1/subscriptions/{id}` |
+| Modify metadata | PUT | `PUT /api/v1/subscriptions/{id}` |
+| Change entitlements | PUT | `PUT /api/v1/subscriptions/{id}` |
+| Upgrade plan (cancel old, create new) | POST | `POST /api/v1/subscriptions` with `cancel_and_create` |
+| Create initial subscription | POST | `POST /api/v1/subscriptions` |
+| Add add-on subscription | POST | `POST /api/v1/subscriptions` with `allow_multiple` |
+
+<Tip>
+  **Rule of thumb:** Use PUT when you have the subscription ID and want to modify it in place. Use POST when creating new subscriptions or replacing old ones.
+</Tip>
+
+---
+
+## Related Endpoints
+
+- **[Create Subscriptions (POST)](/api-reference/subscriptions/create-subscriptions)** - Create new subscriptions with smart conflict handling
+- **[Get Subscription](/api-reference/subscriptions/get-subscription)** - Retrieve subscription details
+- **[List Subscriptions](/api-reference/subscriptions/list-subscriptions)** - Query all subscriptions
+- **[Delete Subscription](/api-reference/subscriptions/delete-subscription)** - Permanently delete a subscription
