@@ -1,13 +1,13 @@
 ---
 title: 'Update Product'
-api: 'PUT /api/v1/products/{productId}'
+api: 'PUT /api/v1/products/{key}'
 description: 'Update a specific product'
 ---
 
 ## Path Parameters
 
-<ParamField path="productId" type="string" required>
-  The unique ID of the product to update
+<ParamField path="key" type="string" required>
+  The unique key of the product to update
 </ParamField>
 
 ## Request Body
@@ -35,7 +35,7 @@ description: 'Update a specific product'
 ## Example Request
 
 ```bash
-curl -X PUT https://api.arali.ai/api/v1/products/{productId} \
+curl -X PUT https://api.arali.ai/api/v1/products/{key} \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

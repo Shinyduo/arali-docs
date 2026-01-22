@@ -1,19 +1,19 @@
 ---
 title: 'Get Product'
-api: 'GET /api/v1/products/{productId}'
-description: 'Retrieve a specific product by ID'
+api: 'GET /api/v1/products/{key}'
+description: 'Retrieve a specific product by key'
 ---
 
 ## Path Parameters
 
-<ParamField path="productId" type="string" required>
-  The unique ID of the product to retrieve
+<ParamField path="key" type="string" required>
+  The unique key of the product to retrieve
 </ParamField>
 
 ## Example Request
 
 ```bash
-curl -X GET https://api.arali.ai/api/v1/products/{productId} \
+curl -X GET https://api.arali.ai/api/v1/products/{key} \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
 
