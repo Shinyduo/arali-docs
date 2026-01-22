@@ -20,6 +20,28 @@ description: 'Add a product to a specific plan'
   Whether the product is included by default. Default: `true`
 </ParamField>
 
+<ParamField body="productEntitlementsJson" type="object">
+  Optional entitlements configuration for the product. If omitted, access is binary (you have it or you don't).
+  
+  <Expandable title="Entitlements Array">
+    <ParamField body="usage_key" type="string">
+      The usage metric key (e.g., "image_analysis_count", "storage_gb")
+    </ParamField>
+    
+    <ParamField body="quantity" type="number">
+      The numeric limit or quota (optional, can be null for unlimited)
+    </ParamField>
+    
+    <ParamField body="validity_interval" type="string">
+      Time unit: `month`, `year`, or `one_time` (optional)
+    </ParamField>
+    
+    <ParamField body="validity_interval_count" type="number">
+      Number of validity intervals (optional)
+    </ParamField>
+  </Expandable>
+</ParamField>
+
 ## Example Request
 
 ```bash
@@ -28,10 +50,23 @@ curl -X POST https://api.arali.ai/api/v1/plans/{planId}/products \
   -H "Content-Type: application/json" \
   -d '{
     "productKey": "advanced-search",
-    "isIncludedByDefault": true
+    "isIncludedByDefault": true,
+    "productEntitlementsJson": [
+      {
+        "usage_key": "search_queries",
+        "quantity": 5000,
+        "validity_interval": "month",
+        "validity_interval_count": 1
+      }
+    ]
   }'
 ```
 
 ## Response
 
 Returns the updated plan with the newly added product.
+
+## Notes
+
+- **`productEntitlementsJson` is optional**: If omitted, access is binary (either you have it or you don't)
+- Use entitlements when you need to track usage limits, quotas, or metered access

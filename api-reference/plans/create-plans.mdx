@@ -55,6 +55,28 @@ description: 'Batch create or update plan records'
         <ParamField body="isIncludedByDefault" type="boolean">
           Whether the product is included by default
         </ParamField>
+        
+        <ParamField body="productEntitlementsJson" type="object">
+          Optional entitlements configuration for the product. If omitted, access is binary (you have it or you don't).
+          
+          <Expandable title="Entitlements Array">
+            <ParamField body="usage_key" type="string">
+              The usage metric key (e.g., "image_analysis_count", "storage_gb")
+            </ParamField>
+            
+            <ParamField body="quantity" type="number">
+              The numeric limit or quota (optional, can be null for unlimited)
+            </ParamField>
+            
+            <ParamField body="validity_interval" type="string">
+              Time unit: `month`, `year`, or `one_time` (optional)
+            </ParamField>
+            
+            <ParamField body="validity_interval_count" type="number">
+              Number of validity intervals (optional)
+            </ParamField>
+          </Expandable>
+        </ParamField>
       </Expandable>
     </ParamField>
   </Expandable>
@@ -81,7 +103,15 @@ curl -X POST https://api.arali.ai/api/v1/plans \
         "products": [
           {
             "productKey": "image-analysis",
-            "isIncludedByDefault": true
+            "isIncludedByDefault": true,
+            "productEntitlementsJson": [
+              {
+                "usage_key": "image_analysis_count",
+                "quantity": 10000,
+                "validity_interval": "month",
+                "validity_interval_count": 1
+              }
+            ]
           },
           {
             "productKey": "advanced-search",
@@ -101,7 +131,7 @@ curl -X POST https://api.arali.ai/api/v1/plans \
         },
         "products": [
           {
-            "productKey": "image-analysis",
+            "productKey": "core_platform",
             "isIncludedByDefault": true
           }
         ]

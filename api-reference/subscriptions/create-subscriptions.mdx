@@ -61,6 +61,28 @@ description: 'Batch create or update subscription records'
     <ParamField body="metadata" type="object">
       Custom key-value metadata
     </ParamField>
+    
+    <ParamField body="entitlementsOverrideJson" type="object">
+      Optional entitlements overrides for this specific subscription. If omitted, plan-level entitlements apply.
+      
+      <Expandable title="Entitlements Override Array">
+        <ParamField body="usage_key" type="string">
+          The usage metric key to override (e.g., "image_analysis_count", "storage_gb")
+        </ParamField>
+        
+        <ParamField body="quantity" type="number">
+          The custom limit or quota for this subscription (optional, can be null for unlimited)
+        </ParamField>
+        
+        <ParamField body="validity_interval" type="string">
+          Time unit: `month`, `year`, or `one_time` (optional)
+        </ParamField>
+        
+        <ParamField body="validity_interval_count" type="number">
+          Number of validity intervals (optional)
+        </ParamField>
+      </Expandable>
+    </ParamField>
   </Expandable>
 </ParamField>
 
@@ -84,10 +106,27 @@ curl -X POST https://api.arali.ai/api/v1/subscriptions \
         "currentPeriodStartAt": "2024-01-01T00:00:00Z",
         "currentPeriodEndAt": "2024-02-01T00:00:00Z",
         "externalSubscriptionId": "stripe_sub_123",
+        "entitlementsOverrideJson": [
+          {
+            "usage_key": "image_analysis_count",
+            "quantity": 50000,
+            "validity_interval": "month",
+            "validity_interval_count": 1
+          }
+        ],
         "metadata": {
           "source": "stripe",
           "customField": "value"
         }
+      },
+      {
+        "externalCompanyId": "basic-customer",
+        "planKey": "basic",
+        "status": "active",
+        "currency": "USD",
+        "billingInterval": "month",
+        "currentPeriodStartAt": "2024-01-01T00:00:00Z",
+        "currentPeriodEndAt": "2024-02-01T00:00:00Z"
       }
     ]
   }'
@@ -101,3 +140,5 @@ Returns the created/updated subscription records.
 
 - Contract values are automatically converted to minor currency units (cents for USD, no conversion for JPY)
 - Example: USD 99.99 → stored as 9999 cents
+- **`entitlementsOverrideJson` is optional**: If omitted, the subscription uses the plan's default entitlements
+- **Entitlement overrides** allow per-subscription customization (e.g., giving a customer 50,000 images instead of the plan's default 10,000)

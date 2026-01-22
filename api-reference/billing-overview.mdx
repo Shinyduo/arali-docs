@@ -40,6 +40,31 @@ Usage tracking captures consumption of products and features:
 - Query usage data with flexible filtering
 - Support both company and account-level tracking
 
+### Entitlements (Optional)
+Entitlements define usage limits and quotas for products within plans and subscriptions. **Entitlements are completely optional**:
+
+#### When to Use Entitlements
+- **With entitlements**: Track usage limits, quotas, or metered access
+  - Example: 10,000 image analyses per month
+  - Example: 50GB storage limit
+- **Without entitlements**: Binary access (you have it or you don't)
+  - Example: Access to advanced search feature
+  - Example: Core platform access
+
+#### Entitlement Structure
+Each entitlement defines:
+- **`usage_key`**: The metric being limited (e.g., "image_analysis_count")
+- **`quantity`**: The numeric limit (optional, null = unlimited)
+- **`validity_interval`**: Time unit (`month`, `year`, `one_time`)
+- **`validity_interval_count`**: Number of intervals
+
+#### Entitlement Hierarchy
+Entitlements can be defined at multiple levels, with overrides flowing down:
+1. **Product-level** (`productEntitlementsJson` in Plans): Default limits for all subscriptions
+2. **Subscription-level** (`entitlementsOverrideJson` in Subscriptions): Custom limits for specific customers
+
+**Example**: A plan might include 10,000 images/month by default, but a subscription can override this to 50,000 images/month for a specific enterprise customer.
+
 ## Currency Handling
 
 Contract values are automatically converted to minor currency units for precision:
