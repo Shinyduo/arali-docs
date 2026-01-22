@@ -21,23 +21,31 @@ description: 'Add a product to a specific plan'
 </ParamField>
 
 <ParamField body="productEntitlementsJson" type="object">
-  Optional entitlements configuration for the product. If omitted, access is binary (you have it or you don't).
+  Optional entitlements configuration for this product. **Single object** (not an array). If omitted, access is binary.
   
-  <Expandable title="Entitlements Array">
+  <Expandable title="Entitlement Object">
     <ParamField body="usage_key" type="string">
-      The usage metric key (e.g., "image_analysis_count", "storage_gb")
+      The usage metric key that links to usage tracking (e.g., "images_processed", "storage_gb")
     </ParamField>
     
     <ParamField body="quantity" type="number">
-      The numeric limit or quota (optional, can be null for unlimited)
+      Units included in the plan. Set to `null` for unlimited.
     </ParamField>
     
     <ParamField body="validity_interval" type="string">
-      Time unit: `month`, `year`, or `one_time` (optional)
+      Time unit: `month`, `year`, or `one_time`
     </ParamField>
     
     <ParamField body="validity_interval_count" type="number">
-      Number of validity intervals (optional)
+      Number of intervals between resets (e.g., 1 for monthly, 12 for annual)
+    </ParamField>
+    
+    <ParamField body="overage_allowed" type="boolean">
+      Whether usage can exceed the quantity limit
+    </ParamField>
+    
+    <ParamField body="overage_rate" type="number">
+      Price per unit when overage is allowed (in major currency units)
     </ParamField>
   </Expandable>
 </ParamField>
@@ -51,14 +59,14 @@ curl -X POST https://api.arali.ai/api/v1/plans/{planId}/products \
   -d '{
     "productKey": "advanced-search",
     "isIncludedByDefault": true,
-    "productEntitlementsJson": [
-      {
-        "usage_key": "search_queries",
-        "quantity": 5000,
-        "validity_interval": "month",
-        "validity_interval_count": 1
-      }
-    ]
+    "productEntitlementsJson": {
+      "usage_key": "search_queries",
+      "quantity": 5000,
+      "validity_interval": "month",
+      "validity_interval_count": 1,
+      "overage_allowed": true,
+      "overage_rate": 0.005
+    }
   }'
 ```
 

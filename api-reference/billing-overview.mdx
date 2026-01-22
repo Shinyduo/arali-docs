@@ -41,29 +41,43 @@ Usage tracking captures consumption of products and features:
 - Support both company and account-level tracking
 
 ### Entitlements (Optional)
-Entitlements define usage limits and quotas for products within plans and subscriptions. **Entitlements are completely optional**:
+Entitlements define usage limits and quotas for products within plans and subscriptions. **Entitlements are completely optional** and use different formats depending on where they're stored:
+
+#### Two Different Formats
+
+**1. Plan-Product Level** (`productEntitlementsJson`): **Single object**
+- Each plan-product row links ONE product to ONE plan
+- The row itself identifies the product, so no `product_key` needed
+- Format: Single object with entitlement configuration
+
+**2. Subscription Level** (`entitlementsOverrideJson`): **Array with product_key**
+- One subscription can override MULTIPLE products
+- Each array item needs `product_key` to identify which product
+- Format: Array where each item has `product_key` + override fields
 
 #### When to Use Entitlements
 - **With entitlements**: Track usage limits, quotas, or metered access
-  - Example: 10,000 image analyses per month
+  - Example: 10,000 image analyses per month with $0.01/image overage
   - Example: 50GB storage limit
 - **Without entitlements**: Binary access (you have it or you don't)
   - Example: Access to advanced search feature
   - Example: Core platform access
 
-#### Entitlement Structure
-Each entitlement defines:
-- **`usage_key`**: The metric being limited (e.g., "image_analysis_count")
-- **`quantity`**: The numeric limit (optional, null = unlimited)
+#### Entitlement Fields
+Each entitlement can define:
+- **`usage_key`**: The metric being limited (e.g., "images_processed")
+- **`quantity`**: The numeric limit (null = unlimited)
 - **`validity_interval`**: Time unit (`month`, `year`, `one_time`)
-- **`validity_interval_count`**: Number of intervals
+- **`validity_interval_count`**: Number of intervals between resets
+- **`overage_allowed`**: Whether usage can exceed the limit
+- **`overage_rate`**: Price per unit when overage is allowed
 
 #### Entitlement Hierarchy
 Entitlements can be defined at multiple levels, with overrides flowing down:
-1. **Product-level** (`productEntitlementsJson` in Plans): Default limits for all subscriptions
-2. **Subscription-level** (`entitlementsOverrideJson` in Subscriptions): Custom limits for specific customers
+1. **Plan-Product** (`productEntitlementsJson`): Base limits for all subscriptions
+2. **Subscription** (`entitlementsOverrideJson`): Customer-specific overrides (partial)
 
-**Example**: A plan might include 10,000 images/month by default, but a subscription can override this to 50,000 images/month for a specific enterprise customer.
+**Example**: A plan might include 10,000 images/month, but a subscription can override just the `quantity` to 50,000 while inheriting other settings like `overage_rate`.
 
 ## Currency Handling
 

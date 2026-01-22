@@ -62,24 +62,36 @@ description: 'Batch create or update subscription records'
       Custom key-value metadata
     </ParamField>
     
-    <ParamField body="entitlementsOverrideJson" type="object">
-      Optional entitlements overrides for this specific subscription. If omitted, plan-level entitlements apply.
+    <ParamField body="entitlementsOverrideJson" type="array">
+      Optional entitlements overrides for this subscription. **Array format** where each item overrides a specific product. If omitted, plan-level entitlements apply.
       
-      <Expandable title="Entitlements Override Array">
+      <Expandable title="Entitlement Override Item">
+        <ParamField body="product_key" type="string" required>
+          **REQUIRED**: The product key to override (e.g., "images", "videos")
+        </ParamField>
+        
         <ParamField body="usage_key" type="string">
-          The usage metric key to override (e.g., "image_analysis_count", "storage_gb")
+          Override the usage metric key (inherits from plan-product if omitted)
         </ParamField>
         
         <ParamField body="quantity" type="number">
-          The custom limit or quota for this subscription (optional, can be null for unlimited)
+          Override the quantity limit for this subscription (null = unlimited)
         </ParamField>
         
         <ParamField body="validity_interval" type="string">
-          Time unit: `month`, `year`, or `one_time` (optional)
+          Override time unit: `month`, `year`, or `one_time`
         </ParamField>
         
         <ParamField body="validity_interval_count" type="number">
-          Number of validity intervals (optional)
+          Override number of intervals between resets
+        </ParamField>
+        
+        <ParamField body="overage_allowed" type="boolean">
+          Override whether usage can exceed the limit
+        </ParamField>
+        
+        <ParamField body="overage_rate" type="number">
+          Override price per unit for overage (in major currency units)
         </ParamField>
       </Expandable>
     </ParamField>
@@ -108,10 +120,14 @@ curl -X POST https://api.arali.ai/api/v1/subscriptions \
         "externalSubscriptionId": "stripe_sub_123",
         "entitlementsOverrideJson": [
           {
-            "usage_key": "image_analysis_count",
-            "quantity": 50000,
-            "validity_interval": "month",
-            "validity_interval_count": 1
+            "product_key": "image-analysis",
+            "quantity": 50000
+          },
+          {
+            "product_key": "video-processing",
+            "quantity": 1000,
+            "overage_allowed": true,
+            "overage_rate": 0.05
           }
         ],
         "metadata": {
@@ -141,4 +157,6 @@ Returns the created/updated subscription records.
 - Contract values are automatically converted to minor currency units (cents for USD, no conversion for JPY)
 - Example: USD 99.99 → stored as 9999 cents
 - **`entitlementsOverrideJson` is optional**: If omitted, the subscription uses the plan's default entitlements
-- **Entitlement overrides** allow per-subscription customization (e.g., giving a customer 50,000 images instead of the plan's default 10,000)
+- **Entitlement overrides are partial**: You only need to specify the fields you want to override (e.g., just `quantity`)
+- **`product_key` is required** in each override item to identify which product's entitlements to modify
+- Other fields inherit from the plan-product configuration if not specified
