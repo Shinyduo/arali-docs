@@ -1,19 +1,19 @@
 ---
 title: 'Get Plan'
-api: 'GET /api/v1/plans/{planId}'
-description: 'Retrieve a specific plan by ID'
+api: 'GET /api/v1/plans/{key}'
+description: 'Retrieve a specific plan by key'
 ---
 
 ## Path Parameters
 
-<ParamField path="planId" type="string" required>
-  The unique ID of the plan to retrieve
+<ParamField path="key" type="string" required>
+  The unique key of the plan to retrieve
 </ParamField>
 
 ## Example Request
 
 ```bash
-curl -X GET https://api.arali.ai/api/v1/plans/{planId} \
+curl -X GET https://api.arali.ai/api/v1/plans/{key} \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
 

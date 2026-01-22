@@ -1,13 +1,13 @@
 ---
 title: 'Update Plan'
-api: 'PUT /api/v1/plans/{planId}'
-description: 'Update a specific plan'
+api: 'PUT /api/v1/plans/{key}'
+description: 'Update a specific plan by key'
 ---
 
 ## Path Parameters
 
-<ParamField path="planId" type="string" required>
-  The unique ID of the plan to update
+<ParamField path="key" type="string" required>
+  The unique key of the plan to update
 </ParamField>
 
 ## Request Body
@@ -45,7 +45,7 @@ description: 'Update a specific plan'
 ## Example Request
 
 ```bash
-curl -X PUT https://api.arali.ai/api/v1/plans/{planId} \
+curl -X PUT https://api.arali.ai/api/v1/plans/{key} \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

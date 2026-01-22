@@ -1,13 +1,13 @@
 ---
 title: 'Add Product to Plan'
-api: 'POST /api/v1/plans/{planId}/products'
-description: 'Add a product to a specific plan'
+api: 'POST /api/v1/plans/{key}/products'
+description: 'Add a product to a specific plan by key'
 ---
 
 ## Path Parameters
 
-<ParamField path="planId" type="string" required>
-  The unique ID of the plan
+<ParamField path="key" type="string" required>
+  The unique key of the plan
 </ParamField>
 
 ## Request Body
@@ -53,7 +53,7 @@ description: 'Add a product to a specific plan'
 ## Example Request
 
 ```bash
-curl -X POST https://api.arali.ai/api/v1/plans/{planId}/products \
+curl -X POST https://api.arali.ai/api/v1/plans/{key}/products \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

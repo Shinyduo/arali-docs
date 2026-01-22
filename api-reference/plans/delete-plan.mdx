@@ -1,0 +1,28 @@
+---
+title: 'Delete Plan'
+api: 'DELETE /api/v1/plans/{key}'
+description: 'Delete a specific plan by key'
+---
+
+## Path Parameters
+
+<ParamField path="key" type="string" required>
+  The unique key of the plan to delete
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X DELETE https://api.arali.ai/api/v1/plans/{key} \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns a success confirmation upon deletion.
+
+## Notes
+
+- Deleting a plan will remove it permanently from the system
+- This operation looks up the plan by key before deleting it
+- Consider archiving plans instead of deleting them to preserve historical data

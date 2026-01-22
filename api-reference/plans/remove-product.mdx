@@ -1,13 +1,13 @@
 ---
 title: 'Remove Product from Plan'
-api: 'DELETE /api/v1/plans/{planId}/products/{productKey}'
-description: 'Remove a product from a specific plan'
+api: 'DELETE /api/v1/plans/{key}/products/{productKey}'
+description: 'Remove a product from a specific plan by key'
 ---
 
 ## Path Parameters
 
-<ParamField path="planId" type="string" required>
-  The unique ID of the plan
+<ParamField path="key" type="string" required>
+  The unique key of the plan
 </ParamField>
 
 <ParamField path="productKey" type="string" required>
@@ -17,7 +17,7 @@ description: 'Remove a product from a specific plan'
 ## Example Request
 
 ```bash
-curl -X DELETE https://api.arali.ai/api/v1/plans/{planId}/products/{productKey} \
+curl -X DELETE https://api.arali.ai/api/v1/plans/{key}/products/{productKey} \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
 
