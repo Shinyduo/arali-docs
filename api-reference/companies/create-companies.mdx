@@ -33,8 +33,8 @@ description: 'Batch create or update company records'
       3. **Insert**: If neither is found, a new company is created.
     </Info>
     
-    <ParamField body="lifecycleStage" type="string" default="lead">
-      Company lifecycle stage. Options: `lead`, `prospect`, `customer`, `expansion`, `churned`, `lost`, `partner`, `other`
+    <ParamField body="stageKey" type="string" default="lead">
+      Company stage key. Options: `lead`, `prospect`, `customer`, `expansion`, `churned`, `lost`, `partner`, `other`
     </ParamField>
     
     <ParamField body="ownerUserId" type="string">
