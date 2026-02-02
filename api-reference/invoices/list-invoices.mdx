@@ -1,0 +1,108 @@
+---
+title: 'List Invoices'
+api: 'GET /api/v1/invoices'
+description: 'List invoices with filters and pagination'
+---
+
+## Query Parameters
+
+<ParamField query="companyId" type="string">
+  Filter by internal company UUID
+</ParamField>
+
+<ParamField query="externalCompanyId" type="string">
+  Filter by external company identifier
+</ParamField>
+
+<ParamField query="accountId" type="string">
+  Filter by internal account UUID
+</ParamField>
+
+<ParamField query="externalAccountId" type="string">
+  Filter by external account identifier
+</ParamField>
+
+<ParamField query="subscriptionId" type="string">
+  Filter by internal subscription UUID
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by status: `draft`, `open`, `paid`, `void`, `uncollectible`
+</ParamField>
+
+<ParamField query="kind" type="string">
+  Filter by kind: `subscription`, `usage`, `adjustment`
+</ParamField>
+
+<ParamField query="issuedAfter" type="string">
+  Filter invoices issued on or after this ISO 8601 timestamp
+</ParamField>
+
+<ParamField query="issuedBefore" type="string">
+  Filter invoices issued on or before this ISO 8601 timestamp
+</ParamField>
+
+<ParamField query="limit" type="number" default="100">
+  Max results per page (max: 500)
+</ParamField>
+
+<ParamField query="offset" type="number" default="0">
+  Pagination offset
+</ParamField>
+
+## Example Requests
+
+### List All Invoices
+
+```bash
+curl -X GET https://api.arali.ai/api/v1/invoices \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+### List Invoices for a Company (External ID)
+
+```bash
+curl -X GET "https://api.arali.ai/api/v1/invoices?externalCompanyId=acme-corp-123" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+### List Open Invoices
+
+```bash
+curl -X GET "https://api.arali.ai/api/v1/invoices?status=open" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+### List Overdue Invoices (Issued Before Date, Still Open)
+
+```bash
+curl -X GET "https://api.arali.ai/api/v1/invoices?status=open&issuedBefore=2026-01-01T00:00:00Z" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+Returns a paginated list of invoice objects.
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "companyId": "789e0123-e45b-67d8-a901-234567890000",
+      "kind": "subscription",
+      "status": "open",
+      "currency": "USD",
+      "amountDueCents": 99900,
+      "amountPaidCents": 0,
+      "amountDue": 999.0,
+      "amountPaid": 0.0,
+      "issuedAt": "2026-02-01T00:00:00.000Z",
+      "dueAt": "2026-02-15T00:00:00.000Z"
+    }
+  ],
+  "meta": { "total": 1, "limit": 100, "offset": 0 }
+}
+```
+

@@ -1,0 +1,59 @@
+---
+title: 'Get Invoice'
+api: 'GET /api/v1/invoices/{id}'
+description: 'Retrieve a single invoice by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Invoice UUID
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X GET https://api.arali.ai/api/v1/invoices/550e8400-e29b-41d4-a716-446655440001 \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "enterpriseId": "123e4567-e89b-12d3-a456-426614174000",
+    "companyId": "789e0123-e45b-67d8-a901-234567890000",
+    "accountId": null,
+    "subscriptionId": "321e6543-e21b-43d2-a654-321098765000",
+    "kind": "subscription",
+    "status": "open",
+    "providerKey": "stripe",
+    "externalInvoiceId": "in_1234567890",
+    "invoiceNumber": "INV-2026-001",
+    "currency": "USD",
+    "amountDueCents": 99900,
+    "amountPaidCents": 0,
+    "amountDue": 999.0,
+    "amountPaid": 0.0,
+    "issuedAt": "2026-02-01T00:00:00.000Z",
+    "dueAt": "2026-02-15T00:00:00.000Z",
+    "paidAt": null,
+    "periodStartAt": "2026-02-01T00:00:00.000Z",
+    "periodEndAt": "2026-02-28T23:59:59.000Z",
+    "pdfUrl": null,
+    "metadata": {},
+    "createdAt": "2026-02-01T10:00:00.000Z",
+    "updatedAt": "2026-02-01T10:00:00.000Z"
+  }
+}
+```
+
+### Error (404)
+
+```json
+{ "error": "Invoice not found" }
+```
+

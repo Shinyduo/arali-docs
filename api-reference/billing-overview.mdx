@@ -40,6 +40,13 @@ Usage tracking captures consumption of products and features:
 - Query usage data with flexible filtering
 - Support both company and account-level tracking
 
+### Invoices
+Invoices represent billable statements for a company/account/subscription:
+- Create invoices in batch for sync or generation flows
+- Track invoice lifecycle (`draft` → `open` → `paid`, or `void`/`uncollectible`)
+- Store provider identifiers (e.g., Stripe invoice IDs) and PDF URLs
+- Query invoices with filters for collections and reporting
+
 ### Entitlements (Optional)
 Entitlements define usage limits and quotas for products within plans and subscriptions. **Entitlements are completely optional** and use different formats depending on where they're stored:
 
@@ -144,12 +151,25 @@ POST /api/v1/usage
 GET /api/v1/usage?externalCompanyId=acme-corp&startDate=2024-01-01&endDate=2024-01-31
 ```
 
+### 4. Invoicing & Collections
+```bash
+# Create invoices (batch)
+POST /api/v1/invoices
+
+# List open invoices for a company
+GET /api/v1/invoices?externalCompanyId=acme-corp&status=open
+
+# Mark an invoice paid
+PUT /api/v1/invoices/{id}
+```
+
 ## API Schema Documentation
 
 Each API provides a schema endpoint for reference:
 - `GET /api/v1/products/schema`
 - `GET /api/v1/plans/schema`
 - `GET /api/v1/subscriptions/schema`
+- `GET /api/v1/invoices/schema`
 - `GET /api/v1/usage/schema`
 
 ## Best Practices
@@ -172,6 +192,9 @@ Each API provides a schema endpoint for reference:
   </Card>
   <Card title="Subscriptions API" icon="credit-card" href="/api-reference/subscriptions/create-subscriptions">
     Manage customer subscriptions
+  </Card>
+  <Card title="Invoices API" icon="receipt" href="/api-reference/invoices/create-invoices">
+    Create, update, and track invoices
   </Card>
   <Card title="Usage API" icon="chart-line" href="/api-reference/usage/report-usage">
     Track product usage

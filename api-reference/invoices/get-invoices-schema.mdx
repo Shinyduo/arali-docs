@@ -1,0 +1,29 @@
+---
+title: 'Get Invoices API Schema'
+api: 'GET /api/v1/invoices/schema'
+description: 'Return schema metadata for the Invoices API'
+---
+
+## Overview
+
+Use this endpoint to fetch schema metadata for the Invoices API (supported fields, enums, and endpoint descriptions).
+
+## Example Request
+
+```bash
+curl -X GET https://api.arali.ai/api/v1/invoices/schema \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+```json
+{
+  "description": "Invoices API - Manage billing invoices for companies and accounts",
+  "version": "1.0.0",
+  "endpoints": {},
+  "invoiceStatuses": ["draft", "open", "paid", "void", "uncollectible"],
+  "invoiceKinds": ["subscription", "usage", "adjustment"]
+}
+```
+

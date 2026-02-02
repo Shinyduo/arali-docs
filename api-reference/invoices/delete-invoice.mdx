@@ -1,0 +1,31 @@
+---
+title: 'Delete Invoice'
+api: 'DELETE /api/v1/invoices/{id}'
+description: 'Delete an invoice by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Invoice UUID
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X DELETE https://api.arali.ai/api/v1/invoices/550e8400-e29b-41d4-a716-446655440001 \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+```json
+{ "success": true, "message": "Invoice deleted successfully" }
+```
+
+### Error (404)
+
+```json
+{ "error": "Invoice not found" }
+```
+

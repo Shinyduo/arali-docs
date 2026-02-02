@@ -1,0 +1,109 @@
+---
+title: 'Update Invoice'
+api: 'PUT /api/v1/invoices/{id}'
+description: 'Update an existing invoice by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Invoice UUID
+</ParamField>
+
+## Request Body
+
+<ParamField body="status" type="string">
+  Updated status: `draft`, `open`, `paid`, `void`, `uncollectible`
+</ParamField>
+
+<ParamField body="kind" type="string">
+  Updated kind: `subscription`, `usage`, `adjustment`
+</ParamField>
+
+<ParamField body="invoiceNumber" type="string">
+  Updated invoice number
+</ParamField>
+
+<ParamField body="currency" type="string">
+  Updated currency code
+</ParamField>
+
+<ParamField body="amountDue" type="number">
+  Updated amount due (display units)
+</ParamField>
+
+<ParamField body="amountPaid" type="number">
+  Updated amount paid (display units)
+</ParamField>
+
+<ParamField body="dueAt" type="string">
+  Updated due date (ISO 8601)
+</ParamField>
+
+<ParamField body="paidAt" type="string">
+  Updated paid timestamp (ISO 8601)
+</ParamField>
+
+<ParamField body="periodStartAt" type="string">
+  Updated billing period start (ISO 8601)
+</ParamField>
+
+<ParamField body="periodEndAt" type="string">
+  Updated billing period end (ISO 8601)
+</ParamField>
+
+<ParamField body="pdfUrl" type="string">
+  Updated PDF URL
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Updated metadata
+</ParamField>
+
+## Example Requests
+
+### 1. Mark Invoice as Paid
+
+```bash
+curl -X PUT https://api.arali.ai/api/v1/invoices/550e8400-e29b-41d4-a716-446655440001 \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "paid",
+    "amountPaid": 999.00,
+    "paidAt": "2026-02-10T14:30:00Z"
+  }'
+```
+
+### 2. Void an Invoice
+
+```bash
+curl -X PUT https://api.arali.ai/api/v1/invoices/550e8400-e29b-41d4-a716-446655440001 \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "void",
+    "metadata": {
+      "void_reason": "Customer cancelled subscription",
+      "voided_by": "admin@company.com"
+    }
+  }'
+```
+
+## Response
+
+Returns the updated invoice.
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "status": "paid",
+    "amountDue": 999.0,
+    "amountPaid": 999.0,
+    "paidAt": "2026-02-10T14:30:00.000Z"
+  }
+}
+```
+

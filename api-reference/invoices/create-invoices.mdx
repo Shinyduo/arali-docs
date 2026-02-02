@@ -1,0 +1,230 @@
+---
+title: 'Create Invoices'
+api: 'POST /api/v1/invoices'
+description: 'Create one or more invoices (batch)'
+---
+
+## Overview
+
+Create one or more invoices in a single request. Invoices can be linked using either internal UUIDs (e.g., `companyId`) or your external identifiers (e.g., `externalCompanyId`).
+
+<Note>
+  At least one of `companyId` or `externalCompanyId` is required per invoice.
+</Note>
+
+## Request Body
+
+<ParamField body="invoices" type="array" required>
+  Array of invoice objects to create
+
+  <Expandable title="Invoice Object">
+    <ParamField body="companyId" type="string">
+      Internal company UUID
+    </ParamField>
+
+    <ParamField body="externalCompanyId" type="string">
+      External company identifier
+    </ParamField>
+
+    <ParamField body="accountId" type="string">
+      Internal account UUID (optional)
+    </ParamField>
+
+    <ParamField body="externalAccountId" type="string">
+      External account identifier (optional)
+    </ParamField>
+
+    <ParamField body="subscriptionId" type="string">
+      Internal subscription UUID (optional)
+    </ParamField>
+
+    <ParamField body="externalSubscriptionId" type="string">
+      External subscription identifier (optional)
+    </ParamField>
+
+    <ParamField body="kind" type="string" default="subscription">
+      Invoice kind: `subscription`, `usage`, or `adjustment`
+    </ParamField>
+
+    <ParamField body="status" type="string" default="open">
+      Invoice status: `draft`, `open`, `paid`, `void`, or `uncollectible`
+    </ParamField>
+
+    <ParamField body="providerKey" type="string" default="manual">
+      Billing provider key: `stripe`, `razorpay`, or `manual`
+    </ParamField>
+
+    <ParamField body="externalInvoiceId" type="string">
+      Provider invoice ID (recommended for sync/idempotency)
+    </ParamField>
+
+    <ParamField body="invoiceNumber" type="string">
+      Human-readable invoice number
+    </ParamField>
+
+    <ParamField body="currency" type="string" default="INR">
+      Currency code (e.g., `USD`, `INR`, `EUR`)
+    </ParamField>
+
+    <ParamField body="amountDue" type="number">
+      Amount due in display units (e.g., `999.00`)
+    </ParamField>
+
+    <ParamField body="amountPaid" type="number">
+      Amount paid in display units
+    </ParamField>
+
+    <ParamField body="issuedAt" type="string" required>
+      ISO 8601 timestamp when the invoice was issued
+    </ParamField>
+
+    <ParamField body="dueAt" type="string">
+      ISO 8601 timestamp when payment is due
+    </ParamField>
+
+    <ParamField body="paidAt" type="string">
+      ISO 8601 timestamp when the invoice was paid
+    </ParamField>
+
+    <ParamField body="periodStartAt" type="string">
+      Billing period start timestamp (ISO 8601)
+    </ParamField>
+
+    <ParamField body="periodEndAt" type="string">
+      Billing period end timestamp (ISO 8601)
+    </ParamField>
+
+    <ParamField body="pdfUrl" type="string">
+      URL to the invoice PDF
+    </ParamField>
+
+    <ParamField body="metadata" type="object">
+      Custom metadata key/value object
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Example Requests
+
+### 1. Create Invoice Using External IDs
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/invoices \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "invoices": [
+      {
+        "externalCompanyId": "acme-corp-123",
+        "externalAccountId": "acme-account-456",
+        "kind": "subscription",
+        "status": "open",
+        "providerKey": "stripe",
+        "externalInvoiceId": "in_1234567890",
+        "invoiceNumber": "INV-2026-001",
+        "currency": "USD",
+        "amountDue": 999.00,
+        "issuedAt": "2026-02-01T00:00:00Z",
+        "dueAt": "2026-02-15T00:00:00Z",
+        "periodStartAt": "2026-02-01T00:00:00Z",
+        "periodEndAt": "2026-02-28T23:59:59Z",
+        "metadata": {
+          "plan": "enterprise",
+          "seats": 50
+        }
+      }
+    ]
+  }'
+```
+
+### 2. Create Invoice Using Internal IDs
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/invoices \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "invoices": [
+      {
+        "companyId": "550e8400-e29b-41d4-a716-446655440000",
+        "subscriptionId": "123e4567-e89b-12d3-a456-426614174000",
+        "kind": "subscription",
+        "status": "open",
+        "currency": "INR",
+        "amountDue": 50000.00,
+        "issuedAt": "2026-02-01T00:00:00Z",
+        "dueAt": "2026-02-15T00:00:00Z",
+        "invoiceNumber": "INV-IN-2026-001"
+      }
+    ]
+  }'
+```
+
+### 3. Create Multiple Invoices (Batch)
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/invoices \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "invoices": [
+      {
+        "externalCompanyId": "company-001",
+        "currency": "USD",
+        "amountDue": 500.00,
+        "issuedAt": "2026-02-01T00:00:00Z",
+        "invoiceNumber": "INV-001"
+      },
+      {
+        "externalCompanyId": "company-002",
+        "currency": "USD",
+        "amountDue": 750.00,
+        "issuedAt": "2026-02-01T00:00:00Z",
+        "invoiceNumber": "INV-002"
+      },
+      {
+        "externalCompanyId": "company-003",
+        "currency": "EUR",
+        "amountDue": 1000.00,
+        "issuedAt": "2026-02-01T00:00:00Z",
+        "invoiceNumber": "INV-003"
+      }
+    ]
+  }'
+```
+
+## Response
+
+### Success (200)
+
+```json
+{
+  "success": true,
+  "summary": { "total": 3, "success": 3, "failed": 0 },
+  "results": [
+    { "invoiceId": "550e8400-e29b-41d4-a716-446655440001", "status": "success" },
+    { "invoiceId": "550e8400-e29b-41d4-a716-446655440002", "status": "success" },
+    { "invoiceId": "550e8400-e29b-41d4-a716-446655440003", "status": "success" }
+  ]
+}
+```
+
+### Partial Success (200)
+
+```json
+{
+  "success": true,
+  "summary": { "total": 2, "success": 1, "failed": 1 },
+  "results": [
+    { "invoiceId": "550e8400-e29b-41d4-a716-446655440001", "status": "success" },
+    { "status": "error", "error": "Company not found. Provide valid companyId or externalCompanyId" }
+  ]
+}
+```
+
+## Notes
+
+- Amounts are stored internally in minor units (for example, USD `99.99` → `9999` cents).
+- For provider sync, use `providerKey` + `externalInvoiceId` to prevent duplicate imports.
+- Batch requests process each invoice independently; one failure does not block others.
+

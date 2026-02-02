@@ -153,6 +153,17 @@
             ]
         },
         {
+            "group": "Invoices",
+            "pages": [
+                "api-reference/invoices/get-invoices-schema",
+                "api-reference/invoices/create-invoices",
+                "api-reference/invoices/list-invoices",
+                "api-reference/invoices/get-invoice",
+                "api-reference/invoices/update-invoice",
+                "api-reference/invoices/delete-invoice"
+            ]
+        },
+        {
             "group": "Usage",
             "pages": [
                 "api-reference/usage/report-usage",
