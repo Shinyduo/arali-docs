@@ -260,8 +260,6 @@ Manage contact records for your enterprise.
 |-------|------|----------|-------------|
 | `externalId` | string | Yes | External unique ID from integration source |
 | `fullName` | string \| null | No | Contact's full name |
-| `primaryEmail` | string \| null | No | Primary email address |
-| `primaryPhone` | string \| null | No | Primary phone number |
 | `title` | string \| null | No | Job title |
 | `ownerUserId` | UUID \| null | No | Owner user ID |
 | `emails` | array | No | List of emails (see Email Object) |
@@ -291,9 +289,17 @@ Manage contact records for your enterprise.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `companyId` | UUID | Yes | Company UUID |
-| `relation` | enum | No | `employee`, `consultant`, `agency`, `partner`, `contractor`, `other` (default: `employee`) |
+| `relation` | enum | No | `employee`, `decision_maker`, `champion`, `end_user`, `influencer` (default: `employee`) |
 | `isPrimary` | boolean | No | Is primary company (default: `false`) |
 | `attributes` | object | No | Relationship attributes |
+
+### Important Notes
+
+#### Email & Phone Behavior
+
+- Only one email can be `isPrimary: true` per contact (same for phone numbers).
+- If multiple entries are passed with `isPrimary: true`, only the first is set as primary.
+- When a new email/phone is set as primary, the existing primary is automatically set to `isPrimary: false`.
 
 ### cURL Examples
 
@@ -308,8 +314,6 @@ curl -X POST 'https://your-api-domain.com/api/v1/contacts' \
       {
         "externalId": "contact_12345",
         "fullName": "John Doe",
-        "primaryEmail": "john.doe@acme.com",
-        "primaryPhone": "+1-555-123-4567",
         "title": "VP of Engineering",
         "emails": [
           { "email": "john.doe@acme.com", "isPrimary": true, "label": "Work" },
@@ -317,6 +321,9 @@ curl -X POST 'https://your-api-domain.com/api/v1/contacts' \
         ],
         "phones": [
           { "phone": "+1-555-123-4567", "isPrimary": true, "label": "Mobile" }
+        ],
+        "companies": [
+          { "companyId": "550e8400-e29b-41d4-a716-446655440000", "relation": "employee", "isPrimary": true }
         ],
         "attributes": {
           "linkedin": "https://linkedin.com/in/johndoe",
@@ -388,7 +395,7 @@ Create contact-company and contact-account relationships. Supports both external
 | `externalCompanyId` | string | No | External ID of the company (creates `customer_company`; optional if `companyId` provided) |
 | `accountId` | UUID | No | Internal UUID of the account (bypasses mapping lookup and auto-resolves company; optional if `externalAccountId` provided) |
 | `externalAccountId` | string | No | External ID of the account (creates `contact_account` and auto-resolves company; optional if `accountId` provided) |
-| `relation` | enum | No | `employee`, `consultant`, `contractor`, `partner`, `agency`, `other` (default: `employee`) |
+| `relation` | enum | No | `employee`, `decision_maker`, `champion`, `end_user`, `influencer` (default: `employee`) |
 | `isPrimary` | boolean | No | Is primary company for contact (default: `false`) |
 | `role` | string | No | Role for the contact_account association |
 
@@ -622,4 +629,3 @@ Manage custom field definitions and values for entities (companies, accounts, co
 
 - **Entity Types:** `company`, `account`, `contact`
 - **Field Types:** `text`, `number`, `date`, `boolean`, `json`, `enum`
-

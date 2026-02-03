@@ -4,4 +4,55 @@ api: 'GET /api/v1/contacts'
 description: 'Get all contacts for your enterprise'
 ---
 
+## Overview
 
+Retrieves a paginated list of contacts.
+
+**Required scope:** `contacts:read`
+
+## Query Parameters
+
+<ParamField query="limit" type="integer" default="50">
+  Number of contacts to return (max: 100)
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Number of contacts to skip
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X GET "https://api.arali.ai/api/v1/contacts?limit=10&offset=0" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "enterpriseId": "550e8400-e29b-41d4-a716-446655440000",
+      "fullName": "John Doe",
+      "title": "VP of Engineering",
+      "ownerUserId": null,
+      "attributes": {},
+      "emails": [{ "email": "john.doe@acme.com", "isPrimary": true, "label": "Work" }],
+      "phones": [{ "phone": "+1-555-123-4567", "isPrimary": true, "label": "Mobile" }],
+      "createdAt": "2026-02-03T10:00:00.000Z",
+      "updatedAt": "2026-02-03T10:00:00.000Z"
+    }
+  ],
+  "pagination": { "limit": 10, "offset": 0, "total": 1 }
+}
+```
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Unauthorized - Missing or invalid token |
+| `403` | Forbidden - Insufficient permissions |

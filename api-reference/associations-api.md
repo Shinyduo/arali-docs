@@ -1,0 +1,265 @@
+# Associations API
+
+The Associations API allows you to create relationships between contacts and companies/accounts. Use this API to link contacts to their organizations.
+
+## Base URL
+
+```
+/api/v1/associations
+```
+
+## Authentication
+
+All endpoints require a Bearer token in the Authorization header:
+
+```
+Authorization: Bearer <your-api-token>
+```
+
+---
+
+## Key Concepts
+
+### Separation of Concerns
+
+| API | Responsibility |
+|-----|----------------|
+| **Contacts API** | Manage contact data (name, emails, phones, attributes) |
+| **Associations API** | Manage relationships (contact→company, contact→account) |
+
+### Association Flows
+
+The API supports three flows for creating associations:
+
+| Flow | Description | Creates |
+|------|-------------|---------|
+| **Flow 1: Company-only** | Associate contact directly with a company | `customer_company` |
+| **Flow 2: Account-based** | Associate contact with an account (company auto-resolved) | `contact_account` + `customer_company` |
+| **Flow 3: Account + Company** | Associate contact with account AND additional company | `contact_account` + multiple `customer_company` |
+
+---
+
+## Endpoints
+
+### GET /api/v1/associations/schema
+
+Returns API documentation and schema information.
+
+---
+
+### POST /api/v1/associations
+
+Batch create or update associations between contacts and companies/accounts.
+
+**Required Scope:** `associations:write`
+
+#### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `associations` | array | Yes | Array of association objects |
+
+#### Association Object
+
+You can use either internal UUIDs or external IDs for all entities.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `contactId` | string (UUID) | Conditional* | Internal contact ID |
+| `externalContactId` | string | Conditional* | External contact ID |
+| `companyId` | string (UUID) | Conditional** | Internal company ID |
+| `externalCompanyId` | string | Conditional** | External company ID |
+| `accountId` | string (UUID) | Conditional** | Internal account ID |
+| `externalAccountId` | string | Conditional** | External account ID |
+| `relation` | enum | No | Relationship type (default: "employee") |
+| `isPrimary` | boolean | No | Primary company flag (default: false) |
+| `role` | string | No | Role in account (for contact_account) |
+
+\* Must provide either `contactId` OR `externalContactId`  
+\** Must provide at least one of: `companyId`, `externalCompanyId`, `accountId`, `externalAccountId`
+
+#### Relation Types
+
+| Value | Description |
+|-------|-------------|
+| `employee` | Full-time or part-time employee (default) |
+| `decision_maker` | Key decision maker |
+| `champion` | Internal champion |
+| `end_user` | End user |
+| `influencer` | Influencer |
+
+---
+
+## Example Requests
+
+### Flow 1: Associate Contact with Company
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/associations \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "associations": [
+      {
+        "externalContactId": "hubspot_contact_12345",
+        "externalCompanyId": "hubspot_company_67890",
+        "relation": "employee",
+        "isPrimary": true
+      }
+    ]
+  }'
+```
+
+### Flow 2: Associate Contact with Account (Company Auto-Resolved)
+
+When you associate a contact with an account, the system automatically:
+1. Creates a `contact_account` association
+2. Looks up the company linked to that account
+3. Creates a `customer_company` association with that company
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/associations \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "associations": [
+      {
+        "externalContactId": "vitally_user_abc123",
+        "externalAccountId": "vitally_acc_xyz789",
+        "role": "decision_maker"
+      }
+    ]
+  }'
+```
+
+### Flow 3: Using Direct UUIDs
+
+If you already have internal UUIDs, use them directly:
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/associations \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "associations": [
+      {
+        "contactId": "550e8400-e29b-41d4-a716-446655440000",
+        "companyId": "661e8400-e29b-41d4-a716-446655440111",
+        "relation": "employee",
+        "isPrimary": false
+      }
+    ]
+  }'
+```
+
+### Batch: Multiple Associations
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/associations \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "associations": [
+      {
+        "externalContactId": "sf_contact_001",
+        "externalCompanyId": "sf_company_001",
+        "relation": "employee",
+        "isPrimary": true
+      },
+      {
+        "externalContactId": "sf_contact_001",
+        "externalCompanyId": "sf_company_002",
+        "relation": "influencer",
+        "isPrimary": false
+      },
+      {
+        "externalContactId": "sf_contact_002",
+        "externalAccountId": "sf_account_001",
+        "role": "admin"
+      }
+    ]
+  }'
+```
+
+---
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "summary": { "total": 3, "success": 3, "failed": 0 },
+  "results": [
+    {
+      "status": "success"
+    },
+    {
+      "status": "success"
+    },
+    {
+      "status": "success"
+    }
+  ]
+}
+```
+
+---
+
+## Upsert Behavior
+
+The API uses **upsert** (insert or update) semantics:
+
+| Scenario | Behavior |
+|----------|----------|
+| New association | Insert new record |
+| Existing association (same contact + company) | Update relation, isPrimary, attributes |
+| Existing association (same contact + account) | Update role, isPrimary |
+
+### Conflict Resolution
+
+- **Conflict key for `customer_company`:** `[contactId, companyId]`
+- **Conflict key for `contact_account`:** `[contactId, accountId]`
+
+---
+
+## Error Responses
+
+| Status Code | Description |
+|-------------|-------------|
+| `400` | Bad Request - Missing required fields |
+| `401` | Unauthorized - Invalid or missing token |
+| `403` | Forbidden - Insufficient permissions |
+| `404` | Not Found - Contact, company, or account not found |
+| `500` | Internal Server Error |
+
+### Skipped Results
+
+Some associations may be skipped (not failed) with reasons:
+
+| Reason | Description |
+|--------|-------------|
+| `Contact not found` | External ID not in integration_object_mapping |
+| `Company not found` | External ID not in integration_object_mapping |
+| `Account not found` | External ID not in integration_object_mapping |
+| `Account has no associated company` | Account exists but has no companyId |
+| `Missing contact identifier` | Neither contactId nor externalContactId provided |
+| `Missing company/account identifier` | No company or account identifier provided |
+
+---
+
+## Database Tables
+
+| Table | Purpose |
+|-------|---------|
+| `customer_company` | Links contacts to companies with relationship metadata |
+| `contact_account` | Links contacts to accounts with role information |
+| `interaction_company` | Links interactions to companies |
+| `interaction_account` | Links interactions to accounts |
+
+---
+
+## Related APIs
+
+- **[Contacts API](./contacts-api.md)** - Manage contact records (name, emails, phones)
+- **Companies API** - Manage company records
+- **Accounts API** - Manage account records

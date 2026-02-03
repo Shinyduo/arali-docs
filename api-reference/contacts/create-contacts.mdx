@@ -1,13 +1,19 @@
 ---
 title: 'Create Contacts'
 api: 'POST /api/v1/contacts'
-description: 'Batch create or update contact records'
+description: 'Bulk create or update contacts (upsert by externalId)'
 ---
+
+## Overview
+
+Create new contacts or update existing ones in a single request. Contacts are upserted by `externalId`.
+
+**Required scope:** `contacts:write`
 
 ## Request Body
 
 <ParamField body="contacts" type="array" required>
-  Array of contact objects to create or update
+  Array of contact objects to create or update (upsert by `externalId`)
   
   <Expandable title="Contact Object">
     <ParamField body="externalId" type="string" required>
@@ -15,35 +21,28 @@ description: 'Batch create or update contact records'
     </ParamField>
     
     <ParamField body="fullName" type="string">
-      Contact's full name
-    </ParamField>
-    
-    <ParamField body="primaryEmail" type="string">
-      Primary email address
-    </ParamField>
-    
-    <ParamField body="primaryPhone" type="string">
-      Primary phone number
+      Contact's full name (`string` or `null`)
     </ParamField>
     
     <ParamField body="title" type="string">
-      Job title
+      Job title (`string` or `null`)
     </ParamField>
     
     <ParamField body="ownerUserId" type="string">
-      Owner user UUID
+      Owner user UUID (`uuid` or `null`)
     </ParamField>
     
     <ParamField body="emails" type="array">
-      List of email objects with `email`, `isPrimary`, and `label` fields
+      List of email objects (`{ email, isPrimary?, label? }`). `email` is required.
     </ParamField>
     
     <ParamField body="phones" type="array">
-      List of phone objects with `phone`, `isPrimary`, and `label` fields
+      List of phone objects (`{ phone, isPrimary?, label? }`). `phone` is required.
     </ParamField>
     
     <ParamField body="companies" type="array">
-      List of company association objects with `companyId`, `relation`, `isPrimary`, and `attributes` fields
+      List of company association objects (`{ companyId, relation?, isPrimary?, attributes? }`).
+      Valid `relation` values: `employee`, `decision_maker`, `champion`, `end_user`, `influencer`.
     </ParamField>
     
     <ParamField body="attributes" type="object">
@@ -53,7 +52,73 @@ description: 'Batch create or update contact records'
     <ParamField body="properties" type="object">
       Custom field values
     </ParamField>
+
+    <Info>
+      **Email & Phone behavior**
+      - Only one email can be `isPrimary: true` per contact (same for phone numbers).
+      - If multiple entries are sent as primary, only the first is kept as primary.
+      - If a new email/phone is set as primary, the existing primary is automatically set to `isPrimary: false`.
+    </Info>
   </Expandable>
 </ParamField>
 
+## Example Request
 
+```bash
+curl -X POST https://api.arali.ai/api/v1/contacts \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contacts": [
+      {
+        "externalId": "hubspot_contact_12345",
+        "fullName": "John Doe",
+        "title": "VP of Engineering",
+        "emails": [
+          { "email": "john.doe@acme.com", "isPrimary": true, "label": "Work" },
+          { "email": "johndoe@gmail.com", "isPrimary": false, "label": "Personal" }
+        ],
+        "phones": [
+          { "phone": "+1-555-123-4567", "isPrimary": true, "label": "Mobile" }
+        ],
+        "companies": [
+          { "companyId": "550e8400-e29b-41d4-a716-446655440000", "relation": "employee", "isPrimary": true }
+        ]
+      }
+    ]
+  }'
+```
+
+## Response
+
+### Success (200)
+
+```json
+{
+  "success": true,
+  "summary": { "total": 1, "success": 1, "failed": 0 },
+  "results": [
+    {
+      "externalId": "hubspot_contact_12345",
+      "contactId": "550e8400-e29b-41d4-a716-446655440001",
+      "status": "success"
+    }
+  ]
+}
+```
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400` | Bad Request - Invalid input |
+| `401` | Unauthorized - Missing or invalid token |
+| `403` | Forbidden - Insufficient permissions |
+| `500` | Internal Server Error |
+
+```json
+{
+  "error": "Error message here",
+  "details": "Additional details if available"
+}
+```

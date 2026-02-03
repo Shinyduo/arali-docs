@@ -4,10 +4,39 @@ api: 'DELETE /api/v1/contacts/{id}'
 description: 'Delete a contact'
 ---
 
+## Overview
+
+Deletes a contact and its associated emails, phones, and company associations.
+
+**Required scope:** `contacts:delete`
+
 ## Path Parameters
 
 <ParamField path="id" type="string" required>
   Contact UUID
 </ParamField>
 
+## Example Request
 
+```bash
+curl -X DELETE "https://api.arali.ai/api/v1/contacts/550e8400-e29b-41d4-a716-446655440001" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Contact deleted successfully",
+  "deletedId": "550e8400-e29b-41d4-a716-446655440001"
+}
+```
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401` | Unauthorized - Missing or invalid token |
+| `403` | Forbidden - Insufficient permissions |
+| `404` | Not Found - Contact doesn't exist |

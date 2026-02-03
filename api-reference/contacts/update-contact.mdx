@@ -4,6 +4,12 @@ api: 'PUT /api/v1/contacts/{id}'
 description: 'Update a single contact'
 ---
 
+## Overview
+
+Updates an existing contact by ID.
+
+**Required scope:** `contacts:write`
+
 ## Path Parameters
 
 <ParamField path="id" type="string" required>
@@ -13,27 +19,28 @@ description: 'Update a single contact'
 ## Request Body
 
 <ParamField body="fullName" type="string">
-  Contact's full name
-</ParamField>
-
-<ParamField body="primaryEmail" type="string">
-  Primary email address
-</ParamField>
-
-<ParamField body="primaryPhone" type="string">
-  Primary phone number
+  Contact's full name (`string` or `null`)
 </ParamField>
 
 <ParamField body="title" type="string">
-  Job title
+  Job title (`string` or `null`)
+</ParamField>
+
+<ParamField body="ownerUserId" type="string">
+  Owner user UUID (`uuid` or `null`)
 </ParamField>
 
 <ParamField body="emails" type="array">
-  List of email objects
+  List of email objects (`{ email, isPrimary?, label? }`)
 </ParamField>
 
 <ParamField body="phones" type="array">
-  List of phone objects
+  List of phone objects (`{ phone, isPrimary?, label? }`)
+</ParamField>
+
+<ParamField body="companies" type="array">
+  List of company association objects (`{ companyId, relation?, isPrimary?, attributes? }`).
+  Valid `relation` values: `employee`, `decision_maker`, `champion`, `end_user`, `influencer`.
 </ParamField>
 
 <ParamField body="attributes" type="object">
@@ -44,4 +51,46 @@ description: 'Update a single contact'
   Custom field values
 </ParamField>
 
+<Info>
+  **Email & Phone behavior**
+  - Only one email can be `isPrimary: true` per contact (same for phone numbers).
+  - If multiple entries are sent as primary, only the first is kept as primary.
+  - If a new email/phone is set as primary, the existing primary is automatically set to `isPrimary: false`.
+</Info>
 
+## Example Request
+
+```bash
+curl -X PUT "https://api.arali.ai/api/v1/contacts/550e8400-e29b-41d4-a716-446655440001" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullName": "John Doe Updated",
+    "title": "Senior VP of Engineering",
+    "emails": [
+      { "email": "john.new@acme.com", "isPrimary": true, "label": "Work" }
+    ]
+  }'
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "fullName": "John Doe Updated",
+    "title": "Senior VP of Engineering"
+  }
+}
+```
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400` | Bad Request - Invalid input |
+| `401` | Unauthorized - Missing or invalid token |
+| `403` | Forbidden - Insufficient permissions |
+| `404` | Not Found - Contact doesn't exist |

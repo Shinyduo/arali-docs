@@ -186,7 +186,7 @@ components:
           type: object
           description: Custom field values
 
-    Contact:
+    ContactUpsert:
       type: object
       required:
         - externalId
@@ -200,16 +200,6 @@ components:
           nullable: true
           description: Contact's full name
           example: "John Doe"
-        primaryEmail:
-          type: string
-          nullable: true
-          description: Primary email address
-          example: "john.doe@acme.com"
-        primaryPhone:
-          type: string
-          nullable: true
-          description: Primary phone number
-          example: "+1-555-123-4567"
         title:
           type: string
           nullable: true
@@ -219,10 +209,13 @@ components:
           type: string
           format: uuid
           nullable: true
+          description: Owner user UUID
         emails:
           type: array
           items:
             type: object
+            required:
+              - email
             properties:
               email:
                 type: string
@@ -231,10 +224,13 @@ components:
                 default: false
               label:
                 type: string
+                nullable: true
         phones:
           type: array
           items:
             type: object
+            required:
+              - phone
             properties:
               phone:
                 type: string
@@ -243,17 +239,90 @@ components:
                 default: false
               label:
                 type: string
+                nullable: true
         companies:
           type: array
           items:
             type: object
+            required:
+              - companyId
             properties:
               companyId:
                 type: string
                 format: uuid
               relation:
                 type: string
-                enum: [employee, consultant, agency, partner, contractor, other]
+                enum: [employee, decision_maker, champion, end_user, influencer]
+                default: employee
+              isPrimary:
+                type: boolean
+                default: false
+              attributes:
+                type: object
+        attributes:
+          type: object
+        properties:
+          type: object
+
+    ContactUpdate:
+      type: object
+      properties:
+        fullName:
+          type: string
+          nullable: true
+          description: Contact's full name
+        title:
+          type: string
+          nullable: true
+          description: Job title
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Owner user UUID
+        emails:
+          type: array
+          items:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+              isPrimary:
+                type: boolean
+                default: false
+              label:
+                type: string
+                nullable: true
+        phones:
+          type: array
+          items:
+            type: object
+            required:
+              - phone
+            properties:
+              phone:
+                type: string
+              isPrimary:
+                type: boolean
+                default: false
+              label:
+                type: string
+                nullable: true
+        companies:
+          type: array
+          items:
+            type: object
+            required:
+              - companyId
+            properties:
+              companyId:
+                type: string
+                format: uuid
+              relation:
+                type: string
+                enum: [employee, decision_maker, champion, end_user, influencer]
                 default: employee
               isPrimary:
                 type: boolean
@@ -291,7 +360,7 @@ components:
           description: External ID of the account
         relation:
           type: string
-          enum: [employee, consultant, contractor, partner, agency, other]
+          enum: [employee, decision_maker, champion, end_user, influencer]
           default: employee
         isPrimary:
           type: boolean
@@ -830,13 +899,11 @@ paths:
                 contacts:
                   type: array
                   items:
-                    $ref: '#/components/schemas/Contact'
+                    $ref: '#/components/schemas/ContactUpsert'
             example:
               contacts:
                 - externalId: "contact_12345"
                   fullName: "John Doe"
-                  primaryEmail: "john.doe@acme.com"
-                  primaryPhone: "+1-555-123-4567"
                   title: "VP of Engineering"
                   emails:
                     - email: "john.doe@acme.com"
@@ -846,6 +913,10 @@ paths:
                     - phone: "+1-555-123-4567"
                       isPrimary: true
                       label: "Mobile"
+                  companies:
+                    - companyId: "550e8400-e29b-41d4-a716-446655440000"
+                      relation: "employee"
+                      isPrimary: true
                   attributes:
                     linkedin: "https://linkedin.com/in/johndoe"
                     timezone: "America/New_York"
@@ -871,6 +942,23 @@ paths:
         - Contacts
       security:
         - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+            maximum: 100
+          description: "Number of contacts to return (max: 100)"
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: Number of contacts to skip
       responses:
         '200':
           description: List of contacts
@@ -927,7 +1015,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Contact'
+              $ref: '#/components/schemas/ContactUpdate'
       responses:
         '200':
           description: Contact updated
