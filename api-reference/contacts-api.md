@@ -62,7 +62,6 @@ Batch create or update multiple contacts. Uses upsert behavior based on `externa
 | `ownerUserId` | string (UUID) \| null | No | Internal user ID who owns this contact |
 | `emails` | array | No | Array of email objects |
 | `phones` | array | No | Array of phone objects |
-| `companies` | array | No | Array of company association objects |
 | `attributes` | object | No | Custom key-value attributes |
 | `properties` | object | No | Custom field values (must match field_definitions) |
 
@@ -82,20 +81,15 @@ Batch create or update multiple contacts. Uses upsert behavior based on `externa
 | `isPrimary` | boolean | No | Whether this is the primary phone (default: false) |
 | `label` | string | No | Label (e.g., "Mobile", "Office") |
 
-#### Company Association Object
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `companyId` | string (UUID) | Yes | Internal company ID |
-| `relation` | enum | No | `employee`, `decision_maker`, `champion`, `end_user`, `influencer` (default: `employee`) |
-| `isPrimary` | boolean | No | Primary company flag (default: false) |
-| `attributes` | object | No | Relationship attributes |
-
 #### Important Notes (Email & Phone)
 
 - Only one email can be `isPrimary: true` per contact (same for phone numbers).
 - If multiple entries are passed with `isPrimary: true`, only the first is set as primary.
 - When a new email/phone is set as primary, the existing primary is automatically set to `isPrimary: false`.
+
+#### Important Notes (Companies)
+
+- Company relationships are managed via the Associations API; the Contacts API does not accept a `companies` array in create/update requests.
 
 #### Example Request
 
@@ -115,9 +109,6 @@ curl -X POST https://api.arali.ai/api/v1/contacts \
         ],
         "phones": [
           { "phone": "+1-555-123-4567", "isPrimary": true, "label": "Mobile" }
-        ],
-        "companies": [
-          { "companyId": "550e8400-e29b-41d4-a716-446655440000", "relation": "employee", "isPrimary": true }
         ],
         "attributes": {
           "linkedin": "https://linkedin.com/in/johndoe",
@@ -206,6 +197,8 @@ curl -X GET https://api.arali.ai/api/v1/contacts/550e8400-e29b-41d4-a716-4466554
 
 #### Example Response
 
+If present, `companies` reflects relationships created via the Associations API.
+
 ```json
 {
   "success": true,
@@ -255,7 +248,6 @@ Update a single contact by ID.
 | `ownerUserId` | string (UUID) \| null | Owner user ID |
 | `emails` | array | Email objects (will be upserted) |
 | `phones` | array | Phone objects (will be upserted) |
-| `companies` | array | Company association objects |
 | `attributes` | object | Custom attributes |
 | `properties` | object | Custom field values |
 

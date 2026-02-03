@@ -10,6 +10,10 @@ Create new contacts or update existing ones in a single request. Contacts are up
 
 **Required scope:** `contacts:write`
 
+<Note>
+  Company associations are managed via the Associations API. This endpoint does not accept a `companies` array in the request body.
+</Note>
+
 ## Request Body
 
 <ParamField body="contacts" type="array" required>
@@ -38,11 +42,6 @@ Create new contacts or update existing ones in a single request. Contacts are up
     
     <ParamField body="phones" type="array">
       List of phone objects (`{ phone, isPrimary?, label? }`). `phone` is required.
-    </ParamField>
-    
-    <ParamField body="companies" type="array">
-      List of company association objects (`{ companyId, relation?, isPrimary?, attributes? }`).
-      Valid `relation` values: `employee`, `decision_maker`, `champion`, `end_user`, `influencer`.
     </ParamField>
     
     <ParamField body="attributes" type="object">
@@ -81,9 +80,7 @@ curl -X POST https://api.arali.ai/api/v1/contacts \
         "phones": [
           { "phone": "+1-555-123-4567", "isPrimary": true, "label": "Mobile" }
         ],
-        "companies": [
-          { "companyId": "550e8400-e29b-41d4-a716-446655440000", "relation": "employee", "isPrimary": true }
-        ]
+        "attributes": { "timezone": "America/New_York" }
       }
     ]
   }'

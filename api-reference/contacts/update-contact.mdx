@@ -10,6 +10,10 @@ Updates an existing contact by ID.
 
 **Required scope:** `contacts:write`
 
+<Note>
+  Company associations are managed via the Associations API. This endpoint does not accept a `companies` array in the request body.
+</Note>
+
 ## Path Parameters
 
 <ParamField path="id" type="string" required>
@@ -36,11 +40,6 @@ Updates an existing contact by ID.
 
 <ParamField body="phones" type="array">
   List of phone objects (`{ phone, isPrimary?, label? }`)
-</ParamField>
-
-<ParamField body="companies" type="array">
-  List of company association objects (`{ companyId, relation?, isPrimary?, attributes? }`).
-  Valid `relation` values: `employee`, `decision_maker`, `champion`, `end_user`, `influencer`.
 </ParamField>
 
 <ParamField body="attributes" type="object">

@@ -10,6 +10,10 @@ Retrieves a single contact by ID.
 
 **Required scope:** `contacts:read`
 
+<Note>
+  If present, `companies` reflects relationships created via the Associations API.
+</Note>
+
 ## Path Parameters
 
 <ParamField path="id" type="string" required>
@@ -61,4 +65,3 @@ Returns a contact record, including emails, phones, and company associations (if
 | `401` | Unauthorized - Missing or invalid token |
 | `403` | Forbidden - Insufficient permissions |
 | `404` | Not Found - Contact doesn't exist |
-

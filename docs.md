@@ -249,9 +249,9 @@ Manage contact records for your enterprise.
 |--------|----------|-------------|----------------|
 | POST | `/api/v1/contacts` | Batch create/update contacts | `contacts:write` |
 | GET | `/api/v1/contacts` | List all contacts | `contacts:read` |
-| GET | `/api/v1/contacts/:id` | Get single contact (with emails, phones, companies) | `contacts:read` |
-| PUT | `/api/v1/contacts/:id` | Update single contact | `contacts:write` |
-| DELETE | `/api/v1/contacts/:id` | Delete a contact | `contacts:delete` |
+| GET | `/api/v1/contacts/{id}` | Get single contact (with emails, phones, companies) | `contacts:read` |
+| PUT | `/api/v1/contacts/{id}` | Update single contact | `contacts:write` |
+| DELETE | `/api/v1/contacts/{id}` | Delete a contact | `contacts:delete` |
 | GET | `/api/v1/contacts/schema` | Get API schema | - |
 
 ### Contact Fields
@@ -264,7 +264,6 @@ Manage contact records for your enterprise.
 | `ownerUserId` | UUID \| null | No | Owner user ID |
 | `emails` | array | No | List of emails (see Email Object) |
 | `phones` | array | No | List of phones (see Phone Object) |
-| `companies` | array | No | List of company associations (see Company Association Object) |
 | `attributes` | object | No | Custom key-value attributes |
 | `properties` | object | No | Custom field values (maps to `field_values` table) |
 
@@ -284,15 +283,6 @@ Manage contact records for your enterprise.
 | `isPrimary` | boolean | No | Is primary phone (default: `false`) |
 | `label` | string | No | Label (e.g., "Mobile", "Office") |
 
-#### Company Association Object
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `companyId` | UUID | Yes | Company UUID |
-| `relation` | enum | No | `employee`, `decision_maker`, `champion`, `end_user`, `influencer` (default: `employee`) |
-| `isPrimary` | boolean | No | Is primary company (default: `false`) |
-| `attributes` | object | No | Relationship attributes |
-
 ### Important Notes
 
 #### Email & Phone Behavior
@@ -300,6 +290,10 @@ Manage contact records for your enterprise.
 - Only one email can be `isPrimary: true` per contact (same for phone numbers).
 - If multiple entries are passed with `isPrimary: true`, only the first is set as primary.
 - When a new email/phone is set as primary, the existing primary is automatically set to `isPrimary: false`.
+
+#### Company Associations
+
+- Company relationships are managed via the Associations API; the Contacts API does not accept a `companies` array in create/update requests.
 
 ### cURL Examples
 
@@ -321,9 +315,6 @@ curl -X POST 'https://your-api-domain.com/api/v1/contacts' \
         ],
         "phones": [
           { "phone": "+1-555-123-4567", "isPrimary": true, "label": "Mobile" }
-        ],
-        "companies": [
-          { "companyId": "550e8400-e29b-41d4-a716-446655440000", "relation": "employee", "isPrimary": true }
         ],
         "attributes": {
           "linkedin": "https://linkedin.com/in/johndoe",
