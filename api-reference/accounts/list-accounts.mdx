@@ -4,4 +4,20 @@ api: 'GET /api/v1/accounts'
 description: 'Get all accounts for your enterprise'
 ---
 
+## Query Parameters
+
+<ParamField query="externalId" type="string">
+  Filter to find a specific account by your custom internal ID (stored in `externalId` field).
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of account objects
+</ResponseField>
+
 

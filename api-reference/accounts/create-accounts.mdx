@@ -20,9 +20,7 @@ There are **two ways** to link an account to its parent company:
           "companyId": "550e8400-e29b-41d4-a716-446655440000",
           "externalId": "vitally_acc_12345",
           "domain": "acme.com",
-          "accountType": "enterprise",
-          "arr": 120000,
-          "healthScore": 85
+          "accountType": "enterprise"
         }
       ]
     }
@@ -38,6 +36,7 @@ There are **two ways** to link an account to its parent company:
     
     ```json
     {
+      "providerKey": "hubspot",
       "accounts": [
         {
           "name": "Acme Enterprise Account",
@@ -46,8 +45,6 @@ There are **two ways** to link an account to its parent company:
           "externalAccountId": "SF_ACC_001",
           "domain": "acme.com",
           "accountType": "enterprise",
-          "arr": 120000,
-          "healthScore": 85,
           "metadata": {
             "tier": "premium",
             "contract_start": "2024-01-01"
@@ -71,6 +68,12 @@ There are **two ways** to link an account to its parent company:
 
 ## Request Body
 
+<ParamField body="providerKey" type="string">
+  Optional. The integration provider key (e.g. `hubspot`, `salesforce`). 
+  If provided, the API will look for existing mappings specific to this provider. 
+  If omitted, it defaults to a generic mapping.
+</ParamField>
+
 <ParamField body="accounts" type="array" required>
   Array of account objects to create or update
   
@@ -87,18 +90,21 @@ There are **two ways** to link an account to its parent company:
       **External company ID**. Use when syncing from integrations. Mutually exclusive with `companyId`.
     </ParamField>
     
-    <ParamField body="externalId" type="string" required>
-      **Primary External ID**. Used for integration mapping lookup.
+    <ParamField body="externalId" type="string">
+      **Integration Source ID**. The ID of this record in the source system (e.g. HubSpot Company ID).
+      *Required if `externalAccountId` is not provided.*
     </ParamField>
     
     <ParamField body="externalAccountId" type="string">
-      **Secondary External ID**. Stored on the record. Defaults to `externalId` if not provided.
+      **Custom Account ID**. Your internal unique ID (e.g. `ACC_123`).
+      *Required if `externalId` is not provided.*
     </ParamField>
 
     <Info>
       **Upsert Logic:**
-      1. **Mapping Lookup**: Checks for mapping using `externalId`.
-      2. **DB Constraint**: Validates/Upserts on `externalAccountId` (defaults to `externalId`).
+      You must provide either `externalId` or `externalAccountId` (or both).
+      1. **Mapping Lookup**: Checks for mapping using `externalId` (or `externalAccountId` if missing).
+      2. **DB Constraint**: Validates/Upserts on `externalAccountId` (or `externalId` if missing).
       3. **Company Link**: Must resolve either `companyId` or `externalCompanyId` to an existing parent company.
     </Info>
     
@@ -116,14 +122,6 @@ There are **two ways** to link an account to its parent company:
     
     <ParamField body="ownerUserId" type="string">
       Owner user UUID
-    </ParamField>
-    
-    <ParamField body="healthScore" type="integer">
-      Health score (0-100)
-    </ParamField>
-    
-    <ParamField body="arr" type="integer">
-      Annual Recurring Revenue
     </ParamField>
     
     <ParamField body="metadata" type="object">
