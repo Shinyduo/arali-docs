@@ -54,9 +54,11 @@ There are **two ways** to link an account to its parent company:
     }
     ```
     
-    - `externalCompanyId`: The external ID of the parent company (e.g., "hubspot_company_12345")
-    - The API will look this up in `integration_object_mapping` to find the internal company UUID
-    - The company **must already exist** with this external ID
+    - `externalCompanyId`: The external ID of the parent company. This can be either:
+      1. The **Integration Source ID** (e.g. `hubspot_company_12345`) linked via mapping.
+      2. The **Custom Organization ID** (e.g. `ORG_123`) stored on the company record.
+    - The API looks for a match in that order.
+    - The company **must already exist**.
     - `externalId`: The unique ID for this account from your integration (stored in mapping table)
     - `externalAccountId`: Optional secondary ID stored directly on the account record (used for upsert)
   </Accordion>
@@ -105,7 +107,7 @@ There are **two ways** to link an account to its parent company:
       You must provide either `externalId` or `externalAccountId` (or both).
       1. **Mapping Lookup**: Checks for mapping using `externalId` (or `externalAccountId` if missing).
       2. **DB Constraint**: Validates/Upserts on `externalAccountId` (or `externalId` if missing).
-      3. **Company Link**: Must resolve either `companyId` or `externalCompanyId` to an existing parent company.
+      3. **Company Link**: Must resolve `companyId` (Internal UUID) OR `externalCompanyId` (Integration ID or Custom ID) to an existing parent company.
     </Info>
     
     <ParamField body="domain" type="string">
