@@ -6,6 +6,12 @@ description: 'Batch create or update company records'
 
 ## Request Body
 
+<ParamField body="providerKey" type="string">
+  Optional. The integration provider key (e.g. `hubspot`, `salesforce`). 
+  If provided, the API will look for existing mappings specific to this provider. 
+  If omitted, it defaults to a generic mapping.
+</ParamField>
+
 <ParamField body="companies" type="array" required>
   Array of company objects to create or update
   
@@ -14,8 +20,9 @@ description: 'Batch create or update company records'
       Company display name
     </ParamField>
     
-    <ParamField body="externalId" type="string" required>
-      **Primary External ID**. Used for integration mapping lookup.
+    <ParamField body="externalId" type="string">
+      **Integration Source ID**. The ID of this record in the source system (e.g. HubSpot Company ID). 
+      *Required if `externalCompanyId` is not provided.*
     </ParamField>
     
     <ParamField body="domain" type="string">
@@ -23,14 +30,16 @@ description: 'Batch create or update company records'
     </ParamField>
     
     <ParamField body="externalCompanyId" type="string">
-      **Secondary External ID**. Stored on the record. Defaults to `externalId` if not provided.
+      **Custom Organization ID**. Your internal unique ID (e.g. `ORG_123`). 
+      *Required if `externalId` is not provided.*
+      If you provide this but not `externalId`, this value is used as the integration key.
     </ParamField>
 
     <Info>
       **Upsert Logic:**
-      1. **Mapping Lookup**: Checks for an existing mapping using `externalId`. If found, updates the linked company.
-      2. **DB Constraint**: If no mapping is found, attempts to insert. If a company with the same `externalCompanyId` exists, it updates that record (and creates a new mapping).
-      3. **Insert**: If neither is found, a new company is created.
+      You must provide either `externalId` or `externalCompanyId` (or both).
+      1. **Mapping Identity**: If `externalId` is missing, `externalCompanyId` is used as the key to identify/map the record.
+      2. **DB Constraint**: The system upserts based on `externalCompanyId`.
     </Info>
     
     <ParamField body="stageKey" type="string" default="lead">
@@ -41,18 +50,9 @@ description: 'Batch create or update company records'
       Owner user UUID
     </ParamField>
     
-    <ParamField body="healthScore" type="integer">
-      Health score (0-100)
-    </ParamField>
-    
-    <ParamField body="arr" type="integer">
-      Annual Recurring Revenue
-    </ParamField>
-    
     <ParamField body="attributes" type="object">
       Custom key-value attributes
     </ParamField>
-    
     <ParamField body="properties" type="object">
       Custom field values (maps to field_values table)
     </ParamField>

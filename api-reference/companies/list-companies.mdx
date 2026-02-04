@@ -4,6 +4,12 @@ api: 'GET /api/v1/companies'
 description: 'Get all companies for your enterprise'
 ---
 
+## Query Parameters
+
+<ParamField query="externalCompanyId" type="string">
+  Filter to find a specific company by your custom internal ID.
+</ParamField>
+
 ## Response
 
 <ResponseField name="success" type="boolean">
