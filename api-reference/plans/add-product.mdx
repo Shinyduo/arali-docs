@@ -54,7 +54,7 @@ description: 'Add a product to a specific plan by key'
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/plans/{key}/products \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "productKey": "advanced-search",

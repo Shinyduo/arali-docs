@@ -4,7 +4,7 @@ This document provides comprehensive documentation for all public APIs exposed u
 
 **Base URL:** `https://your-api-domain.com`  
 **API Version:** `1.0.0`  
-**Authentication:** Bearer Token
+**Authentication:** Bearer JWT or Api-Key
 
 ---
 
@@ -23,17 +23,26 @@ This document provides comprehensive documentation for all public APIs exposed u
 
 ## Authentication
 
-All API endpoints require authentication via Bearer Token.
+All API endpoints require authentication via either JWT bearer tokens or static API keys.
 
 **Header Format:**
 ```
-Authorization: Bearer <your-api-token>
+Authorization: Bearer <JWT>
+Authorization: Api-Key <static_key>
 ```
 
-The token automatically provides:
-- `enterpriseId` - Your enterprise identifier
-- `integrationAccountId` - Integration account context
-- `scopes` - Authorized permissions
+Authentication context:
+- JWT (`Bearer`): `enterpriseId` is read from JWT claims (`scopes` claim is optional).
+- Static key (`Api-Key`): `enterpriseId` and `scopes` are read from your public API key record.
+
+**Examples:**
+```bash
+# JWT
+curl -H 'Authorization: Bearer YOUR_JWT' 'https://your-api-domain.com/api/v1/companies'
+
+# Static API Key
+curl -H 'Authorization: Api-Key YOUR_STATIC_KEY' 'https://your-api-domain.com/api/v1/companies'
+```
 
 ---
 
@@ -80,7 +89,7 @@ Manage company records for your enterprise.
 
 ```bash
 curl -X POST 'https://your-api-domain.com/api/v1/companies' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "companies": [
@@ -103,21 +112,21 @@ curl -X POST 'https://your-api-domain.com/api/v1/companies' \
 
 ```bash
 curl -X GET 'https://your-api-domain.com/api/v1/companies' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 #### Get Single Company
 
 ```bash
 curl -X GET 'https://your-api-domain.com/api/v1/companies/COMPANY_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 #### Update Single Company
 
 ```bash
 curl -X PUT 'https://your-api-domain.com/api/v1/companies/COMPANY_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "name": "Acme Corp Updated",
@@ -130,7 +139,7 @@ curl -X PUT 'https://your-api-domain.com/api/v1/companies/COMPANY_UUID' \
 
 ```bash
 curl -X DELETE 'https://your-api-domain.com/api/v1/companies/COMPANY_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 ---
@@ -179,7 +188,7 @@ Manage account records linked to companies.
 
 ```bash
 curl -X POST 'https://your-api-domain.com/api/v1/accounts' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "accounts": [
@@ -207,21 +216,21 @@ curl -X POST 'https://your-api-domain.com/api/v1/accounts' \
 
 ```bash
 curl -X GET 'https://your-api-domain.com/api/v1/accounts' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 #### Get Single Account
 
 ```bash
 curl -X GET 'https://your-api-domain.com/api/v1/accounts/ACCOUNT_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 #### Update Single Account
 
 ```bash
 curl -X PUT 'https://your-api-domain.com/api/v1/accounts/ACCOUNT_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "name": "Acme Enterprise Account Updated",
@@ -234,7 +243,7 @@ curl -X PUT 'https://your-api-domain.com/api/v1/accounts/ACCOUNT_UUID' \
 
 ```bash
 curl -X DELETE 'https://your-api-domain.com/api/v1/accounts/ACCOUNT_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 ---
@@ -249,9 +258,9 @@ Manage contact records for your enterprise.
 |--------|----------|-------------|----------------|
 | POST | `/api/v1/contacts` | Batch create/update contacts | `contacts:write` |
 | GET | `/api/v1/contacts` | List all contacts | `contacts:read` |
-| GET | `/api/v1/contacts/{id}` | Get single contact (with emails, phones, companies) | `contacts:read` |
-| PUT | `/api/v1/contacts/{id}` | Update single contact | `contacts:write` |
-| DELETE | `/api/v1/contacts/{id}` | Delete a contact | `contacts:delete` |
+| GET | `/api/v1/contacts/:id` | Get single contact (with emails, phones, companies) | `contacts:read` |
+| PUT | `/api/v1/contacts/:id` | Update single contact | `contacts:write` |
+| DELETE | `/api/v1/contacts/:id` | Delete a contact | `contacts:delete` |
 | GET | `/api/v1/contacts/schema` | Get API schema | - |
 
 ### Contact Fields
@@ -260,10 +269,13 @@ Manage contact records for your enterprise.
 |-------|------|----------|-------------|
 | `externalId` | string | Yes | External unique ID from integration source |
 | `fullName` | string \| null | No | Contact's full name |
+| `primaryEmail` | string \| null | No | Primary email address |
+| `primaryPhone` | string \| null | No | Primary phone number |
 | `title` | string \| null | No | Job title |
 | `ownerUserId` | UUID \| null | No | Owner user ID |
 | `emails` | array | No | List of emails (see Email Object) |
 | `phones` | array | No | List of phones (see Phone Object) |
+| `companies` | array | No | List of company associations (see Company Association Object) |
 | `attributes` | object | No | Custom key-value attributes |
 | `properties` | object | No | Custom field values (maps to `field_values` table) |
 
@@ -283,17 +295,14 @@ Manage contact records for your enterprise.
 | `isPrimary` | boolean | No | Is primary phone (default: `false`) |
 | `label` | string | No | Label (e.g., "Mobile", "Office") |
 
-### Important Notes
+#### Company Association Object
 
-#### Email & Phone Behavior
-
-- Only one email can be `isPrimary: true` per contact (same for phone numbers).
-- If multiple entries are passed with `isPrimary: true`, only the first is set as primary.
-- When a new email/phone is set as primary, the existing primary is automatically set to `isPrimary: false`.
-
-#### Company Associations
-
-- Company relationships are managed via the Associations API; the Contacts API does not accept a `companies` array in create/update requests.
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `companyId` | UUID | Yes | Company UUID |
+| `relation` | enum | No | `employee`, `consultant`, `agency`, `partner`, `contractor`, `other` (default: `employee`) |
+| `isPrimary` | boolean | No | Is primary company (default: `false`) |
+| `attributes` | object | No | Relationship attributes |
 
 ### cURL Examples
 
@@ -301,13 +310,15 @@ Manage contact records for your enterprise.
 
 ```bash
 curl -X POST 'https://your-api-domain.com/api/v1/contacts' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "contacts": [
       {
         "externalId": "contact_12345",
         "fullName": "John Doe",
+        "primaryEmail": "john.doe@acme.com",
+        "primaryPhone": "+1-555-123-4567",
         "title": "VP of Engineering",
         "emails": [
           { "email": "john.doe@acme.com", "isPrimary": true, "label": "Work" },
@@ -331,21 +342,21 @@ curl -X POST 'https://your-api-domain.com/api/v1/contacts' \
 
 ```bash
 curl -X GET 'https://your-api-domain.com/api/v1/contacts' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 #### Get Single Contact
 
 ```bash
 curl -X GET 'https://your-api-domain.com/api/v1/contacts/CONTACT_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 #### Update Single Contact
 
 ```bash
 curl -X PUT 'https://your-api-domain.com/api/v1/contacts/CONTACT_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "fullName": "John Doe Jr.",
@@ -360,7 +371,7 @@ curl -X PUT 'https://your-api-domain.com/api/v1/contacts/CONTACT_UUID' \
 
 ```bash
 curl -X DELETE 'https://your-api-domain.com/api/v1/contacts/CONTACT_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 ---
@@ -386,7 +397,7 @@ Create contact-company and contact-account relationships. Supports both external
 | `externalCompanyId` | string | No | External ID of the company (creates `customer_company`; optional if `companyId` provided) |
 | `accountId` | UUID | No | Internal UUID of the account (bypasses mapping lookup and auto-resolves company; optional if `externalAccountId` provided) |
 | `externalAccountId` | string | No | External ID of the account (creates `contact_account` and auto-resolves company; optional if `accountId` provided) |
-| `relation` | enum | No | `employee`, `decision_maker`, `champion`, `end_user`, `influencer` (default: `employee`) |
+| `relation` | enum | No | `employee`, `consultant`, `contractor`, `partner`, `agency`, `other` (default: `employee`) |
 | `isPrimary` | boolean | No | Is primary company for contact (default: `false`) |
 | `role` | string | No | Role for the contact_account association |
 
@@ -412,7 +423,7 @@ Create contact-company and contact-account relationships. Supports both external
 
 ```bash
 curl -X POST 'https://your-api-domain.com/api/v1/associations' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "associations": [
@@ -435,7 +446,7 @@ curl -X POST 'https://your-api-domain.com/api/v1/associations' \
 
 ```bash
 curl -X POST 'https://your-api-domain.com/api/v1/associations' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "associations": [
@@ -458,7 +469,7 @@ curl -X POST 'https://your-api-domain.com/api/v1/associations' \
 
 ```bash
 curl -X POST 'https://your-api-domain.com/api/v1/associations' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "associations": [
@@ -482,6 +493,7 @@ Create and manage call records.
 
 | Method | Endpoint | Description | Required Scope |
 |--------|----------|-------------|----------------|
+| POST | `/api/v1/calls` | Batch create call records | `calls:write` |
 | GET | `/api/v1/calls` | List all calls | `calls:read` |
 | GET | `/api/v1/calls/:id` | Get single call | `calls:read` |
 | GET | `/api/v1/calls/schema` | Get API schema | - |
@@ -508,18 +520,49 @@ Create and manage call records.
 
 ### cURL Examples
 
+#### Create Calls (Batch)
+
+```bash
+curl -X POST 'https://your-api-domain.com/api/v1/calls' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "calls": [
+      {
+        "externalCallId": "call_12345",
+        "direction": "inbound",
+        "status": "completed",
+        "fromNumber": "+1-555-123-4567",
+        "toNumber": "+1-555-987-6543",
+        "durationSeconds": 300,
+        "startTimestamp": "2024-01-15T10:00:00Z",
+        "endTimestamp": "2024-01-15T10:05:00Z",
+        "recordingUrl": "https://recordings.example.com/call_12345.mp3",
+        "customer": {
+          "phone": "+1-555-123-4567",
+          "name": "John Doe",
+          "email": "john.doe@acme.com"
+        },
+        "title": "Sales Follow-up Call"
+      }
+    ]
+  }'
+```
+
+> **Note:** `providerKey` is optional and defaults to `"api"` if not provided.
+
 #### List All Calls
 
 ```bash
 curl -X GET 'https://your-api-domain.com/api/v1/calls' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 #### Get Single Call
 
 ```bash
 curl -X GET 'https://your-api-domain.com/api/v1/calls/CALL_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 ---
@@ -532,6 +575,7 @@ Create and manage meeting records.
 
 | Method | Endpoint | Description | Required Scope |
 |--------|----------|-------------|----------------|
+| POST | `/api/v1/meetings` | Create/update a meeting | `meetings:write` |
 | GET | `/api/v1/meetings` | List all meetings | `meetings:read` |
 | GET | `/api/v1/meetings/:id` | Get single meeting | `meetings:read` |
 | DELETE | `/api/v1/meetings/:id` | Delete/cancel a meeting | `meetings:delete` |
@@ -558,25 +602,45 @@ Create and manage meeting records.
 
 ### cURL Examples
 
+#### Create/Update Meeting
+
+```bash
+curl -X POST 'https://your-api-domain.com/api/v1/meetings' \
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "Weekly Team Sync",
+    "channel": "gmeet",
+    "joinUrl": "https://meet.google.com/abc-defg-hij",
+    "scheduledStartAt": "2024-01-20T10:00:00Z",
+    "scheduledEndAt": "2024-01-20T11:00:00Z",
+    "status": "scheduled",
+    "externalMeetingId": "calendar_event_abc123",
+    "hostEmail": "john@example.com",
+    "participantEmails": ["john@example.com", "jane@example.com"],
+    "type": "internal"
+  }'
+```
+
 #### List All Meetings
 
 ```bash
 curl -X GET 'https://your-api-domain.com/api/v1/meetings' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 #### Get Single Meeting
 
 ```bash
 curl -X GET 'https://your-api-domain.com/api/v1/meetings/MEETING_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 #### Delete/Cancel Meeting
 
 ```bash
 curl -X DELETE 'https://your-api-domain.com/api/v1/meetings/MEETING_UUID' \
-  -H 'Authorization: Bearer YOUR_API_TOKEN'
+  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
 ```
 
 ---

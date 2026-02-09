@@ -17,10 +17,11 @@ The current API version is `v1`. All endpoints are prefixed with `/api/v1`.
 
 ## Authentication
 
-All endpoints require Bearer Token authentication:
+All endpoints require either JWT bearer tokens or static API keys:
 
 ```bash
-Authorization: Bearer <your-api-token>
+Authorization: Bearer <JWT>
+Authorization: Api-Key <static_key>
 ```
 
 See the [Authentication](/authentication) page for more details.

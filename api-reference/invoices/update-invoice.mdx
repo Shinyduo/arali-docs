@@ -66,7 +66,7 @@ description: 'Update an existing invoice by ID'
 
 ```bash
 curl -X PUT https://api.arali.ai/api/v1/invoices/550e8400-e29b-41d4-a716-446655440001 \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "status": "paid",
@@ -79,7 +79,7 @@ curl -X PUT https://api.arali.ai/api/v1/invoices/550e8400-e29b-41d4-a716-4466554
 
 ```bash
 curl -X PUT https://api.arali.ai/api/v1/invoices/550e8400-e29b-41d4-a716-446655440001 \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "status": "void",

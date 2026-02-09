@@ -10,10 +10,11 @@ The Associations API allows you to create relationships between contacts and com
 
 ## Authentication
 
-All endpoints require a Bearer token in the Authorization header:
+All endpoints require either a JWT bearer token or a static API key in the Authorization header:
 
 ```
-Authorization: Bearer <your-api-token>
+Authorization: Bearer <JWT>
+Authorization: Api-Key <static_key>
 ```
 
 ---
@@ -96,7 +97,7 @@ You can use either internal UUIDs or external IDs for all entities.
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/associations \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "associations": [
@@ -119,7 +120,7 @@ When you associate a contact with an account, the system automatically:
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/associations \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "associations": [
@@ -138,7 +139,7 @@ If you already have internal UUIDs, use them directly:
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/associations \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "associations": [
@@ -156,7 +157,7 @@ curl -X POST https://api.arali.ai/api/v1/associations \
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/associations \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "associations": [

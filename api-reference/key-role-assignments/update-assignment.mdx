@@ -39,7 +39,7 @@ description: 'Update a specific internal team assignment'
 ### End a CSM Assignment (Team Member Transition)
 ```bash
 curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "tenure": {
@@ -51,7 +51,7 @@ curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
 ### Change Assigned Team Member
 ```bash
 curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "userEmail": "new.csm@yourcompany.com",

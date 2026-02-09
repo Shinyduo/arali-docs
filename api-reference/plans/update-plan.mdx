@@ -46,7 +46,7 @@ description: 'Update a specific plan by key'
 
 ```bash
 curl -X PUT https://api.arali.ai/api/v1/plans/{key} \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Updated Premium Plan",

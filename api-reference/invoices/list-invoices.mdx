@@ -56,28 +56,28 @@ description: 'List invoices with filters and pagination'
 
 ```bash
 curl -X GET https://api.arali.ai/api/v1/invoices \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 ### List Invoices for a Company (External ID)
 
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/invoices?externalCompanyId=acme-corp-123" \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 ### List Open Invoices
 
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/invoices?status=open" \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 ### List Overdue Invoices (Issued Before Date, Still Open)
 
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/invoices?status=open&issuedBefore=2026-01-01T00:00:00Z" \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 ## Response

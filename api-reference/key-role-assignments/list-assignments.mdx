@@ -27,31 +27,31 @@ description: 'Retrieve all internal team assignments or filter by entity or role
 ### Get All Role Assignments
 ```bash
 curl -X GET https://api.arali.ai/api/v1/key-role-assignments \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 ### Get All Team Members Assigned to a Company
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?entityType=company&externalEntityId=acme-corp" \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 ### Get All Team Members Assigned to an Account
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?entityType=account&externalEntityId=acme-enterprise-account" \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 ### Get All CSM Assignments
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm" \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 ### Get All Companies Assigned to a Specific CSM
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm&userEmail=sarah.jones@yourcompany.com" \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 ## Response

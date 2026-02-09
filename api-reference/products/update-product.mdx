@@ -36,7 +36,7 @@ description: 'Update a specific product'
 
 ```bash
 curl -X PUT https://api.arali.ai/api/v1/products/{key} \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Updated Product Name",

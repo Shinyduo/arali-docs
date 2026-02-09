@@ -46,7 +46,7 @@ description: 'Batch create or update internal team assignments to customer entit
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/key-role-assignments \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "assignments": [

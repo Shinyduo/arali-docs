@@ -12,10 +12,11 @@ The Contacts API allows you to create, read, and update contact records. Contact
 
 ## Authentication
 
-All endpoints require a Bearer token in the Authorization header:
+All endpoints require either a JWT bearer token or a static API key in the Authorization header:
 
 ```
-Authorization: Bearer <your-api-token>
+Authorization: Bearer <JWT>
+Authorization: Api-Key <static_key>
 ```
 
 ---
@@ -95,7 +96,7 @@ Batch create or update multiple contacts. Uses upsert behavior based on `externa
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/contacts \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "contacts": [
@@ -154,7 +155,7 @@ Retrieves a paginated list of contacts.
 
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/contacts?limit=10&offset=0" \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 #### Example Response
@@ -192,7 +193,7 @@ Retrieve a single contact by ID, including emails, phones, and company associati
 
 ```bash
 curl -X GET https://api.arali.ai/api/v1/contacts/550e8400-e29b-41d4-a716-446655440001 \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 #### Example Response
@@ -255,7 +256,7 @@ Update a single contact by ID.
 
 ```bash
 curl -X PUT https://api.arali.ai/api/v1/contacts/550e8400-e29b-41d4-a716-446655440001 \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "CTO",
@@ -289,7 +290,7 @@ Delete a contact by ID.
 
 ```bash
 curl -X DELETE https://api.arali.ai/api/v1/contacts/550e8400-e29b-41d4-a716-446655440001 \
-  -H "Authorization: Bearer YOUR_API_TOKEN"
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 #### Example Response
