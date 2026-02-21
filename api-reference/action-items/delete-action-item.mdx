@@ -1,0 +1,21 @@
+---
+title: 'Delete Action Item'
+api: 'DELETE /api/v1/action-items/{id}'
+description: 'Soft-delete an action item by setting its status to "deleted"'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Action item UUID
+</ParamField>
+
+## Response
+
+Returns `200 OK`. The action item is **not permanently removed** — its `status` is set to `deleted` so historical data is preserved.
+
+<ResponseField name="success" type="boolean" />
+<ResponseField name="data" type="object">
+  <ResponseField name="id" type="string">UUID of the deleted item</ResponseField>
+  <ResponseField name="status" type="string">Will be `deleted`</ResponseField>
+</ResponseField>

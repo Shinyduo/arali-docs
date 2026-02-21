@@ -1,0 +1,52 @@
+---
+title: 'Create Action Item'
+api: 'POST /api/v1/action-items'
+description: 'Create a new action item linked to an interaction'
+---
+
+## Request Body
+
+<ParamField body="interactionId" type="string" required>
+  UUID of the interaction (call, meeting, or thread) this action item belongs to
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Short title / summary of the action item
+</ParamField>
+
+<ParamField body="description" type="string">
+  Longer description or notes
+</ParamField>
+
+<ParamField body="ownerUserId" type="string">
+  UUID of the app user who owns this action item. If not set, the item is unassigned.
+</ParamField>
+
+<ParamField body="participantId" type="string">
+  UUID of the interaction participant this item is linked to
+</ParamField>
+
+<ParamField body="status" type="string" default="todo">
+  One of: `todo`, `in_progress`, `blocked`, `done`, `deleted`
+</ParamField>
+
+<ParamField body="priority" type="string" default="medium">
+  One of: `low`, `medium`, `high`, `blocker`
+</ParamField>
+
+<ParamField body="dueAt" type="string">
+  Due date in ISO 8601 format. Example: `2025-03-01T00:00:00Z`
+</ParamField>
+
+<ParamField body="timestamp" type="string">
+  Transcript timestamp reference in `HH:MM:SS` format (e.g. `00:12:34`)
+</ParamField>
+
+## Response
+
+Returns `201 Created` with the newly created action item object.
+
+<ResponseField name="success" type="boolean" />
+<ResponseField name="data" type="object">
+  The created action item (see [Get Action Item](/api-reference/action-items/get-action-item) for field details)
+</ResponseField>

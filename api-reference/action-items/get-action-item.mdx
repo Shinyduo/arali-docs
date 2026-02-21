@@ -1,0 +1,35 @@
+---
+title: 'Get Action Item'
+api: 'GET /api/v1/action-items/{id}'
+description: 'Get a single action item by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Action item UUID
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean" />
+
+<ResponseField name="data" type="object">
+  <Expandable title="Action Item Object">
+    <ResponseField name="id" type="string">UUID of the action item</ResponseField>
+    <ResponseField name="interactionId" type="string">UUID of the linked interaction</ResponseField>
+    <ResponseField name="enterpriseId" type="string">UUID of your enterprise</ResponseField>
+    <ResponseField name="participantId" type="string | null">UUID of the linked participant</ResponseField>
+    <ResponseField name="ownerUserId" type="string | null">UUID of owning user</ResponseField>
+    <ResponseField name="ownerName" type="string | null">Display name of owner</ResponseField>
+    <ResponseField name="ownerEmail" type="string | null">Email of owner</ResponseField>
+    <ResponseField name="title" type="string">Short title</ResponseField>
+    <ResponseField name="description" type="string | null">Longer description</ResponseField>
+    <ResponseField name="dueAt" type="string | null">Due date (ISO 8601)</ResponseField>
+    <ResponseField name="timestamp" type="string | null">Transcript reference (HH:MM:SS)</ResponseField>
+    <ResponseField name="status" type="string">`todo` | `in_progress` | `blocked` | `done` | `deleted`</ResponseField>
+    <ResponseField name="priority" type="string">`low` | `medium` | `high` | `blocker`</ResponseField>
+    <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>
+  </Expandable>
+</ResponseField>

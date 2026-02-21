@@ -1,0 +1,55 @@
+---
+title: 'List Action Items'
+api: 'GET /api/v1/action-items'
+description: 'List action items for your enterprise with optional filters'
+---
+
+## Query Parameters
+
+<ParamField query="interactionId" type="string">
+  Filter by interaction UUID — returns all action items linked to a specific call, meeting, or thread
+</ParamField>
+
+<ParamField query="ownerUserId" type="string">
+  Filter by the UUID of the user who owns the action item
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by status. One of: `todo`, `in_progress`, `blocked`, `done`, `deleted`
+</ParamField>
+
+<ParamField query="priority" type="string">
+  Filter by priority. One of: `low`, `medium`, `high`, `blocker`
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of action item objects
+
+  <Expandable title="Action Item Object">
+    <ResponseField name="id" type="string">UUID of the action item</ResponseField>
+    <ResponseField name="interactionId" type="string">UUID of the linked interaction</ResponseField>
+    <ResponseField name="enterpriseId" type="string">UUID of your enterprise</ResponseField>
+    <ResponseField name="participantId" type="string | null">UUID of the linked participant</ResponseField>
+    <ResponseField name="ownerUserId" type="string | null">UUID of owning user</ResponseField>
+    <ResponseField name="ownerName" type="string | null">Display name of owner</ResponseField>
+    <ResponseField name="ownerEmail" type="string | null">Email of owner</ResponseField>
+    <ResponseField name="title" type="string">Short title of the action item</ResponseField>
+    <ResponseField name="description" type="string | null">Longer description</ResponseField>
+    <ResponseField name="dueAt" type="string | null">Due date (ISO 8601)</ResponseField>
+    <ResponseField name="timestamp" type="string | null">Transcript timestamp reference (HH:MM:SS)</ResponseField>
+    <ResponseField name="status" type="string">One of: `todo`, `in_progress`, `blocked`, `done`, `deleted`</ResponseField>
+    <ResponseField name="priority" type="string">One of: `low`, `medium`, `high`, `blocker`</ResponseField>
+    <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="meta.total" type="integer">
+  Total number of results returned
+</ResponseField>

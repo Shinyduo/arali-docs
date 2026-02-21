@@ -1,0 +1,54 @@
+---
+title: 'Update Action Item'
+api: 'PATCH /api/v1/action-items/{id}'
+description: 'Partially update an existing action item'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Action item UUID
+</ParamField>
+
+## Request Body
+
+All fields are optional — only provided fields will be updated.
+
+<ParamField body="title" type="string">
+  Updated title
+</ParamField>
+
+<ParamField body="description" type="string">
+  Updated description
+</ParamField>
+
+<ParamField body="ownerUserId" type="string">
+  UUID of the new owner user. Pass `null` to unassign.
+</ParamField>
+
+<ParamField body="participantId" type="string">
+  UUID of the linked participant. Pass `null` to unlink.
+</ParamField>
+
+<ParamField body="status" type="string">
+  One of: `todo`, `in_progress`, `blocked`, `done`, `deleted`
+</ParamField>
+
+<ParamField body="priority" type="string">
+  One of: `low`, `medium`, `high`, `blocker`
+</ParamField>
+
+<ParamField body="dueAt" type="string">
+  Updated due date (ISO 8601). Pass `null` to clear.
+</ParamField>
+
+<ParamField body="timestamp" type="string">
+  Updated transcript reference (`HH:MM:SS`). Pass `null` to clear.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean" />
+<ResponseField name="data" type="object">
+  The updated action item object
+</ResponseField>
