@@ -182,6 +182,13 @@
             ]
         },
         {
+            "group": "Users",
+            "pages": [
+                "api-reference/users/list-users",
+                "api-reference/users/get-user"
+            ]
+        },
+        {
             "group": "Action Items",
             "pages": [
                 "api-reference/action-items/list-action-items",

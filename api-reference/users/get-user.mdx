@@ -1,0 +1,29 @@
+---
+title: 'Get User'
+api: 'GET /api/v1/users/{id}'
+description: 'Get a single user by their ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The UUID of the user to retrieve
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean" />
+
+<ResponseField name="data" type="object">
+  <Expandable title="User Object">
+    <ResponseField name="id" type="string">UUID of the user</ResponseField>
+    <ResponseField name="name" type="string">Display name of the user</ResponseField>
+    <ResponseField name="email" type="string">Email address of the user</ResponseField>
+    <ResponseField name="phone" type="string | null">Phone number of the user</ResponseField>
+    <ResponseField name="provider" type="string | null">Auth provider (e.g. `google`, `local`)</ResponseField>
+    <ResponseField name="orgUnitId" type="string | null">UUID of the org unit this user belongs to</ResponseField>
+    <ResponseField name="orgUnitName" type="string | null">Name of the org unit</ResponseField>
+    <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>
+  </Expandable>
+</ResponseField>

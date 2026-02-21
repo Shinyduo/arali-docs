@@ -1,0 +1,37 @@
+---
+title: 'List Users'
+api: 'GET /api/v1/users'
+description: 'List all users in your enterprise with optional search filtering'
+---
+
+## Query Parameters
+
+<ParamField query="search" type="string">
+  Optional. Case-insensitive partial match against the user's **name** or **email**. Leave blank to return all users.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of user objects
+
+  <Expandable title="User Object">
+    <ResponseField name="id" type="string">UUID of the user</ResponseField>
+    <ResponseField name="name" type="string">Display name of the user</ResponseField>
+    <ResponseField name="email" type="string">Email address of the user</ResponseField>
+    <ResponseField name="phone" type="string | null">Phone number of the user</ResponseField>
+    <ResponseField name="provider" type="string | null">Auth provider (e.g. `google`, `local`)</ResponseField>
+    <ResponseField name="orgUnitId" type="string | null">UUID of the org unit this user belongs to</ResponseField>
+    <ResponseField name="orgUnitName" type="string | null">Name of the org unit</ResponseField>
+    <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="meta.total" type="integer">
+  Total number of users returned
+</ResponseField>
