@@ -180,6 +180,16 @@
                 "api-reference/key-role-assignments/update-assignment",
                 "api-reference/key-role-assignments/delete-assignment"
             ]
+        },
+        {
+            "group": "Action Items",
+            "pages": [
+                "api-reference/action-items/list-action-items",
+                "api-reference/action-items/get-action-item",
+                "api-reference/action-items/create-action-item",
+                "api-reference/action-items/update-action-item",
+                "api-reference/action-items/delete-action-item"
+            ]
         }
     ],
     "footerSocials": {

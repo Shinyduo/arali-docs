@@ -456,6 +456,136 @@ components:
         metadata:
           type: object
 
+    ActionItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique action item ID
+        interactionId:
+          type: string
+          format: uuid
+          description: ID of the linked interaction
+        enterpriseId:
+          type: string
+          format: uuid
+        participantId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Linked participant (optional)
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Owning app user (optional)
+        ownerName:
+          type: string
+          nullable: true
+        ownerEmail:
+          type: string
+          nullable: true
+        title:
+          type: string
+          description: Short title of the action item
+        description:
+          type: string
+          nullable: true
+        dueAt:
+          type: string
+          format: date-time
+          nullable: true
+        timestamp:
+          type: string
+          nullable: true
+          description: Transcript timestamp reference (HH:MM:SS)
+        status:
+          type: string
+          enum: [todo, in_progress, blocked, done, deleted]
+          default: todo
+        priority:
+          type: string
+          enum: [low, medium, high, blocker]
+          default: medium
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ActionItemCreate:
+      type: object
+      required:
+        - interactionId
+        - title
+      properties:
+        interactionId:
+          type: string
+          format: uuid
+          description: UUID of the interaction this action item belongs to
+        participantId:
+          type: string
+          format: uuid
+          nullable: true
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+          description: Short title (required)
+        description:
+          type: string
+          nullable: true
+        dueAt:
+          type: string
+          format: date-time
+          nullable: true
+        timestamp:
+          type: string
+          nullable: true
+          description: Transcript reference (HH:MM:SS)
+        status:
+          type: string
+          enum: [todo, in_progress, blocked, done, deleted]
+          default: todo
+        priority:
+          type: string
+          enum: [low, medium, high, blocker]
+          default: medium
+
+    ActionItemUpdate:
+      type: object
+      properties:
+        participantId:
+          type: string
+          format: uuid
+          nullable: true
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        dueAt:
+          type: string
+          format: date-time
+          nullable: true
+        timestamp:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [todo, in_progress, blocked, done, deleted]
+        priority:
+          type: string
+          enum: [low, medium, high, blocker]
+
     FieldDefinition:
       type: object
       required:
@@ -1447,6 +1577,234 @@ paths:
         '403':
           description: Forbidden - requires fields:write scope
 
+  # Action Items
+  /api/v1/action-items:
+    get:
+      operationId: listActionItems
+      summary: List Action Items
+      description: List action items for your enterprise. Filter by interactionId, ownerUserId, status, or priority.
+      tags:
+        - Action Items
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: interactionId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter by interaction UUID
+        - name: ownerUserId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter by owner user UUID
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [todo, in_progress, blocked, done, deleted]
+          description: Filter by status
+        - name: priority
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [low, medium, high, blocker]
+          description: Filter by priority
+      responses:
+        '200':
+          description: List of action items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ActionItem'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires action_items:read scope
+
+    post:
+      operationId: createActionItem
+      summary: Create Action Item
+      description: Create a new action item linked to an interaction
+      tags:
+        - Action Items
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionItemCreate'
+            example:
+              interactionId: "550e8400-e29b-41d4-a716-446655440000"
+              title: "Follow up with procurement team"
+              description: "Send the updated pricing deck by EOD Friday"
+              ownerUserId: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+              priority: "high"
+              dueAt: "2025-03-07T17:00:00Z"
+      responses:
+        '201':
+          description: Action item created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ActionItem'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires action_items:write scope
+
+  /api/v1/action-items/{id}:
+    get:
+      operationId: getActionItem
+      summary: Get Action Item
+      description: Get a single action item by ID
+      tags:
+        - Action Items
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Action item UUID
+      responses:
+        '200':
+          description: Action item details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ActionItem'
+        '404':
+          description: Action item not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires action_items:read scope
+
+    patch:
+      operationId: updateActionItem
+      summary: Update Action Item
+      description: Partially update an action item. Only provided fields are changed.
+      tags:
+        - Action Items
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Action item UUID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionItemUpdate'
+      responses:
+        '200':
+          description: Action item updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ActionItem'
+        '400':
+          description: Bad request
+        '404':
+          description: Action item not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires action_items:write scope
+
+    delete:
+      operationId: deleteActionItem
+      summary: Delete Action Item
+      description: Soft-delete an action item (sets status to "deleted"). The record is retained for historical purposes.
+      tags:
+        - Action Items
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Action item UUID
+      responses:
+        '200':
+          description: Action item deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      status:
+                        type: string
+                        example: deleted
+        '404':
+          description: Action item not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires action_items:write scope
+
 tags:
   - name: Companies
     description: Manage company records
@@ -1462,3 +1820,5 @@ tags:
     description: Manage meeting records
   - name: Fields
     description: Custom field definitions and values
+  - name: Action Items
+    description: Task and action items linked to interactions
