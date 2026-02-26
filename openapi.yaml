@@ -505,7 +505,8 @@ components:
         interactionId:
           type: string
           format: uuid
-          description: ID of the linked interaction
+          nullable: true
+          description: ID of the linked interaction (optional)
         enterpriseId:
           type: string
           format: uuid
@@ -557,13 +558,13 @@ components:
     ActionItemCreate:
       type: object
       required:
-        - interactionId
         - title
       properties:
         interactionId:
           type: string
           format: uuid
-          description: UUID of the interaction this action item belongs to
+          nullable: true
+          description: UUID of the interaction this action item belongs to (optional)
         participantId:
           type: string
           format: uuid

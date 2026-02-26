@@ -6,8 +6,8 @@ description: 'Create a new action item linked to an interaction'
 
 ## Request Body
 
-<ParamField body="interactionId" type="string" required>
-  UUID of the interaction (call, meeting, or thread) this action item belongs to
+<ParamField body="interactionId" type="string">
+  UUID of the interaction (call, meeting, or thread) this action item belongs to. Optional — can be omitted for standalone action items.
 </ParamField>
 
 <ParamField body="title" type="string" required>
