@@ -1,8 +1,14 @@
 ---
 title: 'List Companies'
 api: 'GET /api/v1/companies'
-description: 'Get all companies for your enterprise'
+description: 'Get all companies for your enterprise with optional filtering and pagination'
 ---
+
+## Overview
+
+Returns a paginated list of companies for your enterprise. Each company in the response is enriched with its **stage details** and **custom field values**.
+
+You can filter companies by stage, custom field values, or external company ID. Multiple filters are combined with AND logic.
 
 ## Query Parameters
 
@@ -10,14 +16,109 @@ description: 'Get all companies for your enterprise'
   Filter to find a specific company by your custom internal ID.
 </ParamField>
 
+<ParamField query="stageKey" type="string">
+  Filter by stage key(s). Supports comma-separated values for multiple stages.
+  Keys must match a `key` in the `stage_definitions` table.
+
+  **Examples:**
+  - `?stageKey=lead` — companies in the "lead" stage
+  - `?stageKey=lead,customer` — companies in either "lead" or "customer" stage
+</ParamField>
+
+<ParamField query="stageId" type="string">
+  Filter by stage definition UUID(s). Supports comma-separated UUIDs.
+  Can be combined with `stageKey` (results are intersected).
+</ParamField>
+
+<ParamField query="fields[fieldKey]" type="string">
+  Filter by custom field values. Replace `fieldKey` with the actual field key
+  from your `field_definitions` table.
+
+  Multiple field filters are **AND-ed** — a company must match **all** specified filters.
+  Matching is **case-insensitive** for text and enum fields.
+
+  **Examples:**
+  - `?fields[tier]=enterprise` — companies where the "tier" field is "enterprise"
+  - `?fields[tier]=enterprise&fields[region]=us` — companies matching both fields
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number for pagination (starts at 1).
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Number of results per page. Maximum is 200.
+</ParamField>
+
 ## Response
 
 <ResponseField name="success" type="boolean">
-  Whether the operation was successful
+  Whether the operation was successful.
 </ResponseField>
 
 <ResponseField name="data" type="array">
-  Array of company objects
+  Array of enriched company objects. Each company includes all standard fields plus:
+
+  <Expandable title="Enriched fields">
+    <ResponseField name="stage" type="object | null">
+      Resolved stage definition details for the company's current stage.
+      <Expandable title="Stage properties">
+        <ResponseField name="id" type="string">Stage definition UUID</ResponseField>
+        <ResponseField name="key" type="string">Stage key (e.g. `"lead"`, `"customer"`)</ResponseField>
+        <ResponseField name="name" type="string">Display name (e.g. `"Lead"`, `"Customer"`)</ResponseField>
+        <ResponseField name="bucket" type="string">Stage bucket: `pre_sale`, `onboarding`, `live`, `paused`, or `churned`</ResponseField>
+        <ResponseField name="scope" type="string">Stage scope: `company` or `account`</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="fieldValues" type="array">
+      Custom field values associated with this company.
+      <Expandable title="Field value properties">
+        <ResponseField name="fieldKey" type="string">Key of the field definition</ResponseField>
+        <ResponseField name="fieldName" type="string">Display name of the field</ResponseField>
+        <ResponseField name="fieldType" type="string">Type: `text`, `number`, `date`, `boolean`, `json`, or `enum`</ResponseField>
+        <ResponseField name="value" type="any">The field value (type depends on `fieldType`)</ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
+<ResponseField name="meta" type="object">
+  Pagination metadata.
+  <Expandable title="Meta properties">
+    <ResponseField name="total" type="integer">Total number of matching companies</ResponseField>
+    <ResponseField name="page" type="integer">Current page number</ResponseField>
+    <ResponseField name="limit" type="integer">Results per page</ResponseField>
+    <ResponseField name="totalPages" type="integer">Total number of pages</ResponseField>
+    <ResponseField name="enterpriseId" type="string">Your enterprise UUID</ResponseField>
+  </Expandable>
+</ResponseField>
 
+## Examples
+
+### Filter by stage
+
+```bash
+# Companies in the "customer" stage
+GET /api/v1/companies?stageKey=customer
+
+# Companies in either "lead" or "qualified" stage
+GET /api/v1/companies?stageKey=lead,qualified
+```
+
+### Filter by custom fields
+
+```bash
+# Companies where tier = "enterprise"
+GET /api/v1/companies?fields[tier]=enterprise
+
+# Companies where tier = "enterprise" AND region = "us"
+GET /api/v1/companies?fields[tier]=enterprise&fields[region]=us
+```
+
+### Combine filters with pagination
+
+```bash
+# Page 2 of customers in the "enterprise" tier, 25 per page
+GET /api/v1/companies?stageKey=customer&fields[tier]=enterprise&page=2&limit=25
+```
