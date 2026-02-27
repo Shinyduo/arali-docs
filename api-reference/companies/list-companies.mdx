@@ -40,6 +40,25 @@ You can filter companies by stage, custom field values, or external company ID. 
   **Examples:**
   - `?fields[tier]=enterprise` — companies where the "tier" field is "enterprise"
   - `?fields[tier]=enterprise&fields[region]=us` — companies matching both fields
+  - `?fields[customer_subtype]=Group Dealer` — companies with a specific enum value
+
+  > [!NOTE]
+  > **Using n8n, axios, or other HTTP clients?** Tools that use the `qs` library (including n8n's HTTP Request node) automatically parse `fields[key]` as a nested object. The API handles both formats:
+  >
+  > **Format 1 — curl / raw URL:**
+  > ```
+  > ?fields[customer_subtype]=Group Dealer
+  > ```
+  >
+  > **Format 2 — n8n "Using JSON" mode** (set the key with brackets as-is):
+  > ```json
+  > {
+  >   "fields[customer_subtype]": "Group Dealer",
+  >   "limit": "200"
+  > }
+  > ```
+  >
+  > Both are supported. To find your exact `fieldKey` values, call `GET /api/v1/fields/definitions?entityType=company`.
 </ParamField>
 
 <ParamField query="page" type="integer" default="1">
