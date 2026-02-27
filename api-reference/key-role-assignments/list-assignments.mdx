@@ -18,6 +18,10 @@ description: 'Retrieve all internal team assignments or filter by entity or role
   Filter by specific customer entity's external ID (requires `entityType` to be set). Ignored if `entityId` is also provided.
 </ParamField>
 
+<ParamField query="roleKey" type="string">
+  Filter by role key (e.g. `csm`, `ae`, `tam`). Looked up from key role definitions — returns a `400` if the role key doesn't exist.
+</ParamField>
+
 <ParamField query="userId" type="string">
   Filter by the internal Arali UUID of the assigned team member.
 </ParamField>
@@ -54,9 +58,9 @@ curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-### Get All Companies Assigned to a Specific CSM
+### Get All Companies Assigned to a Specific Team Member
 ```bash
-curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm&userEmail=sarah.jones@yourcompany.com" \
+curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm&userId=888843a2-8d54-4716-a44b-718ebb6a00f2" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -64,7 +68,7 @@ curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm&userEm
 
 Returns an array of role assignment records with:
 - Assignment ID
-- Role key
+- Key role definition ID (use `roleKey` filter to query by human-readable key)
 - Entity type and internal entity ID
 - Assigned user ID (internal team member)
 - Tenure start and end dates
