@@ -2028,6 +2028,108 @@ paths:
         '403':
           description: Forbidden - requires action_items:write scope
 
+  # Key Role Assignments
+  /api/v1/key-role-assignments:
+    get:
+      operationId: listKeyRoleAssignments
+      summary: List Role Assignments
+      description: Retrieve all internal team role assignments. Filter by entity, role key, or user.
+      tags:
+        - Key Role Assignments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: entityType
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [company, account]
+          description: Filter by entity type
+        - name: entityId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter by internal Arali entity UUID. Takes precedence over externalEntityId if both are provided.
+        - name: externalEntityId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by the entity's external ID (requires entityType). Ignored if entityId is also provided.
+        - name: roleKey
+          in: query
+          required: false
+          schema:
+            type: string
+          description: "Filter by role key (e.g. csm, ae, tam). Returns 400 if the role key doesn't exist."
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter by the internal Arali UUID of the assigned team member.
+      responses:
+        '200':
+          description: List of role assignments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        keyRoleDefinitionId:
+                          type: string
+                          format: uuid
+                        entityType:
+                          type: string
+                          enum: [company, account]
+                        entityId:
+                          type: string
+                          format: uuid
+                        userId:
+                          type: string
+                          format: uuid
+                        startAt:
+                          type: string
+                          format: date-time
+                        endAt:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        reason:
+                          type: string
+                          nullable: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                        updatedAt:
+                          type: string
+                          format: date-time
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+        '400':
+          description: Bad request (e.g. invalid roleKey or missing entityType with externalEntityId)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires key_roles:read scope
+
 tags:
   - name: Companies
     description: Manage company records
@@ -2047,3 +2149,5 @@ tags:
     description: Fetch users within your enterprise
   - name: Action Items
     description: Task and action items linked to interactions
+  - name: Key Role Assignments
+    description: Manage internal team role assignments for companies and accounts
