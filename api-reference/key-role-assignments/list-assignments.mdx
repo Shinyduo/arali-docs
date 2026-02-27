@@ -6,10 +6,6 @@ description: 'Retrieve all internal team assignments or filter by entity or role
 
 ## Query Parameters
 
-<ParamField query="companyId" type="string">
-  Filter by company ID. Returns all role assignments for the company **and** for any accounts belonging to that company.
-</ParamField>
-
 <ParamField query="entityType" type="string">
   Filter by entity type: `company` or `account`
 </ParamField>
@@ -31,12 +27,6 @@ description: 'Retrieve all internal team assignments or filter by entity or role
 ### Get All Role Assignments
 ```bash
 curl -X GET https://api.arali.ai/api/v1/key-role-assignments \
-  -H "Authorization: Api-Key YOUR_STATIC_KEY"
-```
-
-### Get All Assignments for a Company (Including Its Accounts)
-```bash
-curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?companyId=COMPANY_UUID" \
   -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
