@@ -6,10 +6,10 @@ description: 'Create new subscription records with smart conflict handling'
 
 ## Overview
 
-The POST endpoint creates new subscriptions with built-in duplicate prevention. Use the `onExistingSubscription` parameter to control behavior when active subscriptions already exist.
+The POST endpoint creates or updates subscriptions. When `externalSubscriptionId` is provided and matches an existing subscription, the record is **updated** instead of creating a new one (upsert). This eliminates the need to use the PUT endpoint for syncing from external billing providers.
 
 <Note>
-  For updating existing subscriptions by ID, use the [PUT endpoint](/api-reference/subscriptions/update-subscription).
+  **Upsert behavior**: If `externalSubscriptionId` is provided, the API will look for an existing subscription with that external ID. If found, it updates all fields. If not found, it creates a new subscription. When no `externalSubscriptionId` is provided, a new subscription is always created.
 </Note>
 
 ## Request Body
@@ -69,7 +69,7 @@ The POST endpoint creates new subscriptions with built-in duplicate prevention. 
     </ParamField>
     
     <ParamField body="externalSubscriptionId" type="string">
-      External subscription ID from billing provider (e.g., Stripe)
+      External subscription ID from billing provider (e.g., Stripe). **When provided, enables upsert**: if a subscription with this external ID already exists, it will be updated instead of creating a new one.
     </ParamField>
     
     <ParamField body="cancelledAt" type="string">
@@ -467,9 +467,45 @@ POST /api/v1/subscriptions
 
 ---
 
+### Workflow: Sync from Stripe (Upsert by External ID)
+```bash
+# Step 5: Sync subscription from Stripe — creates on first call, updates on subsequent calls
+POST /api/v1/subscriptions
+{
+  "subscriptions": [{
+    "externalCompanyId": "new-customer",
+    "planKey": "premium",
+    "status": "active",
+    "contractValue": 179.99,
+    "externalSubscriptionId": "sub_stripe_12345",
+    "currentPeriodEndAt": "2027-01-22T00:00:00Z",
+    "metadata": { "source": "stripe_webhook" }
+  }]
+}
+# ✅ First call: Creates new subscription
+# ✅ Second call: Updates existing subscription (matched by externalSubscriptionId)
+```
+
+---
+
 ### Workflow: Update Existing Subscription
 ```bash
-# Step 5: Change contract terms (use PUT instead)
+# Option A: Upsert via external ID (recommended for integrations)
+POST /api/v1/subscriptions
+{
+  "subscriptions": [{
+    "externalCompanyId": "new-customer",
+    "planKey": "premium",
+    "status": "active",
+    "contractValue": 179.99,
+    "externalSubscriptionId": "sub_stripe_12345",
+    "currentPeriodEndAt": "2027-01-22T00:00:00Z",
+    "metadata": { "discount": "early_adopter" }
+  }]
+}
+# ✅ Success: Updates existing subscription matched by externalSubscriptionId
+
+# Option B: Update by internal ID (use PUT)
 PUT /api/v1/subscriptions/sub-abc-123
 {
   "contractValue": 179.99,
@@ -523,6 +559,7 @@ PUT /api/v1/subscriptions/sub-abc-123
 
 - **Contract values** are automatically converted to minor currency units (cents for USD, no conversion for JPY)
   - Example: USD 99.99 → stored as 9999 cents
+- **Upsert via `externalSubscriptionId`**: When provided, the API checks for an existing subscription with that external ID. If found, all fields are updated. If not, a new subscription is created. This is ideal for syncing from Stripe, Chargebee, etc.
 - **`entitlementsOverrideJson` is optional**: If omitted, the subscription uses the plan's default entitlements
 - **Entitlement overrides are partial**: You only need to specify the fields you want to override (e.g., just `quantity`)
 - **`product_key` is required** in each override item to identify which product's entitlements to modify

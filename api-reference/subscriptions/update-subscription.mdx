@@ -201,12 +201,13 @@ Returns the updated subscription record:
 | Update contract value | PUT | `PUT /api/v1/subscriptions/{id}` |
 | Modify metadata | PUT | `PUT /api/v1/subscriptions/{id}` |
 | Change entitlements | PUT | `PUT /api/v1/subscriptions/{id}` |
+| Sync from billing provider (Stripe, etc.) | POST | `POST /api/v1/subscriptions` with `externalSubscriptionId` (auto-upsert) |
 | Upgrade plan (cancel old, create new) | POST | `POST /api/v1/subscriptions` with `cancel_and_create` |
 | Create initial subscription | POST | `POST /api/v1/subscriptions` |
 | Add add-on subscription | POST | `POST /api/v1/subscriptions` with `allow_multiple` |
 
 <Tip>
-  **Rule of thumb:** Use PUT when you have the subscription ID and want to modify it in place. Use POST when creating new subscriptions or replacing old ones.
+  **Rule of thumb:** Use PUT when you have the internal subscription ID and want to modify it in place. Use POST with `externalSubscriptionId` to sync from external billing providers — it will automatically create or update. Use POST with `onExistingSubscription` for plan changes.
 </Tip>
 
 ---
