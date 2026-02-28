@@ -32,6 +32,10 @@ description: 'Update a specific product'
   Updated billable candidate status
 </ParamField>
 
+<ParamField body="externalProductId" type="string">
+  External product ID from your billing/payment provider (e.g., Stripe product ID). Set to `null` to clear.
+</ParamField>
+
 ## Example Request
 
 ```bash
@@ -43,7 +47,8 @@ curl -X PUT https://api.arali.ai/api/v1/products/{key} \
     "description": "Updated description",
     "status": "active",
     "kind": "addon",
-    "isBillableCandidate": false
+    "isBillableCandidate": false,
+    "externalProductId": "prod_updated_001"
   }'
 ```
 

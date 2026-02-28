@@ -87,6 +87,10 @@ description: 'Batch create or update plan records'
         </ParamField>
       </Expandable>
     </ParamField>
+    
+    <ParamField body="externalPlanId" type="string">
+      External plan ID from your billing/payment provider (e.g., Stripe price/plan ID)
+    </ParamField>
   </Expandable>
 </ParamField>
 
@@ -103,6 +107,7 @@ curl -X POST https://api.arali.ai/api/v1/plans \
         "name": "Premium Plan",
         "description": "Our premium tier with all features",
         "status": "active",
+        "externalPlanId": "price_premium_001",
         "pricingJson": {
           "basePrice": 99.99,
           "currency": "USD",
@@ -132,6 +137,7 @@ curl -X POST https://api.arali.ai/api/v1/plans \
         "name": "Basic Plan",
         "description": "Starter plan",
         "status": "active",
+        "externalPlanId": "price_basic_001",
         "pricingJson": {
           "basePrice": 29.99,
           "currency": "USD",

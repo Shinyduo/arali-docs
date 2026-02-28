@@ -42,6 +42,10 @@ description: 'Update a specific plan by key'
   </Expandable>
 </ParamField>
 
+<ParamField body="externalPlanId" type="string">
+  External plan ID from your billing/payment provider (e.g., Stripe price/plan ID). Set to `null` to clear.
+</ParamField>
+
 ## Example Request
 
 ```bash
@@ -52,6 +56,7 @@ curl -X PUT https://api.arali.ai/api/v1/plans/{key} \
     "name": "Updated Premium Plan",
     "description": "New description",
     "status": "active",
+    "externalPlanId": "price_updated_001",
     "pricingJson": {
       "basePrice": 149.99,
       "currency": "USD",

@@ -33,6 +33,10 @@ description: 'Batch create or update product records'
     <ParamField body="isBillableCandidate" type="boolean">
       Whether this product can be billed. Default: `false`
     </ParamField>
+    
+    <ParamField body="externalProductId" type="string">
+      External product ID from your billing/payment provider (e.g., Stripe product ID)
+    </ParamField>
   </Expandable>
 </ParamField>
 
@@ -50,7 +54,8 @@ curl -X POST https://api.arali.ai/api/v1/products \
         "description": "AI-powered image analysis service",
         "kind": "core_product",
         "status": "active",
-        "isBillableCandidate": true
+        "isBillableCandidate": true,
+        "externalProductId": "prod_img_001"
       },
       {
         "key": "advanced-search",
@@ -58,7 +63,8 @@ curl -X POST https://api.arali.ai/api/v1/products \
         "description": "Enhanced search capabilities",
         "kind": "feature",
         "status": "active",
-        "isBillableCandidate": true
+        "isBillableCandidate": true,
+        "externalProductId": "prod_search_002"
       }
     ]
   }'
