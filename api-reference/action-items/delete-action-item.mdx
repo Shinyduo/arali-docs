@@ -1,7 +1,7 @@
 ---
 title: 'Delete Action Item'
 api: 'DELETE /api/v1/action-items/{id}'
-description: 'Soft-delete an action item by setting its status to "deleted"'
+description: 'Delete an action item'
 ---
 
 ## Path Parameters
@@ -12,10 +12,9 @@ description: 'Soft-delete an action item by setting its status to "deleted"'
 
 ## Response
 
-Returns `200 OK`. The action item is **not permanently removed** — its `status` is set to `deleted` so historical data is preserved.
+Returns `200 OK`. The action item and its related subtasks/entity mappings are permanently deleted.
 
 <ResponseField name="success" type="boolean" />
 <ResponseField name="data" type="object">
   <ResponseField name="id" type="string">UUID of the deleted item</ResponseField>
-  <ResponseField name="status" type="string">Will be `deleted`</ResponseField>
 </ResponseField>

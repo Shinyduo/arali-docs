@@ -14,8 +14,8 @@ description: 'List action items for your enterprise with optional filters'
   Filter by the UUID of the user who owns the action item
 </ParamField>
 
-<ParamField query="status" type="string">
-  Filter by status. One of: `todo`, `in_progress`, `blocked`, `done`, `deleted`
+<ParamField query="stageId" type="string">
+  Filter by pipeline stage UUID.
 </ParamField>
 
 <ParamField query="priority" type="string">
@@ -43,7 +43,9 @@ description: 'List action items for your enterprise with optional filters'
     <ResponseField name="description" type="string | null">Longer description</ResponseField>
     <ResponseField name="dueAt" type="string | null">Due date (ISO 8601)</ResponseField>
     <ResponseField name="timestamp" type="string | null">Transcript timestamp reference (HH:MM:SS)</ResponseField>
-    <ResponseField name="status" type="string">One of: `todo`, `in_progress`, `blocked`, `done`, `deleted`</ResponseField>
+    <ResponseField name="currentStageId" type="string | null">UUID of the pipeline stage</ResponseField>
+    <ResponseField name="stageName" type="string | null">Name of the pipeline stage</ResponseField>
+    <ResponseField name="stageBucket" type="string | null">Bucket of the pipeline stage (e.g. `open`, `done`, `archived`)</ResponseField>
     <ResponseField name="priority" type="string">One of: `low`, `medium`, `high`, `blocker`</ResponseField>
     <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
     <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>

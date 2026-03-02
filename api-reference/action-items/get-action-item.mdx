@@ -27,7 +27,9 @@ description: 'Get a single action item by ID'
     <ResponseField name="description" type="string | null">Longer description</ResponseField>
     <ResponseField name="dueAt" type="string | null">Due date (ISO 8601)</ResponseField>
     <ResponseField name="timestamp" type="string | null">Transcript reference (HH:MM:SS)</ResponseField>
-    <ResponseField name="status" type="string">`todo` | `in_progress` | `blocked` | `done` | `deleted`</ResponseField>
+    <ResponseField name="currentStageId" type="string | null">UUID of the pipeline stage</ResponseField>
+    <ResponseField name="stageName" type="string | null">Name of the pipeline stage</ResponseField>
+    <ResponseField name="stageBucket" type="string | null">Bucket of the pipeline stage (e.g. `open`, `done`, `archived`)</ResponseField>
     <ResponseField name="priority" type="string">`low` | `medium` | `high` | `blocker`</ResponseField>
     <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
     <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>

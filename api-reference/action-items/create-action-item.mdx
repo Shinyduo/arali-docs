@@ -7,7 +7,7 @@ description: 'Create a new action item linked to an interaction'
 ## Request Body
 
 <ParamField body="interactionId" type="string">
-  UUID of the interaction (call, meeting, or thread) this action item belongs to. Optional — can be omitted for standalone action items.
+  UUID of the interaction (call, meeting, or thread) this action item belongs to. Optional — if omitted, a "note" interaction might be automatically created.
 </ParamField>
 
 <ParamField body="title" type="string" required>
@@ -26,8 +26,12 @@ description: 'Create a new action item linked to an interaction'
   UUID of the interaction participant this item is linked to
 </ParamField>
 
-<ParamField body="status" type="string" default="todo">
-  One of: `todo`, `in_progress`, `blocked`, `done`, `deleted`
+<ParamField body="entities" type="array">
+  Optional array of explicit entity mappings (e.g. `[{"entityType": "company", "entityId": "uuid"}]`). Allowed types are `company`, `contact`, `interaction`, and `account`.
+</ParamField>
+
+<ParamField body="stageId" type="string">
+  UUID of the pipeline stage to assign this action item to. Optional — defaults to the first stage of the enterprise's default pipeline.
 </ParamField>
 
 <ParamField body="priority" type="string" default="medium">
