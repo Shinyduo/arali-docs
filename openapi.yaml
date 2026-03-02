@@ -540,10 +540,19 @@ components:
           type: string
           nullable: true
           description: Transcript timestamp reference (HH:MM:SS)
-        status:
+        currentStageId:
           type: string
-          enum: [todo, in_progress, blocked, done, deleted]
-          default: todo
+          format: uuid
+          nullable: true
+          description: UUID of the pipeline stage
+        stageName:
+          type: string
+          nullable: true
+          description: Name of the pipeline stage
+        stageBucket:
+          type: string
+          nullable: true
+          description: Bucket of the pipeline stage (e.g., open, done, archived)
         priority:
           type: string
           enum: [low, medium, high, blocker]
@@ -587,10 +596,24 @@ components:
           type: string
           nullable: true
           description: Transcript reference (HH:MM:SS)
-        status:
+        stageId:
           type: string
-          enum: [todo, in_progress, blocked, done, deleted]
-          default: todo
+          format: uuid
+          nullable: true
+          description: UUID of the pipeline stage to assign. If omitted, uses default.
+        entities:
+          type: array
+          description: Optional list of explicit entity mappings
+          items:
+            type: object
+            required: [entityType, entityId]
+            properties:
+              entityType:
+                type: string
+                enum: [company, contact, interaction, account]
+              entityId:
+                type: string
+                format: uuid
         priority:
           type: string
           enum: [low, medium, high, blocker]
@@ -619,9 +642,21 @@ components:
         timestamp:
           type: string
           nullable: true
-        status:
+        stageId:
           type: string
-          enum: [todo, in_progress, blocked, done, deleted]
+          format: uuid
+          nullable: true
+        entities:
+          type: array
+          items:
+            type: object
+            properties:
+              entityType:
+                type: string
+                enum: [company, contact, interaction, account]
+              entityId:
+                type: string
+                format: uuid
         priority:
           type: string
           enum: [low, medium, high, blocker]
@@ -1805,7 +1840,7 @@ paths:
     get:
       operationId: listActionItems
       summary: List Action Items
-      description: List action items for your enterprise. Filter by interactionId, ownerUserId, status, or priority.
+      description: List action items for your enterprise. Filter by interactionId, ownerUserId, stageId, or priority.
       tags:
         - Action Items
       security:
@@ -1825,13 +1860,13 @@ paths:
             type: string
             format: uuid
           description: Filter by owner user UUID
-        - name: status
+        - name: stageId
           in: query
           required: false
           schema:
             type: string
-            enum: [todo, in_progress, blocked, done, deleted]
-          description: Filter by status
+            format: uuid
+          description: Filter by stageId
         - name: priority
           in: query
           required: false
@@ -1989,7 +2024,7 @@ paths:
     delete:
       operationId: deleteActionItem
       summary: Delete Action Item
-      description: Soft-delete an action item (sets status to "deleted"). The record is retained for historical purposes.
+      description: Delete an action item. The record and its related mappings are permanently deleted.
       tags:
         - Action Items
       security:
@@ -2018,9 +2053,6 @@ paths:
                       id:
                         type: string
                         format: uuid
-                      status:
-                        type: string
-                        example: deleted
         '404':
           description: Action item not found
         '401':
