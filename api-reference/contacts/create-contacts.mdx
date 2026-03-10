@@ -45,11 +45,11 @@ Create new contacts or update existing ones in a single request. Contacts are up
     </ParamField>
     
     <ParamField body="attributes" type="object">
-      Custom key-value attributes
+      Free-form key-value store saved directly on the contact record (JSONB column). Use for unstructured metadata like `linkedin`, `timezone`, etc.
     </ParamField>
     
     <ParamField body="properties" type="object">
-      Custom field values
+      Typed custom field values saved to the `field_values` table. Keys must match a `fieldKey` defined in your `field_definitions`. Values are coerced to the field's declared type (text, number, date, boolean, enum, json).
     </ParamField>
 
     <ParamField body="stageKey" type="string">
