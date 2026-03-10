@@ -52,6 +52,10 @@ Create new contacts or update existing ones in a single request. Contacts are up
       Custom field values
     </ParamField>
 
+    <ParamField body="stageKey" type="string">
+      Lifecycle stage key for the contact. Must match the `key` field of a `stage_definition` record with `scope = "contact"` for your enterprise (e.g. `"prospect"`, `"customer"`, `"churned"`). If the key is not found, the contact's stage is left unchanged. Pass `null` to explicitly clear the stage.
+    </ParamField>
+
     <Info>
       **Email & Phone behavior**
       - Only one email can be `isPrimary: true` per contact (same for phone numbers).
@@ -73,6 +77,7 @@ curl -X POST https://api.arali.ai/api/v1/contacts \
         "externalId": "hubspot_contact_12345",
         "fullName": "John Doe",
         "title": "VP of Engineering",
+        "stageKey": "prospect",
         "emails": [
           { "email": "john.doe@acme.com", "isPrimary": true, "label": "Work" },
           { "email": "johndoe@gmail.com", "isPrimary": false, "label": "Personal" }
