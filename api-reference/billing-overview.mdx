@@ -88,11 +88,17 @@ Entitlements can be defined at multiple levels, with overrides flowing down:
 
 ## Currency Handling
 
-Contract values are automatically converted to minor currency units for precision:
+Contract values (ARR) are automatically converted to minor currency units for precision:
 - **USD**: 99.99 → stored as 9999 cents
 - **JPY**: 1000 → stored as 1000 (no conversion for zero-decimal currencies)
 
 This ensures accurate financial calculations without floating-point errors.
+
+## ARR & MRR Calculation
+
+- **`contractValue`** = ARR (Annual Recurring Revenue). It is stored as-is (in cents) as the subscription's ARR.
+- **MRR** is auto-calculated as `ARR / 12` and stored in `mrrCents`.
+- When a subscription is created or updated, the company's total ARR is recalculated by summing all active subscriptions.
 
 ## Valid Enum Values
 
