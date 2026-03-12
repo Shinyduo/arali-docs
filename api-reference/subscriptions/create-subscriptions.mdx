@@ -57,7 +57,7 @@ The POST endpoint creates or updates subscriptions. When `externalSubscriptionId
     </ParamField>
     
     <ParamField body="contractValue" type="number">
-      Contract value in major currency units (automatically converted to minor units)
+      Annual Recurring Revenue (ARR) in major currency units (automatically converted to minor units). MRR is auto-calculated as ARR / 12.
     </ParamField>
     
     <ParamField body="currentPeriodStartAt" type="string">
@@ -557,8 +557,9 @@ PUT /api/v1/subscriptions/sub-abc-123
 
 ## Notes
 
-- **Contract values** are automatically converted to minor currency units (cents for USD, no conversion for JPY)
+- **`contractValue` represents ARR** (Annual Recurring Revenue) and is automatically converted to minor currency units (cents for USD, no conversion for JPY)
   - Example: USD 99.99 → stored as 9999 cents
+  - **MRR** is auto-calculated as `ARR / 12` and stored in `mrrCents`
 - **Upsert via `externalSubscriptionId`**: When provided, the API checks for an existing subscription with that external ID. If found, all fields are updated. If not, a new subscription is created. This is ideal for syncing from Stripe, Chargebee, etc.
 - **`entitlementsOverrideJson` is optional**: If omitted, the subscription uses the plan's default entitlements
 - **Entitlement overrides are partial**: You only need to specify the fields you want to override (e.g., just `quantity`)
