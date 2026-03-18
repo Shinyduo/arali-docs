@@ -56,6 +56,10 @@ Create new contacts or update existing ones in a single request. Contacts are up
       Lifecycle stage key for the contact. Must match the `key` field of a `stage_definition` record with `scope = "contact"` for your enterprise (e.g. `"prospect"`, `"customer"`, `"churned"`). If the key is not found, the contact's stage is left unchanged. Pass `null` to explicitly clear the stage.
     </ParamField>
 
+    <ParamField body="createdAt" type="string">
+      ISO 8601 creation timestamp. If provided, this value is used as the contact's `created_at` instead of the current time. Applied on both insert and upsert.
+    </ParamField>
+
     <Info>
       **Email & Phone behavior**
       - Only one email can be `isPrimary: true` per contact (same for phone numbers).

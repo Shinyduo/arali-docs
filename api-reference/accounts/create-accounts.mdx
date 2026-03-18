@@ -133,5 +133,9 @@ There are **two ways** to link an account to its parent company:
     <ParamField body="properties" type="object">
       Custom field values
     </ParamField>
+
+    <ParamField body="createdAt" type="string">
+      ISO 8601 creation timestamp. If provided, this value is used as the account's `created_at` instead of the current time. Applied on both insert and upsert.
+    </ParamField>
   </Expandable>
 </ParamField>

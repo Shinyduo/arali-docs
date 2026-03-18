@@ -56,6 +56,10 @@ description: 'Batch create or update company records'
     <ParamField body="properties" type="object">
       Custom field values (maps to field_values table)
     </ParamField>
+
+    <ParamField body="createdAt" type="string">
+      ISO 8601 creation timestamp. If provided, this value is used as the company's `created_at` instead of the current time. Applied on both insert and upsert.
+    </ParamField>
   </Expandable>
 </ParamField>
 
