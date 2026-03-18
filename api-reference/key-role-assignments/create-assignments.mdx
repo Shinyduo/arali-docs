@@ -15,11 +15,11 @@ description: 'Batch create or update internal team assignments to customer entit
     </ParamField>
     
     <ParamField body="entityType" type="string" required>
-      Type of entity: `company` or `account`
+      Type of entity: `company`, `account`, or `contact`
     </ParamField>
     
     <ParamField body="externalEntityId" type="string" required>
-      External ID of the customer company or account
+      External ID of the customer company, account, or contact
     </ParamField>
     
     <ParamField body="userEmail" type="string" required>
@@ -89,7 +89,7 @@ Returns the created/updated role assignment records with their IDs.
 
 ## Notes
 
-- Assignments map your internal team members (CSM, AE, etc.) to customer companies or accounts
+- Assignments map your internal team members (CSM, AE, etc.) to customer companies, accounts, or contacts
 - Use consistent role keys across your organization (e.g., "csm", "ae", "onboarding_manager")
 - Omit `endDate` for ongoing assignments
 - Set `endDate` when team members transition off accounts to maintain historical records
