@@ -15,7 +15,7 @@ description: 'Create a new custom field definition'
 </ParamField>
 
 <ParamField body="fieldType" type="string" required>
-  Field type. Options: `text`, `number`, `date`, `boolean`, `json`, `enum`
+  Field type. Options: `text`, `number`, `date`, `boolean`, `json`, `enum`, `multi_enum`
 </ParamField>
 
 <ParamField body="entityType" type="string" required>
@@ -23,7 +23,7 @@ description: 'Create a new custom field definition'
 </ParamField>
 
 <ParamField body="enumOptions" type="array">
-  Valid options for enum field type (required if fieldType is `enum`)
+  Valid options for enum or multi_enum field types (required if fieldType is `enum` or `multi_enum`). For multi_enum, users can select multiple values from this array.
 </ParamField>
 
 <ParamField body="isRequired" type="boolean" default="false">
