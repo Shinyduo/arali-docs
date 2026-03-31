@@ -1,0 +1,65 @@
+---
+title: 'List Notes'
+api: 'GET /api/v1/notes'
+description: 'List notes for your enterprise with optional filters'
+---
+
+## Overview
+
+Retrieve notes for your enterprise. Supports filtering by entity type and entity ID. Requires the `notes:read` scope.
+
+## Query Parameters
+
+<ParamField query="entityType" type="string">
+  Filter by entity type. One of: `contact`, `company`
+</ParamField>
+
+<ParamField query="entityId" type="string">
+  Filter by entity UUID — returns all notes linked to a specific contact or company
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Maximum number of results to return (1–200)
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Pagination offset
+</ParamField>
+
+## Example Request
+
+```bash
+curl "https://api.arali.ai/api/v1/notes?entityType=contact&entityId=f47ac10b-58cc-4372-a567-0e02b2c3d479&limit=10" \
+  -H "Authorization: Api-Key YOUR_API_KEY"
+```
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of note objects
+
+  <Expandable title="Note Object">
+    <ResponseField name="id" type="string">UUID of the note</ResponseField>
+    <ResponseField name="enterpriseId" type="string">UUID of your enterprise</ResponseField>
+    <ResponseField name="entityType" type="string">Entity type (`contact` or `company`)</ResponseField>
+    <ResponseField name="entityId" type="string">UUID of the linked entity</ResponseField>
+    <ResponseField name="title" type="string | null">Title of the note</ResponseField>
+    <ResponseField name="content" type="string">Body content of the note</ResponseField>
+    <ResponseField name="createdByUserId" type="string | null">UUID of the user who created the note</ResponseField>
+    <ResponseField name="updatedByUserId" type="string | null">UUID of the user who last updated the note</ResponseField>
+    <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  <Expandable title="Pagination">
+    <ResponseField name="total" type="integer">Total number of matching notes</ResponseField>
+    <ResponseField name="limit" type="integer">Limit used for this request</ResponseField>
+    <ResponseField name="offset" type="integer">Offset used for this request</ResponseField>
+  </Expandable>
+</ResponseField>

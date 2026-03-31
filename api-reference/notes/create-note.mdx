@@ -1,0 +1,73 @@
+---
+title: 'Create Note'
+api: 'POST /api/v1/notes'
+description: 'Create a new note linked to a contact or company'
+---
+
+## Overview
+
+Create a note attached to a contact or company entity. Requires the `notes:write` scope.
+
+## Request Body
+
+<ParamField body="entityType" type="string" required>
+  Type of entity this note is linked to. One of: `contact`, `company`
+</ParamField>
+
+<ParamField body="entityId" type="string" required>
+  UUID of the entity (contact or company) this note belongs to
+</ParamField>
+
+<ParamField body="content" type="string" required>
+  Body content of the note
+</ParamField>
+
+<ParamField body="title" type="string">
+  Optional title for the note
+</ParamField>
+
+<ParamField body="createdByUserId" type="string">
+  UUID of the user creating this note. Optional — used for attribution.
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST "https://api.arali.ai/api/v1/notes" \
+  -H "Authorization: Api-Key YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entityType": "contact",
+    "entityId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "title": "Follow-up from demo call",
+    "content": "Customer is interested in the enterprise plan. Schedule a follow-up next week."
+  }'
+```
+
+## Response
+
+Returns `201 Created` with the newly created note object.
+
+<ResponseField name="success" type="boolean" />
+<ResponseField name="data" type="object">
+  <Expandable title="Note Object">
+    <ResponseField name="id" type="string">UUID of the note</ResponseField>
+    <ResponseField name="enterpriseId" type="string">UUID of your enterprise</ResponseField>
+    <ResponseField name="entityType" type="string">Entity type (`contact` or `company`)</ResponseField>
+    <ResponseField name="entityId" type="string">UUID of the linked entity</ResponseField>
+    <ResponseField name="title" type="string | null">Title of the note</ResponseField>
+    <ResponseField name="content" type="string">Body content of the note</ResponseField>
+    <ResponseField name="createdByUserId" type="string | null">UUID of the user who created the note</ResponseField>
+    <ResponseField name="updatedByUserId" type="string | null">UUID of the user who last updated the note</ResponseField>
+    <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400`  | Missing or invalid `entityType`, `entityId`, or `content` |
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `notes:write` scope) |

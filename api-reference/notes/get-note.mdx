@@ -1,0 +1,45 @@
+---
+title: 'Get Note'
+api: 'GET /api/v1/notes/{id}'
+description: 'Get a single note by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Note UUID
+</ParamField>
+
+## Example Request
+
+```bash
+curl "https://api.arali.ai/api/v1/notes/a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -H "Authorization: Api-Key YOUR_API_KEY"
+```
+
+## Response
+
+<ResponseField name="success" type="boolean" />
+
+<ResponseField name="data" type="object">
+  <Expandable title="Note Object">
+    <ResponseField name="id" type="string">UUID of the note</ResponseField>
+    <ResponseField name="enterpriseId" type="string">UUID of your enterprise</ResponseField>
+    <ResponseField name="entityType" type="string">Entity type (`contact` or `company`)</ResponseField>
+    <ResponseField name="entityId" type="string">UUID of the linked entity</ResponseField>
+    <ResponseField name="title" type="string | null">Title of the note</ResponseField>
+    <ResponseField name="content" type="string">Body content of the note</ResponseField>
+    <ResponseField name="createdByUserId" type="string | null">UUID of the user who created the note</ResponseField>
+    <ResponseField name="updatedByUserId" type="string | null">UUID of the user who last updated the note</ResponseField>
+    <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `notes:read` scope) |
+| `404`  | Note not found or does not belong to your enterprise |

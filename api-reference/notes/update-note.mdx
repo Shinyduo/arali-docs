@@ -1,0 +1,56 @@
+---
+title: 'Update Note'
+api: 'PATCH /api/v1/notes/{id}'
+description: 'Partially update an existing note'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Note UUID
+</ParamField>
+
+## Request Body
+
+All fields are optional — only provided fields will be updated.
+
+<ParamField body="title" type="string">
+  Updated title. Pass `null` to clear.
+</ParamField>
+
+<ParamField body="content" type="string">
+  Updated body content. Must be a non-empty string if provided.
+</ParamField>
+
+<ParamField body="updatedByUserId" type="string">
+  UUID of the user making this update. Optional — used for attribution.
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X PATCH "https://api.arali.ai/api/v1/notes/a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -H "Authorization: Api-Key YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Updated note content with additional details from the follow-up call."
+  }'
+```
+
+## Response
+
+Returns `200 OK` with the updated note object.
+
+<ResponseField name="success" type="boolean" />
+<ResponseField name="data" type="object">
+  The updated note object (see [Get Note](/api-reference/notes/get-note) for field details)
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400`  | Invalid `content` (must be non-empty string if provided) |
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `notes:write` scope) |
+| `404`  | Note not found or does not belong to your enterprise |

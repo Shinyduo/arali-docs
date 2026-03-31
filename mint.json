@@ -197,6 +197,16 @@
                 "api-reference/action-items/update-action-item",
                 "api-reference/action-items/delete-action-item"
             ]
+        },
+        {
+            "group": "Notes",
+            "pages": [
+                "api-reference/notes/create-note",
+                "api-reference/notes/list-notes",
+                "api-reference/notes/get-note",
+                "api-reference/notes/update-note",
+                "api-reference/notes/delete-note"
+            ]
         }
     ],
     "footerSocials": {

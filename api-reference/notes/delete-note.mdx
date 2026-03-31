@@ -1,0 +1,35 @@
+---
+title: 'Delete Note'
+api: 'DELETE /api/v1/notes/{id}'
+description: 'Delete a note'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Note UUID
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X DELETE "https://api.arali.ai/api/v1/notes/a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+  -H "Authorization: Api-Key YOUR_API_KEY"
+```
+
+## Response
+
+Returns `200 OK`. The note is permanently deleted.
+
+<ResponseField name="success" type="boolean" />
+<ResponseField name="message" type="string">
+  Confirmation message (`Note deleted`)
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `notes:write` scope) |
+| `404`  | Note not found or does not belong to your enterprise |
