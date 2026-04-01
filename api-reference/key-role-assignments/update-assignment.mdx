@@ -13,7 +13,11 @@ description: 'Update a specific internal team assignment'
 ## Request Body
 
 <ParamField body="userEmail" type="string">
-  Updated internal team member email address
+  Updated internal team member email address. Either `userEmail` or `userId` can be used.
+</ParamField>
+
+<ParamField body="userId" type="string">
+  Internal Arali UUID of the team member to reassign to. Either `userEmail` or `userId` can be used.
 </ParamField>
 
 <ParamField body="roleKey" type="string">
@@ -69,5 +73,6 @@ Returns the updated role assignment record.
 
 Common use cases:
 - Set `endDate` when a team member transitions off an account
-- Update `userEmail` when reassigning to a different team member
+- Update `userEmail` or `userId` when reassigning to a different team member
+- If `userId` is provided, it takes precedence over `userEmail`
 - Maintain historical records by setting end dates rather than deleting assignments

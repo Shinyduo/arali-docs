@@ -18,12 +18,20 @@ description: 'Batch create or update internal team assignments to customer entit
       Type of entity: `company`, `account`, or `contact`
     </ParamField>
     
-    <ParamField body="externalEntityId" type="string" required>
-      External ID of the customer company, account, or contact
+    <ParamField body="externalEntityId" type="string">
+      External ID of the customer company, account, or contact. Either `entityId` or `externalEntityId` must be provided.
+    </ParamField>
+
+    <ParamField body="entityId" type="string">
+      Internal Arali UUID of the entity. Either `entityId` or `externalEntityId` must be provided.
     </ParamField>
     
-    <ParamField body="userEmail" type="string" required>
-      Email address of the internal team member being assigned
+    <ParamField body="userEmail" type="string">
+      Email address of the internal team member being assigned. Either `userEmail` or `userId` must be provided.
+    </ParamField>
+
+    <ParamField body="userId" type="string">
+      Internal Arali UUID of the team member being assigned. Either `userEmail` or `userId` must be provided.
     </ParamField>
     
     <ParamField body="tenure" type="object">
@@ -73,7 +81,7 @@ curl -X POST https://api.arali.ai/api/v1/key-role-assignments \
         "roleKey": "onboarding_manager",
         "entityType": "company",
         "externalEntityId": "acme-corp",
-        "userEmail": "mike.williams@yourcompany.com",
+        "userId": "550e8400-e29b-41d4-a716-446655440000",
         "tenure": {
           "startDate": "2024-01-15",
           "endDate": "2024-03-15"
@@ -90,6 +98,8 @@ Returns the created/updated role assignment records with their IDs.
 ## Notes
 
 - Assignments map your internal team members (CSM, AE, etc.) to customer companies, accounts, or contacts
+- Identify the team member by either `userEmail` or `userId` — at least one is required per assignment
+- If `userId` is provided, it takes precedence over `userEmail`
 - Use consistent role keys across your organization (e.g., "csm", "ae", "onboarding_manager")
 - Omit `endDate` for ongoing assignments
 - Set `endDate` when team members transition off accounts to maintain historical records
