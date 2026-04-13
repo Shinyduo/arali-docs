@@ -1,0 +1,116 @@
+---
+title: 'Claude MCP Connector'
+description: 'Connect Claude to Arali and query your CRM data using natural language'
+---
+
+Connect your Arali workspace to Claude and access your CRM data directly in conversations. Ask Claude about your companies, signals, action items, meetings, and more — all with your existing permissions.
+
+## Setup
+
+<Steps>
+  <Step title="Open Claude Settings">
+    Go to [claude.ai](https://claude.ai) → **Settings** → **Connectors** → **Add custom connector**.
+  </Step>
+  <Step title="Enter the Arali MCP URL">
+    Enter the following URL:
+    ```
+    https://mcp.arali.ai/mcp
+    ```
+  </Step>
+  <Step title="Authorize with Arali">
+    Click **Connect**. You'll be redirected to Arali's login page. Sign in with your Arali credentials (email/password, Google, or Microsoft).
+
+    After signing in, you'll be redirected back to Claude automatically.
+  </Step>
+  <Step title="Start using tools">
+    Open a new conversation in Claude. You now have access to 26 Arali tools. Try asking:
+    - *"Show me my at-risk companies"*
+    - *"Brief me on Acme Corp"*
+    - *"What signals are open this week?"*
+    - *"Show me team performance"*
+  </Step>
+</Steps>
+
+## Available Tools
+
+### Read Tools
+
+| Tool | Use when asking about... |
+|------|--------------------------|
+| `get-companies` | Lists, comparisons, filtered queries across companies |
+| `get-company-overview` | Deep dive on a single company |
+| `get-action-items` | Tasks, to-dos, overdue items |
+| `get-contacts` | Contacts, leads, people |
+| `get-open-signals` | Risk and opportunity signals |
+| `get-signal-details` | Why a signal exists — evidence and transcripts |
+| `get-insights` | Feature requests, objections, competitor mentions |
+| `get-interaction-timeline` | Chronological activity with a company |
+| `get-metrics` | NPS, CSAT, BANT scores, meeting summaries |
+| `get-billing-overview` | Subscriptions, plans, MRR, invoices |
+| `get-tickets` | Support tickets and resolution times |
+| `get-portfolio-health-trend` | Health score trends over time |
+| `get-team-members` | Look up team members by name |
+| `get-team-portfolio` | Rep/team performance metrics |
+| `search-transcripts-keyword` | Full-text search on call transcripts |
+| `search-transcripts-semantic` | Conceptual/thematic transcript search |
+| `search-thread-messages` | Search emails, Slack, WhatsApp messages |
+| `brief-me` | Pre-call prep — overview + signals + action items in one shot |
+| `my-day-today` | Today's meetings, overdue items, new signals |
+| `weekly-digest` | Weekly summary — signals, health changes, activity |
+
+### Write Tools
+
+| Tool | What it does |
+|------|--------------|
+| `create-action-item` | Create a task with owner, pipeline, priority |
+| `update-action-item-stage` | Move a task to a different stage |
+| `dismiss-signal` | Dismiss a signal |
+| `update-company-stage` | Change a company's lifecycle stage |
+| `assign-key-role` | Assign a user to a company key role |
+| `create-entity-note` | Add a note to a company, contact, or account |
+| `update-company-fields` | Update custom field values |
+
+<Note>
+Write tools require appropriate permissions in your Arali workspace. If you don't have write access, Claude will let you know.
+</Note>
+
+## Example Queries
+
+Here are some things you can ask Claude once connected:
+
+| Query | What happens |
+|-------|-------------|
+| *"Show me at-risk companies"* | Fetches companies with health score below 5 |
+| *"Brief me on Acme"* | Returns company overview, signals, action items, recent interactions |
+| *"What's on my plate today?"* | Shows today's meetings, overdue tasks, new signals |
+| *"Which reps have the most open signals?"* | Returns team portfolio sorted by signal count |
+| *"Create an action item for John on Acme"* | Resolves John's email, creates the task |
+| *"What did we discuss about pricing this week?"* | Searches call transcripts for pricing mentions |
+| *"Show me companies stuck in negotiation for 5+ days"* | Filters by stage and duration |
+
+## Permissions & Security
+
+- **Your data, your permissions.** All queries respect your Arali RBAC permissions. You only see data you have access to in the Arali dashboard.
+- **No additional AI cost.** The tools query your database directly — Claude handles the reasoning. No separate AI API calls are made.
+- **Authentication.** Your session is secured with a JWT token valid for 1 year. You can disconnect the connector at any time from Claude's settings.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="'Couldn't reach the MCP server'">
+    Make sure you're using the full URL: `https://mcp.arali.ai/mcp` (not just `https://mcp.arali.ai`).
+  </Accordion>
+  <Accordion title="'Authorization failed'">
+    Try removing the connector and re-adding it. If you're redirected to Arali but end up on the dashboard instead of back to Claude, clear your browser cookies for `app.arali.ai` and try again.
+  </Accordion>
+  <Accordion title="Tools not appearing">
+    After connecting, start a **new conversation** in Claude. Tools from connectors are loaded per-conversation.
+  </Accordion>
+  <Accordion title="Empty results">
+    Check that your Arali account has data and that your role has the appropriate permissions. The connector respects the same RBAC rules as the Arali dashboard.
+  </Accordion>
+</AccordionGroup>
+
+## Need More Tools?
+
+We're actively expanding the MCP connector with new tools and use cases. If you have a specific workflow or data query you'd like supported, reach out to us at [akshat@arali.ai](mailto:akshat@arali.ai).
