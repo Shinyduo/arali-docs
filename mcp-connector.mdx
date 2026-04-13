@@ -1,35 +1,52 @@
 ---
-title: 'Claude MCP Connector'
-description: 'Connect Claude to Arali and query your CRM data using natural language'
+title: 'MCP Connector'
+description: 'Connect AI assistants to Arali and query your CRM data using natural language'
 ---
 
-Connect your Arali workspace to Claude and access your CRM data directly in conversations. Ask Claude about your companies, signals, action items, meetings, and more — all with your existing permissions.
+Connect your Arali workspace to AI assistants like Claude and ChatGPT. Query your companies, signals, action items, meetings, and more using natural language — all with your existing permissions.
 
 ## Setup
 
-<Steps>
-  <Step title="Open Claude Settings">
-    Go to [claude.ai](https://claude.ai) → **Settings** → **Connectors** → **Add custom connector**.
-  </Step>
-  <Step title="Enter the Arali MCP URL">
-    Enter the following URL:
-    ```
-    https://mcp.arali.ai/mcp
-    ```
-  </Step>
-  <Step title="Authorize with Arali">
-    Click **Connect**. You'll be redirected to Arali's login page. Sign in with your Arali credentials (email/password, Google, or Microsoft).
+<Tabs>
+  <Tab title="Claude">
+    <Steps>
+      <Step title="Open Settings">
+        Go to [claude.ai](https://claude.ai) → **Settings** → **Connectors** → **Add custom connector**.
+      </Step>
+      <Step title="Enter MCP URL">
+        ```
+        https://mcp.arali.ai/mcp
+        ```
+      </Step>
+      <Step title="Authorize">
+        Click **Connect**. Sign in with your Arali credentials. You'll be redirected back to Claude automatically.
+      </Step>
+      <Step title="Start using">
+        Open a new conversation. 26 Arali tools are now available.
+      </Step>
+    </Steps>
+  </Tab>
 
-    After signing in, you'll be redirected back to Claude automatically.
-  </Step>
-  <Step title="Start using tools">
-    Open a new conversation in Claude. You now have access to 26 Arali tools. Try asking:
-    - *"Show me my at-risk companies"*
-    - *"Brief me on Acme Corp"*
-    - *"What signals are open this week?"*
-    - *"Show me team performance"*
-  </Step>
-</Steps>
+  <Tab title="ChatGPT">
+    <Steps>
+      <Step title="Open Settings">
+        Go to [chatgpt.com](https://chatgpt.com) → **Settings** → **Connected apps** → **Add connection**.
+      </Step>
+      <Step title="Enter MCP URL">
+        ```
+        https://mcp.arali.ai/mcp
+        ```
+      </Step>
+      <Step title="Authorize">
+        Click **Connect**. Sign in with your Arali credentials when prompted.
+      </Step>
+      <Step title="Start using">
+        Open a new conversation. Arali tools will be available.
+      </Step>
+    </Steps>
+  </Tab>
+
+</Tabs>
 
 ## Available Tools
 
