@@ -1,0 +1,71 @@
+---
+title: 'Create Metric Definitions'
+api: 'POST /api/v1/metric-definitions'
+description: 'Batch create or update metric definitions'
+---
+
+## Request Body
+
+<ParamField body="metricDefinitions" type="array" required>
+  Array of metric definition objects
+  
+  <Expandable title="Metric Definition Object">
+    <ParamField body="key" type="string" required>
+      Unique metric key (e.g. `api_calls`, `active_users`)
+    </ParamField>
+
+    <ParamField body="name" type="string" required>
+      Human-readable metric name
+    </ParamField>
+
+    <ParamField body="description" type="string">
+      Metric description
+    </ParamField>
+
+    <ParamField body="type" type="string" default="aggregation">
+      Metric type. One of: `aggregation`, `derived`, `ratio`, `funnel`
+    </ParamField>
+
+    <ParamField body="source" type="string" default="events">
+      Data source. Currently only `events` is supported.
+    </ParamField>
+
+    <ParamField body="definitionJson" type="object" required>
+      Metric definition configuration (schema depends on metric type)
+    </ParamField>
+
+    <ParamField body="unit" type="string">
+      Unit of measurement (e.g. `count`, `bytes`, `ms`)
+    </ParamField>
+
+    <ParamField body="higherIsBetter" type="boolean" default="false">
+      Whether higher values are considered better
+    </ParamField>
+
+    <ParamField body="defaultGrain" type="string">
+      Default time grain for aggregation. One of: `minute`, `hour`, `day`
+    </ParamField>
+
+    <ParamField body="isActive" type="boolean" default="true">
+      Whether this metric definition is active
+    </ParamField>
+
+    <ParamField body="version" type="number" default="1">
+      Metric version number
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Upsert Behavior
+
+The API upserts on the composite key `(enterpriseId, key, version)`. If a metric definition with the same key and version exists, it is updated.
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of created/updated metric definition objects
+</ResponseField>

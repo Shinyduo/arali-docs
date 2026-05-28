@@ -1,0 +1,21 @@
+---
+title: 'Delete Metric Definition'
+api: 'DELETE /api/v1/metric-definitions/{id}'
+description: 'Delete a metric definition by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Metric definition UUID
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success message
+</ResponseField>

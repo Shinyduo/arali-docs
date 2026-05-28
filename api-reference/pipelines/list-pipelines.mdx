@@ -1,0 +1,21 @@
+---
+title: 'List Pipelines'
+api: 'GET /api/v1/pipelines'
+description: 'Get all pipelines for your enterprise'
+---
+
+## Query Parameters
+
+<ParamField query="entityType" type="string">
+  Filter by entity type. One of: `deal`, `action_item`, `ticket`
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of pipeline objects
+</ResponseField>

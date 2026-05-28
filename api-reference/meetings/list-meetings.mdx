@@ -1,7 +1,81 @@
 ---
 title: 'List Meetings'
 api: 'GET /api/v1/meetings'
-description: 'Get all meetings for your enterprise'
+description: 'Get all meetings for your enterprise with optional filtering'
 ---
 
+## Overview
 
+Returns a paginated list of meetings for your enterprise with optional filtering by status, channel, type, host, participants, company, account, date range, and more.
+
+## Query Parameters
+
+<ParamField query="limit" type="integer" default="100">
+  Number of results per page. Maximum is 200.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip for pagination.
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by status. One of: `scheduled`, `skip`, `in_progress`, `cancelled`, `completed`, `deleted`, `error`
+</ParamField>
+
+<ParamField query="channel" type="string">
+  Filter by channel. One of: `gmeet`, `zoom`, `teams`, `offline`
+</ParamField>
+
+<ParamField query="type" type="string">
+  Filter by type. One of: `external`, `internal`
+</ParamField>
+
+<ParamField query="hostEmail" type="string">
+  Filter by host email address
+</ParamField>
+
+<ParamField query="participantEmail" type="string">
+  Filter by participant email address
+</ParamField>
+
+<ParamField query="companyId" type="string">
+  Filter by company UUID
+</ParamField>
+
+<ParamField query="accountId" type="string">
+  Filter by account UUID
+</ParamField>
+
+<ParamField query="startDate" type="string">
+  Filter meetings starting on or after this date (ISO 8601)
+</ParamField>
+
+<ParamField query="endDate" type="string">
+  Filter meetings ending on or before this date (ISO 8601)
+</ParamField>
+
+<ParamField query="externalMeetingId" type="string">
+  Filter by external meeting ID
+</ParamField>
+
+<ParamField query="recurringMeetingId" type="string">
+  Filter by recurring meeting ID
+</ParamField>
+
+<ParamField query="search" type="string">
+  Search by meeting title (case-insensitive partial match)
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of meeting objects
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  Pagination metadata
+</ResponseField>

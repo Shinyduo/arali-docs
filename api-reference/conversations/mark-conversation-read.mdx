@@ -1,0 +1,49 @@
+---
+title: 'Mark Conversation Read'
+api: 'POST /api/v1/conversations/{id}/read'
+description: 'Mark a conversation or specific message as read'
+---
+
+## Mark Conversation as Read
+
+### Endpoint
+
+`POST /api/v1/conversations/{id}/read`
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  Conversation UUID
+</ParamField>
+
+### Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/conversations/CONVERSATION_UUID/read \
+  -H "Authorization: Bearer YOUR_JWT"
+```
+
+---
+
+## Mark Specific Message as Read
+
+### Endpoint
+
+`POST /api/v1/conversations/{id}/messages/{messageId}/read`
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  Conversation UUID
+</ParamField>
+
+<ParamField path="messageId" type="string" required>
+  Message UUID
+</ParamField>
+
+### Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/conversations/CONVERSATION_UUID/messages/MESSAGE_UUID/read \
+  -H "Authorization: Bearer YOUR_JWT"
+```

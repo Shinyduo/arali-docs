@@ -4,68 +4,108 @@ api: 'POST /api/v1/associations'
 description: 'Batch create contact-company and contact-account relationships'
 ---
 
-## Overview
-
-Create contact-company and contact-account relationships. Supports both external IDs (via integration mappings) and direct internal database IDs.
-
-<Info>
-  **Validation Rules:**
-  1. **Contact Identifier:** Must provide either `contactId` OR `externalContactId`
-  2. **Company/Account Identifier:** Must provide at least one of:
-     - `companyId` or `externalCompanyId` (for company-only associations)
-     - `accountId` or `externalAccountId` (for account-based associations)
-     - Both (for associations with both company and account)
-</Info>
-
-### Association Flows
-
-| Flow | Required Fields | Creates |
-|------|-----------------|---------|
-| **Company-only** | `contactId` or `externalContactId` + `companyId` or `externalCompanyId` | `customer_company` |
-| **Account-based** | `contactId` or `externalContactId` + `accountId` or `externalAccountId` | `contact_account`, `customer_company` (from account.companyId) |
-| **Account + Company** | `contactId` or `externalContactId` + `accountId` or `externalAccountId` + `companyId` or `externalCompanyId` | `contact_account`, `customer_company` (for both companies) |
-
 ## Request Body
 
+<ParamField body="providerKey" type="string" required>
+  Integration provider key (e.g. `hubspot`, `salesforce`). Defaults to `"api"` if not provided.
+</ParamField>
+
 <ParamField body="associations" type="array" required>
-  Array of association objects
+  Array of association objects to create
   
   <Expandable title="Association Object">
-    <ParamField body="contactId" type="string" format="uuid">
+    <ParamField body="contactId" type="string">
       Internal UUID of the contact (bypasses mapping lookup; optional if `externalContactId` provided)
     </ParamField>
-  
+
     <ParamField body="externalContactId" type="string">
       External ID of the contact (via integration mapping; optional if `contactId` provided)
     </ParamField>
-    
-    <ParamField body="companyId" type="string" format="uuid">
+
+    <ParamField body="companyId" type="string">
       Internal UUID of the company (bypasses mapping lookup; optional if `externalCompanyId` provided)
     </ParamField>
 
     <ParamField body="externalCompanyId" type="string">
-      External ID of the company (creates `customer_company` relationship)
+      External ID of the company (creates `customer_company`; optional if `companyId` provided)
     </ParamField>
-    
-    <ParamField body="accountId" type="string" format="uuid">
+
+    <ParamField body="accountId" type="string">
       Internal UUID of the account (bypasses mapping lookup and auto-resolves company; optional if `externalAccountId` provided)
     </ParamField>
 
     <ParamField body="externalAccountId" type="string">
-      External ID of the account (creates `contact_account` relationship and auto-resolves company)
+      External ID of the account (creates `contact_account` and auto-resolves company; optional if `accountId` provided)
     </ParamField>
-    
+
     <ParamField body="relation" type="string" default="employee">
-      Relationship type for contact-company association. Options: `employee`, `decision_maker`, `champion`, `end_user`, `influencer`
+      Relationship type. One of: `employee`, `consultant`, `contractor`, `partner`, `agency`, `other`
     </ParamField>
-    
+
     <ParamField body="isPrimary" type="boolean" default="false">
-      Is this the primary company for the contact
+      Is primary company for contact
     </ParamField>
-    
+
     <ParamField body="role" type="string">
       Role for the contact_account association
     </ParamField>
   </Expandable>
 </ParamField>
 
+## Validation Rules
+
+1. **Contact Identifier:** Must provide either `contactId` OR `externalContactId`
+2. **Company/Account Identifier:** Must provide at least one of:
+   - `companyId` or `externalCompanyId` (for company-only associations)
+   - `accountId` or `externalAccountId` (for account-based associations)
+   - Both (for associations with both company and account)
+
+## Association Flows
+
+| Flow | Required Fields | Creates |
+|------|----------------|---------|
+| **Company-only** | contactId/externalContactId + companyId/externalCompanyId | `customer_company` |
+| **Account-based** | contactId/externalContactId + accountId/externalAccountId | `contact_account`, `customer_company` (from account.companyId) |
+| **Account + Company** | contactId/externalContactId + accountId/externalAccountId + companyId/externalCompanyId | `contact_account`, `customer_company` (for both companies) |
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/associations \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "providerKey": "hubspot",
+    "associations": [
+      {
+        "externalContactId": "contact_12345",
+        "externalCompanyId": "company_67890",
+        "relation": "employee",
+        "isPrimary": true
+      },
+      {
+        "externalContactId": "contact_12345",
+        "externalAccountId": "acc_abc123",
+        "role": "decision_maker"
+      }
+    ]
+  }'
+```
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="summary" type="object">
+  <Expandable title="Summary Object">
+    <ResponseField name="total" type="integer">Total associations processed</ResponseField>
+    <ResponseField name="success" type="integer">Successfully created</ResponseField>
+    <ResponseField name="failed" type="integer">Failed</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of result objects
+</ResponseField>

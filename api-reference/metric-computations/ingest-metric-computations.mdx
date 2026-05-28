@@ -1,0 +1,75 @@
+---
+title: 'Ingest Metric Computations'
+api: 'POST /api/v1/metric-computations'
+description: 'Batch ingest metric computation records'
+---
+
+## Request Body
+
+<ParamField body="computations" type="array" required>
+  Array of metric computation objects
+  
+  <Expandable title="Metric Computation Object">
+    <ParamField body="metricId" type="string">
+      Metric definition UUID. Required if `metricKey` is not provided.
+    </ParamField>
+
+    <ParamField body="metricKey" type="string">
+      Metric key. The API will resolve this to a metricId. Required if `metricId` is not provided.
+    </ParamField>
+
+    <ParamField body="metricVersion" type="number" default="1">
+      Metric version number
+    </ParamField>
+
+    <ParamField body="eventKey" type="string">
+      Event key for traceability
+    </ParamField>
+
+    <ParamField body="productId" type="string">
+      Product UUID
+    </ParamField>
+
+    <ParamField body="productKey" type="string">
+      Product key (alternative to productId)
+    </ParamField>
+
+    <ParamField body="companyId" type="string">
+      Company UUID
+    </ParamField>
+
+    <ParamField body="accountId" type="string">
+      Account UUID
+    </ParamField>
+
+    <ParamField body="valueNumber" type="number">
+      Numeric value for the computation
+    </ParamField>
+
+    <ParamField body="valueJson" type="object">
+      JSON value for the computation
+    </ParamField>
+
+    <ParamField body="computedAt" type="string">
+      Computation timestamp (ISO 8601)
+    </ParamField>
+
+    <ParamField body="metadata" type="object">
+      Additional metadata
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="summary" type="object">
+  <Expandable title="Summary Object">
+    <ResponseField name="total" type="integer">Total computations processed</ResponseField>
+    <ResponseField name="success" type="integer">Successfully ingested</ResponseField>
+    <ResponseField name="failed" type="integer">Failed</ResponseField>
+  </Expandable>
+</ResponseField>

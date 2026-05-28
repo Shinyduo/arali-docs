@@ -1,0 +1,63 @@
+---
+title: 'List Deals'
+api: 'GET /api/v1/deals'
+description: 'Get all deals for your enterprise with optional filtering'
+---
+
+## Overview
+
+Returns a list of deals for your enterprise with optional filtering by company, account, pipeline, stage, status, and owner.
+
+## Query Parameters
+
+<ParamField query="limit" type="integer" default="100">
+  Number of results per page. Maximum is 200.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip for pagination.
+</ParamField>
+
+<ParamField query="companyId" type="string">
+  Filter by company UUID.
+</ParamField>
+
+<ParamField query="accountId" type="string">
+  Filter by account UUID.
+</ParamField>
+
+<ParamField query="pipelineId" type="string">
+  Filter by pipeline UUID.
+</ParamField>
+
+<ParamField query="stageId" type="string">
+  Filter by stage UUID.
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by status. One of: `open`, `won`, `lost`, `cancelled`.
+</ParamField>
+
+<ParamField query="ownerUserId" type="string">
+  Filter by deal owner UUID.
+</ParamField>
+
+<ParamField query="search" type="string">
+  Search by deal title (case-insensitive partial match).
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of deal objects
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  <Expandable title="Meta Object">
+    <ResponseField name="total" type="integer">Total number of matching deals</ResponseField>
+  </Expandable>
+</ResponseField>

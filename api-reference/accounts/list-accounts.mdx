@@ -10,6 +10,26 @@ description: 'Get all accounts for your enterprise'
   Filter to find a specific account by your custom internal ID (stored in `externalId` field).
 </ParamField>
 
+<ParamField query="stageKey" type="string">
+  Filter by stage key(s). Supports comma-separated values.
+</ParamField>
+
+<ParamField query="stageId" type="string">
+  Filter by stage definition UUID(s). Supports comma-separated UUIDs.
+</ParamField>
+
+<ParamField query="fields[fieldKey]" type="string">
+  Filter by custom field values. Replace `fieldKey` with the actual field key from your `field_definitions` table.
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number for pagination (starts at 1)
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Number of results per page. Maximum is 200.
+</ParamField>
+
 ## Response
 
 <ResponseField name="success" type="boolean">
@@ -17,5 +37,23 @@ description: 'Get all accounts for your enterprise'
 </ResponseField>
 
 <ResponseField name="data" type="array">
-  Array of account objects
+  Array of enriched account objects. Each account includes standard fields plus:
+  
+  <Expandable title="Enriched fields">
+    <ResponseField name="stage" type="object | null">
+      Resolved stage definition details
+    </ResponseField>
+    <ResponseField name="fieldValues" type="array">
+      Custom field values associated with this account
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  <Expandable title="Meta Object">
+    <ResponseField name="total" type="integer">Total number of matching accounts</ResponseField>
+    <ResponseField name="page" type="integer">Current page number</ResponseField>
+    <ResponseField name="limit" type="integer">Results per page</ResponseField>
+    <ResponseField name="totalPages" type="integer">Total number of pages</ResponseField>
+  </Expandable>
 </ResponseField>

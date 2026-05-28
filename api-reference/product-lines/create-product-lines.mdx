@@ -1,0 +1,43 @@
+---
+title: 'Create Product Lines'
+api: 'POST /api/v1/product-lines'
+description: 'Batch create or update product line records'
+---
+
+## Request Body
+
+<ParamField body="productLines" type="array" required>
+  Array of product line objects to create or update
+  
+  <Expandable title="Product Line Object">
+    <ParamField body="key" type="string" required>
+      Unique product line key (e.g. `software`, `services`)
+    </ParamField>
+
+    <ParamField body="name" type="string" required>
+      Product line display name
+    </ParamField>
+
+    <ParamField body="description" type="string">
+      Product line description
+    </ParamField>
+
+    <ParamField body="status" type="string" default="active">
+      Status. One of: `active`, `archived`
+    </ParamField>
+
+    <ParamField body="sortOrder" type="number" default="0">
+      Display order
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of created/updated product line objects
+</ResponseField>

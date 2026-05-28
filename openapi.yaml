@@ -707,6 +707,309 @@ components:
         value:
           description: Value matching the field type
 
+    Deal:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        companyId:
+          type: string
+          format: uuid
+          nullable: true
+        accountId:
+          type: string
+          format: uuid
+          nullable: true
+        parentDealId:
+          type: string
+          format: uuid
+          nullable: true
+        pipelineId:
+          type: string
+          format: uuid
+        currentStageId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        dealType:
+          type: string
+          enum: [new_business, expansion, renewal, upsell, contraction, churn_save]
+        status:
+          type: string
+          enum: [open, won, lost, cancelled]
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+        amountCents:
+          type: number
+          nullable: true
+        currency:
+          type: string
+          default: INR
+        expectedCloseDate:
+          type: string
+          format: date
+          nullable: true
+        closedAt:
+          type: string
+          format: date-time
+          nullable: true
+        externalDealId:
+          type: string
+          nullable: true
+        planId:
+          type: string
+          format: uuid
+          nullable: true
+        productId:
+          type: string
+          format: uuid
+          nullable: true
+        subscriptionId:
+          type: string
+          format: uuid
+          nullable: true
+        lineItemId:
+          type: string
+          format: uuid
+          nullable: true
+        metadata:
+          type: object
+        transitionReason:
+          type: string
+          nullable: true
+
+    Pipeline:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        entityType:
+          type: string
+          enum: [deal, action_item, ticket]
+          default: action_item
+        orgUnitId:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        isDefault:
+          type: boolean
+          default: false
+        createdByUserId:
+          type: string
+          format: uuid
+          nullable: true
+
+    PipelineStage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        pipelineId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        bucket:
+          type: string
+          enum: [open, in_progress, blocked, done, archived]
+          default: open
+        color:
+          type: string
+          nullable: true
+        icon:
+          type: string
+          nullable: true
+        sortOrder:
+          type: integer
+          default: 0
+        isTerminal:
+          type: boolean
+          default: false
+        winProbability:
+          type: number
+          nullable: true
+
+    ProductLine:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, archived]
+          default: active
+        sortOrder:
+          type: integer
+          default: 0
+
+    MetricDefinition:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        type:
+          type: string
+          enum: [aggregation, derived, ratio, funnel]
+          default: aggregation
+        source:
+          type: string
+          default: events
+        definitionJson:
+          type: object
+        unit:
+          type: string
+          nullable: true
+        higherIsBetter:
+          type: boolean
+          default: false
+        defaultGrain:
+          type: string
+          enum: [minute, hour, day]
+          nullable: true
+        isActive:
+          type: boolean
+          default: true
+        version:
+          type: integer
+          default: 1
+
+    MetricComputation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        metricId:
+          type: string
+          format: uuid
+        metricVersion:
+          type: number
+          default: 1
+        eventKey:
+          type: string
+          nullable: true
+        productId:
+          type: string
+          format: uuid
+          nullable: true
+        companyId:
+          type: string
+          format: uuid
+          nullable: true
+        accountId:
+          type: string
+          format: uuid
+          nullable: true
+        valueNumber:
+          type: number
+          nullable: true
+        valueJson:
+          type: object
+          nullable: true
+        computedAt:
+          type: string
+          format: date-time
+          nullable: true
+        metadata:
+          type: object
+          nullable: true
+
+    MetricAggregate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        metricId:
+          type: string
+          format: uuid
+        companyId:
+          type: string
+          format: uuid
+          nullable: true
+        productId:
+          type: string
+          format: uuid
+          nullable: true
+        grain:
+          type: string
+          enum: [minute, hour, day]
+        windowStart:
+          type: string
+          format: date-time
+        windowEnd:
+          type: string
+          format: date-time
+        value:
+          type: number
+
+    ProductEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+          nullable: true
+        companyId:
+          type: string
+          format: uuid
+          nullable: true
+        accountId:
+          type: string
+          format: uuid
+          nullable: true
+        userId:
+          type: string
+          format: uuid
+          nullable: true
+        eventName:
+          type: string
+        eventKey:
+          type: string
+          nullable: true
+        eventTimestamp:
+          type: string
+          format: date-time
+        valueNumber:
+          type: number
+          nullable: true
+        valueJson:
+          type: object
+          nullable: true
+        dimensions:
+          type: object
+          nullable: true
+
 paths:
   # Companies
   /api/v1/companies:
@@ -2162,6 +2465,1343 @@ paths:
         '403':
           description: Forbidden - requires key_roles:read scope
 
+  # Deals
+  /api/v1/deals:
+    post:
+      operationId: createDeals
+      summary: Create/Update Deals
+      description: Batch create or update deal records
+      tags:
+        - Deals
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - deals
+              properties:
+                deals:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Deal'
+      responses:
+        '200':
+          description: Batch operation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires deals:write scope
+
+    get:
+      operationId: listDeals
+      summary: List Deals
+      description: Get all deals for your enterprise
+      tags:
+        - Deals
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            maximum: 200
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: companyId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: accountId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: pipelineId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: stageId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, won, lost, cancelled]
+        - name: ownerUserId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of deals
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires deals:read scope
+
+  /api/v1/deals/{id}:
+    get:
+      operationId: getDeal
+      summary: Get Deal
+      description: Get a single deal by ID
+      tags:
+        - Deals
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Deal details
+        '404':
+          description: Deal not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires deals:read scope
+
+    put:
+      operationId: updateDeal
+      summary: Update Deal
+      description: Update a single deal
+      tags:
+        - Deals
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Deal'
+      responses:
+        '200':
+          description: Deal updated
+        '404':
+          description: Deal not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires deals:write scope
+
+    delete:
+      operationId: deleteDeal
+      summary: Delete Deal
+      description: Delete a deal
+      tags:
+        - Deals
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Deal deleted
+        '404':
+          description: Deal not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires deals:write scope
+
+  /api/v1/deals/{id}/contacts:
+    post:
+      operationId: addDealContacts
+      summary: Add Contacts to Deal
+      description: Attach contacts to a deal
+      tags:
+        - Deals
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contacts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      contactId:
+                        type: string
+                        format: uuid
+                      role:
+                        type: string
+                      isPrimary:
+                        type: boolean
+      responses:
+        '200':
+          description: Contacts added
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires deals:write scope
+
+  /api/v1/deals/{id}/contacts/{contactId}:
+    delete:
+      operationId: removeDealContact
+      summary: Remove Contact from Deal
+      description: Detach a contact from a deal
+      tags:
+        - Deals
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: contactId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Contact removed
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires deals:write scope
+
+  /api/v1/deals/{id}/interactions:
+    post:
+      operationId: addDealInteractions
+      summary: Add Interactions to Deal
+      description: Attach interactions to a deal
+      tags:
+        - Deals
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                interactions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      interactionId:
+                        type: string
+                        format: uuid
+      responses:
+        '200':
+          description: Interactions added
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires deals:write scope
+
+  /api/v1/deals/{id}/interactions/{interactionId}:
+    delete:
+      operationId: removeDealInteraction
+      summary: Remove Interaction from Deal
+      description: Detach an interaction from a deal
+      tags:
+        - Deals
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: interactionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Interaction removed
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires deals:write scope
+
+  # Pipelines
+  /api/v1/pipelines:
+    post:
+      operationId: createPipelines
+      summary: Create/Update Pipelines
+      description: Batch create or update pipeline records
+      tags:
+        - Pipelines
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pipelines
+              properties:
+                pipelines:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Pipeline'
+      responses:
+        '200':
+          description: Batch operation completed
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires pipelines:write scope
+
+    get:
+      operationId: listPipelines
+      summary: List Pipelines
+      description: Get all pipelines for your enterprise
+      tags:
+        - Pipelines
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: entityType
+          in: query
+          schema:
+            type: string
+            enum: [deal, action_item, ticket]
+      responses:
+        '200':
+          description: List of pipelines
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires pipelines:read scope
+
+  /api/v1/pipelines/{id}:
+    get:
+      operationId: getPipeline
+      summary: Get Pipeline
+      description: Get a single pipeline by ID with stages
+      tags:
+        - Pipelines
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Pipeline details
+        '404':
+          description: Pipeline not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires pipelines:read scope
+
+    put:
+      operationId: updatePipeline
+      summary: Update Pipeline
+      description: Update a single pipeline
+      tags:
+        - Pipelines
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pipeline'
+      responses:
+        '200':
+          description: Pipeline updated
+        '404':
+          description: Pipeline not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires pipelines:write scope
+
+    delete:
+      operationId: deletePipeline
+      summary: Delete Pipeline
+      description: Delete a pipeline
+      tags:
+        - Pipelines
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Pipeline deleted
+        '404':
+          description: Pipeline not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires pipelines:delete scope
+
+  # Pipeline Stages
+  /api/v1/pipeline-stages:
+    post:
+      operationId: createPipelineStages
+      summary: Create/Update Pipeline Stages
+      description: Batch create or update pipeline stage records
+      tags:
+        - Pipeline Stages
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - stages
+              properties:
+                stages:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PipelineStage'
+      responses:
+        '200':
+          description: Batch operation completed
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires stages:write scope
+
+    get:
+      operationId: listPipelineStages
+      summary: List Pipeline Stages
+      description: Get all stages for a pipeline
+      tags:
+        - Pipeline Stages
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: pipelineId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of stages
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires stages:read scope
+
+  /api/v1/pipeline-stages/{id}:
+    get:
+      operationId: getPipelineStage
+      summary: Get Pipeline Stage
+      description: Get a single pipeline stage by ID
+      tags:
+        - Pipeline Stages
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Stage details
+        '404':
+          description: Stage not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires stages:read scope
+
+    put:
+      operationId: updatePipelineStage
+      summary: Update Pipeline Stage
+      description: Update a single pipeline stage
+      tags:
+        - Pipeline Stages
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PipelineStage'
+      responses:
+        '200':
+          description: Stage updated
+        '404':
+          description: Stage not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires stages:write scope
+
+    delete:
+      operationId: deletePipelineStage
+      summary: Delete Pipeline Stage
+      description: Delete a pipeline stage
+      tags:
+        - Pipeline Stages
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Stage deleted
+        '404':
+          description: Stage not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires stages:delete scope
+
+  # Product Lines
+  /api/v1/product-lines:
+    post:
+      operationId: createProductLines
+      summary: Create/Update Product Lines
+      description: Batch create or update product line records
+      tags:
+        - Product Lines
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productLines
+              properties:
+                productLines:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProductLine'
+      responses:
+        '200':
+          description: Batch operation completed
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires product-lines:write scope
+
+    get:
+      operationId: listProductLines
+      summary: List Product Lines
+      description: Get all product lines for your enterprise
+      tags:
+        - Product Lines
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, archived]
+      responses:
+        '200':
+          description: List of product lines
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires product-lines:read scope
+
+  /api/v1/product-lines/{key}:
+    get:
+      operationId: getProductLine
+      summary: Get Product Line
+      description: Get a single product line by key
+      tags:
+        - Product Lines
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product line details
+        '404':
+          description: Product line not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires product-lines:read scope
+
+    put:
+      operationId: updateProductLine
+      summary: Update Product Line
+      description: Update a single product line by key
+      tags:
+        - Product Lines
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductLine'
+      responses:
+        '200':
+          description: Product line updated
+        '404':
+          description: Product line not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires product-lines:write scope
+
+  /api/v1/product-lines/{id}:
+    delete:
+      operationId: deleteProductLine
+      summary: Delete Product Line
+      description: Delete a product line by ID
+      tags:
+        - Product Lines
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product line deleted
+        '404':
+          description: Product line not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires product-lines:delete scope
+
+  # Call Recordings
+  /api/v1/calls/recording/ingest:
+    post:
+      operationId: ingestCallRecording
+      summary: Ingest Call Recording
+      description: Ingest a call recording URL for automatic transcription
+      tags:
+        - Call Recordings
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - externalCallId
+                - recordingUrl
+              properties:
+                externalCallId:
+                  type: string
+                recordingUrl:
+                  type: string
+                providerKey:
+                  type: string
+                title:
+                  type: string
+                direction:
+                  type: string
+                  enum: [inbound, outbound, unknown]
+                status:
+                  type: string
+                  enum: [completed, missed, voicemail, failed, busy, cancelled, unknown]
+                fromNumber:
+                  type: string
+                  nullable: true
+                toNumber:
+                  type: string
+                  nullable: true
+                durationSeconds:
+                  type: number
+                  nullable: true
+                startTimestamp:
+                  type: string
+                  format: date-time
+                  nullable: true
+                endTimestamp:
+                  type: string
+                  format: date-time
+                  nullable: true
+                customer:
+                  type: object
+                  properties:
+                    phone:
+                      type: string
+                    email:
+                      type: string
+                    name:
+                      type: string
+                orgUnitId:
+                  type: string
+                  format: uuid
+                orgUnitIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                metadata:
+                  type: object
+                transcript:
+                  type: string
+                  nullable: true
+                language:
+                  type: string
+                deepgramModel:
+                  type: string
+                enqueuePreanalyze:
+                  type: boolean
+                skipUpload:
+                  type: boolean
+                userEmail:
+                  type: string
+                externalCompanyId:
+                  type: string
+      responses:
+        '200':
+          description: Recording ingested successfully
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires calls:write scope
+
+  # Meeting Recordings
+  /api/v1/recordings/ingest:
+    post:
+      operationId: ingestMeetingRecording
+      summary: Ingest Meeting Recording
+      description: Ingest a meeting recording URL for automatic transcription
+      tags:
+        - Meeting Recordings
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recordingUrl:
+                  type: string
+                recordingUrls:
+                  type: array
+                  items:
+                    type: string
+                recordings:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      recordingUrl:
+                        type: string
+                      title:
+                        type: string
+                      externalMeetingId:
+                        type: string
+                      metadata:
+                        type: object
+                title:
+                  type: string
+                  default: "Ingested Recording"
+                titles:
+                  type: array
+                  items:
+                    type: string
+                scheduledStartAt:
+                  type: string
+                  format: date-time
+                scheduledEndAt:
+                  type: string
+                  format: date-time
+                channel:
+                  type: string
+                  enum: [gmeet, zoom, teams, offline]
+                  default: offline
+                joinUrl:
+                  type: string
+                hostEmail:
+                  type: string
+                participantEmails:
+                  type: array
+                  items:
+                    type: string
+                orgUnitId:
+                  type: string
+                  format: uuid
+                orgUnitIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                externalMeetingId:
+                  type: string
+                language:
+                  type: string
+                  default: en
+                deepgramModel:
+                  type: string
+                  default: nova-2
+                metadata:
+                  type: object
+                enqueuePreanalyze:
+                  type: boolean
+                  default: true
+                createTranscript:
+                  type: boolean
+                  default: true
+                uploadToR2:
+                  type: boolean
+                  default: true
+                waitForTranscript:
+                  type: boolean
+                  default: false
+                skipEmail:
+                  type: boolean
+                  default: false
+                skipNotifications:
+                  type: boolean
+                  default: false
+                skipInsightsEmbed:
+                  type: boolean
+                  default: false
+                force:
+                  type: boolean
+                  default: false
+                forceAnalyze:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Recording ingested successfully
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires meetings:write scope
+
+  # Metric Definitions
+  /api/v1/metric-definitions:
+    post:
+      operationId: createMetricDefinitions
+      summary: Create/Update Metric Definitions
+      description: Batch create or update metric definitions
+      tags:
+        - Metric Definitions
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - metricDefinitions
+              properties:
+                metricDefinitions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/MetricDefinition'
+      responses:
+        '200':
+          description: Batch operation completed
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires metrics:definitions:write scope
+
+    get:
+      operationId: listMetricDefinitions
+      summary: List Metric Definitions
+      description: Get all metric definitions for your enterprise
+      tags:
+        - Metric Definitions
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            maximum: 500
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of metric definitions
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires metrics:definitions:read scope
+
+  /api/v1/metric-definitions/{id}:
+    get:
+      operationId: getMetricDefinition
+      summary: Get Metric Definition
+      description: Get a single metric definition by ID
+      tags:
+        - Metric Definitions
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Metric definition details
+        '404':
+          description: Metric definition not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires metrics:definitions:read scope
+
+    put:
+      operationId: updateMetricDefinition
+      summary: Update Metric Definition
+      description: Update a single metric definition
+      tags:
+        - Metric Definitions
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetricDefinition'
+      responses:
+        '200':
+          description: Metric definition updated
+        '404':
+          description: Metric definition not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires metrics:definitions:write scope
+
+    delete:
+      operationId: deleteMetricDefinition
+      summary: Delete Metric Definition
+      description: Delete a metric definition
+      tags:
+        - Metric Definitions
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Metric definition deleted
+        '404':
+          description: Metric definition not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires metrics:definitions:delete scope
+
+  # Metric Computations
+  /api/v1/metric-computations:
+    post:
+      operationId: ingestMetricComputations
+      summary: Ingest Metric Computations
+      description: Batch ingest metric computation records
+      tags:
+        - Metric Computations
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - computations
+              properties:
+                computations:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/MetricComputation'
+      responses:
+        '200':
+          description: Batch operation completed
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires metrics:computations:write scope
+
+    get:
+      operationId: queryMetricComputations
+      summary: Query Metric Computations
+      description: Query metric computation records
+      tags:
+        - Metric Computations
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            maximum: 500
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: metricId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: companyId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: accountId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: productId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: eventKey
+          in: query
+          schema:
+            type: string
+        - name: startAt
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: endAt
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of metric computations
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires metrics:computations:read scope
+
+  # Metric Aggregates
+  /api/v1/metric-aggregates:
+    get:
+      operationId: queryMetricAggregates
+      summary: Query Metric Aggregates
+      description: Query aggregated metric windows
+      tags:
+        - Metric Aggregates
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            maximum: 500
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: metricId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: companyId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: productId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: grain
+          in: query
+          schema:
+            type: string
+            enum: [minute, hour, day]
+        - name: windowStart
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: windowEnd
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of metric aggregates
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires metrics:aggregates:read scope
+
+  # Product Events
+  /api/v1/product-events:
+    post:
+      operationId: ingestProductEvents
+      summary: Ingest Product Events
+      description: Batch ingest raw product events
+      tags:
+        - Product Events
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - events
+              properties:
+                events:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProductEvent'
+      responses:
+        '200':
+          description: Batch operation completed
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires metrics:events:write scope
+
+    get:
+      operationId: queryProductEvents
+      summary: Query Product Events
+      description: Query product event records
+      tags:
+        - Product Events
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            maximum: 500
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: eventName
+          in: query
+          schema:
+            type: string
+        - name: eventKey
+          in: query
+          schema:
+            type: string
+        - name: companyId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: accountId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: productId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: startAt
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: endAt
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of product events
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires metrics:events:read scope
+
 tags:
   - name: Companies
     description: Manage company records
@@ -2169,17 +3809,49 @@ tags:
     description: Manage account records
   - name: Contacts
     description: Manage contact records
+  - name: Deals
+    description: Manage CRM deals with pipeline stages and interactions
   - name: Associations
     description: Create contact-company/account relationships
   - name: Calls
     description: Manage call records
+  - name: Call Recordings
+    description: Ingest call recordings for transcription
   - name: Meetings
     description: Manage meeting records
+  - name: Meeting Recordings
+    description: Ingest meeting recordings for transcription
   - name: Fields
     description: Custom field definitions and values
+  - name: Pipelines
+    description: Manage deal, action item, and ticket pipelines
+  - name: Pipeline Stages
+    description: Manage pipeline stage definitions
+  - name: Product Lines
+    description: Manage product line categories
+  - name: Products
+    description: Manage billing products
+  - name: Plans
+    description: Manage billing plans
+  - name: Subscriptions
+    description: Manage customer subscriptions
+  - name: Invoices
+    description: Create and manage invoices
+  - name: Usage
+    description: Report and query usage data
   - name: Users
     description: Fetch users within your enterprise
   - name: Action Items
     description: Task and action items linked to interactions
+  - name: Notes
+    description: Create and manage notes
   - name: Key Role Assignments
-    description: Manage internal team role assignments for companies and accounts
+    description: Manage internal team role assignments for companies, accounts, contacts, and deals
+  - name: Metric Definitions
+    description: Define and manage metrics
+  - name: Metric Computations
+    description: Ingest and query metric computations
+  - name: Metric Aggregates
+    description: Query aggregated metric windows
+  - name: Product Events
+    description: Ingest and query product events

@@ -1,0 +1,153 @@
+---
+title: 'Ingest Meeting Recording'
+api: 'POST /api/v1/recordings/ingest'
+description: 'Ingest a meeting recording URL for automatic transcription and analysis'
+---
+
+## Overview
+
+Ingest a meeting recording URL. The API will create a completed meeting, upload the recording to R2, transcribe it, and optionally run analysis.
+
+## Request Body
+
+You can provide recordings in one of three formats:
+
+**Format 1 — Single recording:**
+<ParamField body="recordingUrl" type="string">
+  URL to a single recording
+</ParamField>
+
+**Format 2 — Multiple recordings:**
+<ParamField body="recordingUrls" type="array">
+  Array of recording URLs
+</ParamField>
+
+**Format 3 — Batch with metadata (preferred):**
+<ParamField body="recordings" type="array">
+  Array of objects: `{ recordingUrl, title?, externalMeetingId?, metadata? }`
+</ParamField>
+
+### Common Fields
+
+<ParamField body="title" type="string" default="Ingested Recording">
+  Meeting title
+</ParamField>
+
+<ParamField body="titles" type="array">
+  Array of titles aligned with `recordingUrls`
+</ParamField>
+
+<ParamField body="scheduledStartAt" type="string">
+  Scheduled start time (ISO 8601). Defaults to 1 hour ago.
+</ParamField>
+
+<ParamField body="scheduledEndAt" type="string">
+  Scheduled end time (ISO 8601). Defaults to start + 1 hour.
+</ParamField>
+
+<ParamField body="channel" type="string" default="offline">
+  Meeting channel. One of: `gmeet`, `zoom`, `teams`, `offline`
+</ParamField>
+
+<ParamField body="joinUrl" type="string">
+  URL to join the meeting
+</ParamField>
+
+<ParamField body="hostEmail" type="string">
+  Email of meeting host
+</ParamField>
+
+<ParamField body="participantEmails" type="array">
+  Array of participant email addresses
+</ParamField>
+
+<ParamField body="orgUnitId" type="string">
+  Single org unit ID
+</ParamField>
+
+<ParamField body="orgUnitIds" type="array">
+  Array of org unit IDs
+</ParamField>
+
+<ParamField body="externalMeetingId" type="string">
+  External meeting ID for upsert
+</ParamField>
+
+<ParamField body="language" type="string" default="en">
+  Language code for transcription
+</ParamField>
+
+<ParamField body="deepgramModel" type="string" default="nova-2">
+  Deepgram model for transcription
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Additional metadata
+</ParamField>
+
+<ParamField body="enqueuePreanalyze" type="boolean" default="true">
+  Whether to enqueue pre-analysis
+</ParamField>
+
+<ParamField body="createTranscript" type="boolean" default="true">
+  Whether to create transcript
+</ParamField>
+
+<ParamField body="uploadToR2" type="boolean" default="true">
+  Whether to upload recording to R2
+</ParamField>
+
+<ParamField body="waitForTranscript" type="boolean" default="false">
+  Whether to wait for transcription before responding
+</ParamField>
+
+<ParamField body="skipEmail" type="boolean" default="false">
+  Whether to skip email notifications
+</ParamField>
+
+<ParamField body="skipNotifications" type="boolean" default="false">
+  Whether to skip all notifications
+</ParamField>
+
+<ParamField body="skipInsightsEmbed" type="boolean" default="false">
+  Whether to skip insights embedding
+</ParamField>
+
+<ParamField body="force" type="boolean" default="false">
+  Delete and recreate if meeting already exists
+</ParamField>
+
+<ParamField body="forceAnalyze" type="boolean" default="false">
+  Re-run enrichment on existing meeting
+</ParamField>
+
+## Response Fields
+
+<ResponseField name="reingested" type="boolean">
+  True when an existing meeting was upserted
+</ResponseField>
+
+<ResponseField name="metricsExist" type="boolean">
+  True when metrics data already exists
+</ResponseField>
+
+<ResponseField name="forceAnalyzed" type="boolean">
+  True when forceAnalyze was used
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/recordings/ingest \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "recordingUrl": "https://recordings.example.com/meeting_123.mp4",
+    "title": "Weekly Team Sync",
+    "participantEmails": ["john@example.com", "jane@example.com"],
+    "hostEmail": "john@example.com",
+    "scheduledStartAt": "2024-01-20T10:00:00Z",
+    "scheduledEndAt": "2024-01-20T11:00:00Z",
+    "channel": "zoom"
+  }'
+```

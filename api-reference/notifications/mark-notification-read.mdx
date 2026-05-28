@@ -1,0 +1,24 @@
+---
+title: 'Mark Notification Read'
+api: 'POST /api/v1/notifications/{id}/read'
+description: 'Mark a single notification as read'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Notification UUID
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/notifications/NOTIFICATION_UUID/read \
+  -H "Authorization: Bearer YOUR_JWT"
+```
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>

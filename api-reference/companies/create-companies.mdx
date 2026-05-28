@@ -49,6 +49,26 @@ description: 'Batch create or update company records'
     <ParamField body="ownerUserId" type="string">
       Owner user UUID
     </ParamField>
+
+    <ParamField body="healthScore" type="integer">
+      Health score (0-100)
+    </ParamField>
+
+    <ParamField body="healthScoreComputedAt" type="string">
+      ISO 8601 timestamp when health score was computed
+    </ParamField>
+
+    <ParamField body="healthScoreBreakdown" type="object">
+      Health score component breakdown
+    </ParamField>
+
+    <ParamField body="arr" type="number">
+      Annual Recurring Revenue
+    </ParamField>
+
+    <ParamField body="currency" type="string" default="USD">
+      Currency code (e.g. `USD`, `EUR`)
+    </ParamField>
     
     <ParamField body="attributes" type="object">
       Custom key-value attributes
@@ -59,6 +79,16 @@ description: 'Batch create or update company records'
 
     <ParamField body="createdAt" type="string">
       ISO 8601 creation timestamp. If provided, this value is used as the company's `created_at` instead of the current time. Applied on both insert and upsert.
+    </ParamField>
+
+    <ParamField body="key_roles" type="array">
+      Array of key role assignments for this company.
+      
+      <Expandable title="Key Role Object">
+        <ParamField body="roleKey" type="string" required>Role key (e.g. `csm`, `ae`)</ParamField>
+        <ParamField body="userEmail" type="string">Email of the assigned user</ParamField>
+        <ParamField body="userId" type="string">UUID of the assigned user</ParamField>
+      </Expandable>
     </ParamField>
   </Expandable>
 </ParamField>

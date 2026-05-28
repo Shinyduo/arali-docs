@@ -45,6 +45,14 @@ Scopes control what actions your API credentials can perform. When creating a ke
     | `contacts:write` | Create and update contacts |
     | `contacts:delete` | Delete contacts |
   </Accordion>
+
+  <Accordion title="Deals" icon="handshake">
+    | Scope | Permission |
+    |-------|------------|
+    | `deals:read` | List and view deals |
+    | `deals:write` | Create and update deals |
+    | `deals:delete` | Delete deals |
+  </Accordion>
   
   <Accordion title="Calls" icon="phone">
     | Scope | Permission |
@@ -60,6 +68,18 @@ Scopes control what actions your API credentials can perform. When creating a ke
     | `meetings:write` | Create and update meetings |
     | `meetings:delete` | Delete/cancel meetings |
   </Accordion>
+
+  <Accordion title="Associations" icon="link">
+    | Scope | Permission |
+    |-------|------------|
+    | `associations:write` | Create contact-company/account associations |
+  </Accordion>
+
+  <Accordion title="Interactions" icon="arrows-rotate">
+    | Scope | Permission |
+    |-------|------------|
+    | `interactions:write` | Link interactions to contacts and deals |
+  </Accordion>
   
   <Accordion title="Fields" icon="sliders">
     | Scope | Permission |
@@ -68,11 +88,99 @@ Scopes control what actions your API credentials can perform. When creating a ke
     | `fields:write` | Create field definitions and set values |
     | `fields:delete` | Delete field definitions |
   </Accordion>
-  
-  <Accordion title="Associations" icon="link">
+
+  <Accordion title="Pipelines & Stages" icon="diagram-project">
     | Scope | Permission |
     |-------|------------|
-    | `associations:write` | Create contact-company/account associations |
+    | `pipelines:read` | List and view pipelines |
+    | `pipelines:write` | Create and update pipelines |
+    | `pipelines:delete` | Delete pipelines |
+    | `stages:read` | List and view pipeline stages |
+    | `stages:write` | Create and update pipeline stages |
+    | `stages:delete` | Delete pipeline stages |
+  </Accordion>
+
+  <Accordion title="Products & Product Lines" icon="box">
+    | Scope | Permission |
+    |-------|------------|
+    | `products:read` | List and view products |
+    | `products:write` | Create and update products |
+    | `products:delete` | Delete products |
+    | `product-lines:read` | List and view product lines |
+    | `product-lines:write` | Create and update product lines |
+    | `product-lines:delete` | Delete product lines |
+  </Accordion>
+  
+  <Accordion title="Plans" icon="clipboard-list">
+    | Scope | Permission |
+    |-------|------------|
+    | `plans:read` | List and view plans |
+    | `plans:write` | Create and update plans |
+    | `plans:delete` | Delete plans |
+  </Accordion>
+  
+  <Accordion title="Subscriptions" icon="rotate">
+    | Scope | Permission |
+    |-------|------------|
+    | `subscriptions:read` | List and view subscriptions |
+    | `subscriptions:write` | Create and update subscriptions |
+    | `subscriptions:delete` | Delete subscriptions |
+  </Accordion>
+  
+  <Accordion title="Invoices" icon="file-invoice">
+    | Scope | Permission |
+    |-------|------------|
+    | `invoices:read` | List and view invoices |
+    | `invoices:write` | Create and update invoices |
+    | `invoices:delete` | Delete invoices |
+  </Accordion>
+  
+  <Accordion title="Usage" icon="chart-line">
+    | Scope | Permission |
+    |-------|------------|
+    | `usage:read` | Query usage data |
+    | `usage:write` | Report usage data |
+  </Accordion>
+  
+  <Accordion title="Key Role Assignments" icon="user-shield">
+    | Scope | Permission |
+    |-------|------------|
+    | `key_roles:read` | List and view role assignments |
+    | `key_roles:write` | Create and update role assignments |
+    | `key_roles:delete` | Delete role assignments |
+  </Accordion>
+  
+  <Accordion title="Users" icon="user">
+    | Scope | Permission |
+    |-------|------------|
+    | `users:read` | List and view users |
+  </Accordion>
+  
+  <Accordion title="Action Items" icon="check-circle">
+    | Scope | Permission |
+    |-------|------------|
+    | `action-items:read` | List and view action items |
+    | `action-items:write` | Create, update, and delete action items |
+  </Accordion>
+  
+  <Accordion title="Notes" icon="note-sticky">
+    | Scope | Permission |
+    |-------|------------|
+    | `notes:read` | List and view notes |
+    | `notes:write` | Create, update, and delete notes |
+  </Accordion>
+
+  <Accordion title="Metric Engine" icon="chart-bar">
+    | Scope | Permission |
+    |-------|------------|
+    | `metrics:definitions:read` | List and view metric definitions |
+    | `metrics:definitions:write` | Create and update metric definitions |
+    | `metrics:definitions:delete` | Delete metric definitions |
+    | `metrics:computations:read` | Query metric computations |
+    | `metrics:computations:write` | Ingest metric computations |
+    | `metrics:events:read` | Query product events |
+    | `metrics:events:write` | Ingest product events |
+    | `metrics:aggregates:read` | Query metric aggregates |
   </Accordion>
 </AccordionGroup>
 

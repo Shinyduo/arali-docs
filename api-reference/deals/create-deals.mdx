@@ -1,0 +1,197 @@
+---
+title: 'Create Deals'
+api: 'POST /api/v1/deals'
+description: 'Batch create or update deal records'
+---
+
+## Overview
+
+Create or update deals in batch. When `externalDealId` is provided, the API will upsert (update if exists, create if not). If `externalDealId` is not provided, a new deal is always created.
+
+## Request Body
+
+<ParamField body="deals" type="array" required>
+  Array of deal objects to create or update
+  
+  <Expandable title="Deal Object">
+    <ParamField body="id" type="string">
+      Deal ID. Auto-generated when omitted on create. Use for explicit ID assignment.
+    </ParamField>
+
+    <ParamField body="companyId" type="string">
+      Parent company UUID. May be omitted for unscoped deals.
+    </ParamField>
+
+    <ParamField body="accountId" type="string">
+      Linked account UUID.
+    </ParamField>
+
+    <ParamField body="parentDealId" type="string">
+      Parent deal UUID for nested deals.
+    </ParamField>
+
+    <ParamField body="pipelineId" type="string">
+      Deal pipeline ID. Defaults to the workspace default active deal pipeline.
+    </ParamField>
+
+    <ParamField body="currentStageId" type="string">
+      Stage ID within the selected pipeline. Defaults to the first stage in the resolved pipeline.
+    </ParamField>
+
+    <ParamField body="currentStageKey" type="string">
+      Stage slug/key within the pipeline (e.g. `prospecting`, `demo_booked`). Alternative to `currentStageId`.
+    </ParamField>
+
+    <ParamField body="currentStageName" type="string">
+      Stage display name (e.g. `Prospecting`, `Demo Booked`). Alternative to `currentStageId` or `currentStageKey`.
+    </ParamField>
+
+    <ParamField body="stageKey" type="string">
+      Shorthand for current stage key. Same as `currentStageKey`.
+    </ParamField>
+
+    <ParamField body="title" type="string">
+      Deal title. Also accepted as `name`.
+    </ParamField>
+
+    <ParamField body="dealType" type="string">
+      Deal type. One of: `new_business`, `expansion`, `renewal`, `upsell`, `contraction`, `churn_save`
+    </ParamField>
+
+    <ParamField body="status" type="string">
+      Deal status. One of: `open`, `won`, `lost`, `cancelled`
+    </ParamField>
+
+    <ParamField body="ownerUserId" type="string">
+      Deal owner user UUID.
+    </ParamField>
+
+    <ParamField body="amountCents" type="number">
+      Deal amount in minor currency units (e.g. cents).
+    </ParamField>
+
+    <ParamField body="currency" type="string" default="INR">
+      Currency code. Defaults to `INR`.
+    </ParamField>
+
+    <ParamField body="expectedCloseDate" type="string">
+      Expected close date in ISO 8601 format.
+    </ParamField>
+
+    <ParamField body="closedAt" type="string">
+      Actual close timestamp in ISO 8601 format.
+    </ParamField>
+
+    <ParamField body="externalDealId" type="string">
+      External system identifier used for upsert. When provided, the API checks for an existing deal with this external ID and updates it.
+    </ParamField>
+
+    <ParamField body="planId" type="string">
+      Linked billing plan ID.
+    </ParamField>
+
+    <ParamField body="productId" type="string">
+      Linked billing product ID.
+    </ParamField>
+
+    <ParamField body="subscriptionId" type="string">
+      Linked subscription ID.
+    </ParamField>
+
+    <ParamField body="lineItemId" type="string">
+      Linked line item ID.
+    </ParamField>
+
+    <ParamField body="metadata" type="object">
+      Arbitrary JSON metadata.
+    </ParamField>
+
+    <ParamField body="transitionReason" type="string">
+      Audit note when creating or changing stage.
+    </ParamField>
+
+    <ParamField body="contacts" type="array">
+      Array of contacts to attach to the deal.
+      
+      <Expandable title="Deal Contact Object">
+        <ParamField body="contactId" type="string" required>
+          Contact UUID
+        </ParamField>
+        <ParamField body="role" type="string">
+          Contact role. One of: `decision_maker`, `economic_buyer`, `champion`, `influencer`, `user`, `stakeholder`, `admin`, `other`, `unknown`
+        </ParamField>
+        <ParamField body="isPrimary" type="boolean" default="false">
+          Whether this is the primary contact for the deal
+        </ParamField>
+        <ParamField body="properties" type="object">
+          Custom properties for this contact-deal relationship
+        </ParamField>
+        <ParamField body="keyRoles" type="array">
+          Key roles for this contact within the deal
+        </ParamField>
+      </Expandable>
+    </ParamField>
+
+    <ParamField body="properties" type="object">
+      Custom field values for the deal.
+    </ParamField>
+
+    <ParamField body="key_roles" type="array">
+      Array of key role assignments for the deal.
+      
+      <Expandable title="Key Role Object">
+        <ParamField body="roleKey" type="string" required>Role key (e.g. `decision_maker`)</ParamField>
+        <ParamField body="userEmail" type="string">Email of the assigned user</ParamField>
+        <ParamField body="userId" type="string">UUID of the assigned user</ParamField>
+      </Expandable>
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="summary" type="object">
+  <Expandable title="Summary Object">
+    <ResponseField name="total" type="integer">Total number of deals processed</ResponseField>
+    <ResponseField name="success" type="integer">Number of deals successfully created/updated</ResponseField>
+    <ResponseField name="failed" type="integer">Number of deals that failed</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of result objects for each deal
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/deals \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "deals": [
+      {
+        "title": "Acme Expansion FY26",
+        "accountId": "ACCOUNT_UUID",
+        "currentStageName": "Prospecting",
+        "dealType": "expansion",
+        "status": "open",
+        "amountCents": 2500000,
+        "currency": "USD",
+        "externalDealId": "crm_deal_123",
+        "transitionReason": "Imported from CRM",
+        "contacts": [
+          {
+            "contactId": "CONTACT_UUID",
+            "role": "decision_maker",
+            "isPrimary": true
+          }
+        ]
+      }
+    ]
+  }'
+```

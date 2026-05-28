@@ -1,0 +1,59 @@
+---
+title: 'Create Pipeline Stages'
+api: 'POST /api/v1/pipeline-stages'
+description: 'Batch create or update pipeline stage records'
+---
+
+## Request Body
+
+<ParamField body="stages" type="array" required>
+  Array of stage objects to create or update
+  
+  <Expandable title="Stage Object">
+    <ParamField body="id" type="string">
+      Stage UUID. Provide to update an existing stage.
+    </ParamField>
+
+    <ParamField body="pipelineId" type="string" required>
+      Pipeline UUID this stage belongs to
+    </ParamField>
+
+    <ParamField body="name" type="string" required>
+      Stage display name
+    </ParamField>
+
+    <ParamField body="bucket" type="string" default="open">
+      Stage bucket. One of: `open`, `in_progress`, `blocked`, `done`, `archived`
+    </ParamField>
+
+    <ParamField body="color" type="string">
+      Hex color code for UI display
+    </ParamField>
+
+    <ParamField body="icon" type="string">
+      Icon identifier for UI display
+    </ParamField>
+
+    <ParamField body="sortOrder" type="number" default="0">
+      Display order within the pipeline
+    </ParamField>
+
+    <ParamField body="isTerminal" type="boolean" default="false">
+      Whether this is a terminal stage
+    </ParamField>
+
+    <ParamField body="winProbability" type="number">
+      Win probability (0-100). Only for deal pipelines.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of created/updated stage objects
+</ResponseField>

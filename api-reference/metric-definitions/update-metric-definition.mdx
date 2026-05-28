@@ -1,0 +1,53 @@
+---
+title: 'Update Metric Definition'
+api: 'PUT /api/v1/metric-definitions/{id}'
+description: 'Update a single metric definition by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Metric definition UUID
+</ParamField>
+
+## Request Body
+
+All fields are optional. Provide only the fields you want to update.
+
+<ParamField body="name" type="string">
+  Human-readable metric name
+</ParamField>
+
+<ParamField body="description" type="string">
+  Metric description
+</ParamField>
+
+<ParamField body="type" type="string">
+  Metric type: `aggregation`, `derived`, `ratio`, `funnel`
+</ParamField>
+
+<ParamField body="definitionJson" type="object">
+  Metric definition configuration
+</ParamField>
+
+<ParamField body="unit" type="string">
+  Unit of measurement
+</ParamField>
+
+<ParamField body="higherIsBetter" type="boolean">
+  Whether higher values are better
+</ParamField>
+
+<ParamField body="defaultGrain" type="string">
+  Default time grain: `minute`, `hour`, `day`
+</ParamField>
+
+<ParamField body="isActive" type="boolean">
+  Whether the metric is active
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>

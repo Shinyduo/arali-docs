@@ -1,0 +1,21 @@
+---
+title: 'Get Metric Definition'
+api: 'GET /api/v1/metric-definitions/{id}'
+description: 'Get a single metric definition by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Metric definition UUID
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Metric definition object
+</ResponseField>

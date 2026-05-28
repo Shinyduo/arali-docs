@@ -1,0 +1,25 @@
+---
+title: 'Delete Deal'
+api: 'DELETE /api/v1/deals/{id}'
+description: 'Delete a deal by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Deal UUID
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success message
+</ResponseField>
+
+<ResponseField name="deletedId" type="string">
+  UUID of the deleted deal
+</ResponseField>

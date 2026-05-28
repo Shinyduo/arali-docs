@@ -1,0 +1,77 @@
+---
+title: 'Deal Contacts'
+api: 'POST /api/v1/deals/{id}/contacts'
+description: 'Add or remove contacts from a deal'
+---
+
+## Add Contacts to Deal
+
+### Endpoint
+
+`POST /api/v1/deals/{id}/contacts`
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  Deal UUID
+</ParamField>
+
+### Request Body
+
+<ParamField body="contacts" type="array" required>
+  Array of contact objects to attach
+  
+  <Expandable title="Contact Object">
+    <ParamField body="contactId" type="string" required>
+      Contact UUID
+    </ParamField>
+    <ParamField body="role" type="string">
+      Contact role. One of: `decision_maker`, `economic_buyer`, `champion`, `influencer`, `user`, `stakeholder`, `admin`, `other`, `unknown`
+    </ParamField>
+    <ParamField body="isPrimary" type="boolean" default="false">
+      Whether this is the primary contact
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/deals/DEAL_UUID/contacts \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contacts": [
+      {
+        "contactId": "CONTACT_UUID",
+        "role": "decision_maker",
+        "isPrimary": true
+      }
+    ]
+  }'
+```
+
+---
+
+## Remove Contact from Deal
+
+### Endpoint
+
+`DELETE /api/v1/deals/{id}/contacts/{contactId}`
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  Deal UUID
+</ParamField>
+
+<ParamField path="contactId" type="string" required>
+  Contact UUID to remove
+</ParamField>
+
+### Example Request
+
+```bash
+curl -X DELETE https://api.arali.ai/api/v1/deals/DEAL_UUID/contacts/CONTACT_UUID \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
+```

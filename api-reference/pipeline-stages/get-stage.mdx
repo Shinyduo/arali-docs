@@ -1,0 +1,21 @@
+---
+title: 'Get Pipeline Stage'
+api: 'GET /api/v1/pipeline-stages/{id}'
+description: 'Get a single pipeline stage by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Stage UUID
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Stage object
+</ResponseField>

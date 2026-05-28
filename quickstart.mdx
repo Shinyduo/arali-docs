@@ -17,10 +17,24 @@ description: 'Start integrating with Arali API in under 5 minutes'
     - `companies:read`, `companies:write`, `companies:delete`
     - `accounts:read`, `accounts:write`, `accounts:delete`
     - `contacts:read`, `contacts:write`, `contacts:delete`
+    - `deals:read`, `deals:write`, `deals:delete`
     - `calls:read`, `calls:write`
     - `meetings:read`, `meetings:write`, `meetings:delete`
-    - `fields:read`, `fields:write`, `fields:delete`
     - `associations:write`
+    - `interactions:write`
+    - `fields:read`, `fields:write`, `fields:delete`
+    - `pipelines:read`, `pipelines:write`, `stages:read`, `stages:write`
+    - `products:read`, `products:write`
+    - `product-lines:read`, `product-lines:write`
+    - `plans:read`, `plans:write`
+    - `subscriptions:read`, `subscriptions:write`
+    - `invoices:read`, `invoices:write`
+    - `usage:read`, `usage:write`
+    - `key_roles:read`, `key_roles:write`
+    - `users:read`
+    - `action-items:read`, `action-items:write`
+    - `notes:read`, `notes:write`
+    - `metrics:definitions:read`, `metrics:events:write`, `metrics:aggregates:read`
   </Step>
   <Step title="Copy Your Token">
     Copy and securely store your API token. You won't be able to see it again.
@@ -43,7 +57,7 @@ curl -X POST 'https://api.arali.ai/api/v1/companies' \
         "name": "Acme Corporation",
         "externalId": "acme-001",
         "domain": "acme.com",
-        "lifecycleStage": "prospect"
+        "stageKey": "prospect"
       }
     ]
   }'
@@ -62,7 +76,7 @@ const response = await fetch('https://api.arali.ai/api/v1/companies', {
         name: 'Acme Corporation',
         externalId: 'acme-001',
         domain: 'acme.com',
-        lifecycleStage: 'prospect'
+        stageKey: 'prospect'
       }
     ]
   })
@@ -87,7 +101,7 @@ response = requests.post(
                 'name': 'Acme Corporation',
                 'externalId': 'acme-001',
                 'domain': 'acme.com',
-                'lifecycleStage': 'prospect'
+                'stageKey': 'prospect'
             }
         ]
     }

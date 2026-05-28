@@ -1,0 +1,21 @@
+---
+title: 'Get Product Line'
+api: 'GET /api/v1/product-lines/{key}'
+description: 'Get a single product line by key'
+---
+
+## Path Parameters
+
+<ParamField path="key" type="string" required>
+  Product line key
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Product line object
+</ResponseField>

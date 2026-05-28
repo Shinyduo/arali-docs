@@ -1,0 +1,100 @@
+---
+title: 'Ingest Product Events'
+api: 'POST /api/v1/product-events'
+description: 'Batch ingest raw product events'
+---
+
+## Request Body
+
+<ParamField body="events" type="array" required>
+  Array of product event objects
+  
+  <Expandable title="Product Event Object">
+    <ParamField body="eventName" type="string" required>
+      Event name (e.g. `image_processed`, `api_call`)
+    </ParamField>
+
+    <ParamField body="eventTimestamp" type="string" required>
+      Event timestamp (ISO 8601)
+    </ParamField>
+
+    <ParamField body="productId" type="string">
+      Product UUID. Required if `productKey` is not provided.
+    </ParamField>
+
+    <ParamField body="productKey" type="string">
+      Product key (alternative to productId)
+    </ParamField>
+
+    <ParamField body="companyId" type="string">
+      Company UUID
+    </ParamField>
+
+    <ParamField body="accountId" type="string">
+      Account UUID
+    </ParamField>
+
+    <ParamField body="userId" type="string">
+      User UUID
+    </ParamField>
+
+    <ParamField body="eventKey" type="string">
+      Unique event key for idempotency/traceability
+    </ParamField>
+
+    <ParamField body="valueNumber" type="number">
+      Numeric value associated with the event
+    </ParamField>
+
+    <ParamField body="valueJson" type="object">
+      JSON value associated with the event
+    </ParamField>
+
+    <ParamField body="rawRequest" type="object">
+      Raw request data
+    </ParamField>
+
+    <ParamField body="rawResponse" type="object">
+      Raw response data
+    </ParamField>
+
+    <ParamField body="dimensions" type="object">
+      Key-value dimensions for the event (e.g. `{ "region": "ap-south-1" }`)
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/product-events \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "events": [
+      {
+        "productKey": "image",
+        "companyId": "COMPANY_UUID",
+        "eventName": "image_processed",
+        "eventKey": "req_12345",
+        "eventTimestamp": "2026-03-25T10:05:00Z",
+        "valueNumber": 1,
+        "dimensions": { "region": "ap-south-1" }
+      }
+    ]
+  }'
+```
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="summary" type="object">
+  <Expandable title="Summary Object">
+    <ResponseField name="total" type="integer">Total events processed</ResponseField>
+    <ResponseField name="success" type="integer">Successfully ingested</ResponseField>
+    <ResponseField name="failed" type="integer">Failed</ResponseField>
+  </Expandable>
+</ResponseField>

@@ -1,0 +1,80 @@
+---
+title: 'Conversation Messages'
+api: 'GET /api/v1/conversations/{id}/messages'
+description: 'Get messages in a conversation and send new messages'
+---
+
+## Get Messages
+
+### Endpoint
+
+`GET /api/v1/conversations/{id}/messages`
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  Conversation (thread) UUID. Also accepts an interactionId as fallback.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="page" type="integer" default="1">
+  Page number for pagination
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Number of results per page. Maximum is 100.
+</ParamField>
+
+<ParamField query="since" type="string">
+  Filter messages after this ISO 8601 timestamp
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of message objects
+</ResponseField>
+
+---
+
+## Send Message
+
+### Endpoint
+
+`POST /api/v1/conversations/{id}/messages`
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  Conversation UUID
+</ParamField>
+
+### Request Body
+
+<ParamField body="textBody" type="string">
+  Plain text message body. Required if no `htmlBody` is provided.
+</ParamField>
+
+<ParamField body="htmlBody" type="string">
+  HTML message body. Required if no `textBody` is provided.
+</ParamField>
+
+<ParamField body="attachments" type="array">
+  Array of attachment objects
+</ParamField>
+
+### Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/conversations/CONVERSATION_UUID/messages \
+  -H "Authorization: Bearer YOUR_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "textBody": "Can you share the latest update?"
+  }'
+```

@@ -1,0 +1,35 @@
+---
+title: 'Update Product Line'
+api: 'PUT /api/v1/product-lines/{key}'
+description: 'Update a single product line by key'
+---
+
+## Path Parameters
+
+<ParamField path="key" type="string" required>
+  Product line key
+</ParamField>
+
+## Request Body
+
+<ParamField body="name" type="string">
+  Product line display name
+</ParamField>
+
+<ParamField body="description" type="string">
+  Product line description
+</ParamField>
+
+<ParamField body="status" type="string">
+  Status. One of: `active`, `archived`
+</ParamField>
+
+<ParamField body="sortOrder" type="number">
+  Display order
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>

@@ -1,0 +1,43 @@
+---
+title: 'Create Conversation'
+api: 'POST /api/v1/conversations'
+description: 'Create a new conversation'
+---
+
+## Overview
+
+Create a new conversation with specified participants. Optionally send an initial message.
+
+<Note>
+  This endpoint requires JWT authentication.
+</Note>
+
+## Request Body
+
+<ParamField body="subject" type="string">
+  Conversation subject/title
+</ParamField>
+
+<ParamField body="participantIds" type="array" required>
+  Array of user UUIDs to include in the conversation
+</ParamField>
+
+<ParamField body="initialMessage" type="string">
+  Optional initial message text
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/conversations \
+  -H "Authorization: Bearer YOUR_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subject": "Q1 Planning Discussion",
+    "participantIds": [
+      "550e8400-e29b-41d4-a716-446655440000",
+      "660e8400-e29b-41d4-a716-446655440001"
+    ],
+    "initialMessage": "Let us discuss our Q1 priorities."
+  }'
+```

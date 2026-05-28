@@ -1,7 +1,77 @@
 ---
 title: 'List Calls'
 api: 'GET /api/v1/calls'
-description: 'Get all call records for your enterprise'
+description: 'Get all call records for your enterprise with optional filtering'
 ---
 
+## Overview
 
+Returns a paginated list of call records for your enterprise with optional filtering by status, direction, company, account, contact, date range, and more.
+
+## Query Parameters
+
+<ParamField query="limit" type="integer" default="100">
+  Number of results per page. Maximum is 200.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip for pagination.
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by call status. One of: `completed`, `missed`, `voicemail`, `failed`, `busy`, `cancelled`, `unknown`
+</ParamField>
+
+<ParamField query="direction" type="string">
+  Filter by direction. One of: `inbound`, `outbound`, `unknown`
+</ParamField>
+
+<ParamField query="fromNumber" type="string">
+  Filter by originating phone number
+</ParamField>
+
+<ParamField query="toNumber" type="string">
+  Filter by destination phone number
+</ParamField>
+
+<ParamField query="companyId" type="string">
+  Filter by company UUID
+</ParamField>
+
+<ParamField query="accountId" type="string">
+  Filter by account UUID
+</ParamField>
+
+<ParamField query="contactId" type="string">
+  Filter by contact UUID
+</ParamField>
+
+<ParamField query="externalCallId" type="string">
+  Filter by external call ID
+</ParamField>
+
+<ParamField query="startDate" type="string">
+  Filter calls starting on or after this date (ISO 8601)
+</ParamField>
+
+<ParamField query="endDate" type="string">
+  Filter calls ending on or before this date (ISO 8601)
+</ParamField>
+
+<ParamField query="search" type="string">
+  Search by call title (case-insensitive partial match)
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of call objects
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  Pagination metadata
+</ResponseField>

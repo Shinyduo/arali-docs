@@ -1,0 +1,27 @@
+---
+title: 'Mark All Notifications Read'
+api: 'POST /api/v1/notifications/read-all'
+description: 'Mark all notifications as read'
+---
+
+## Overview
+
+Mark all notifications for the authenticated user as read.
+
+<Note>
+  This endpoint requires JWT authentication.
+</Note>
+
+## Endpoint
+
+`POST /api/v1/notifications/read-all`
+
+<Info>
+  `POST /api/v1/notifications/read` is an alias for the same operation.
+</Info>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>

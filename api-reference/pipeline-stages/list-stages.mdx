@@ -1,0 +1,21 @@
+---
+title: 'List Pipeline Stages'
+api: 'GET /api/v1/pipeline-stages'
+description: 'Get all stages for a pipeline'
+---
+
+## Query Parameters
+
+<ParamField query="pipelineId" type="string" required>
+  Pipeline UUID to get stages for
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of stage objects ordered by sortOrder
+</ResponseField>

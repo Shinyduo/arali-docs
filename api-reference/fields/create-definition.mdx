@@ -15,11 +15,11 @@ description: 'Create a new custom field definition'
 </ParamField>
 
 <ParamField body="fieldType" type="string" required>
-  Field type. Options: `text`, `number`, `date`, `boolean`, `json`, `enum`, `multi_enum`
+  Field type. Options: `text`, `number`, `date`, `boolean`, `json`, `enum`, `multi_enum`, `currency`, `user`
 </ParamField>
 
 <ParamField body="entityType" type="string" required>
-  Entity type this field applies to. Options: `company`, `account`, `contact`
+  Entity type this field applies to. Options: `company`, `account`, `contact`, `deal`, `deal_line_item`
 </ParamField>
 
 <ParamField body="enumOptions" type="array">
@@ -34,4 +34,12 @@ description: 'Create a new custom field definition'
   Order for UI display
 </ParamField>
 
+## Response
 
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Created field definition object
+</ResponseField>

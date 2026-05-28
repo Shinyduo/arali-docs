@@ -1,0 +1,21 @@
+---
+title: 'Delete Pipeline Stage'
+api: 'DELETE /api/v1/pipeline-stages/{id}'
+description: 'Delete a pipeline stage by ID'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Stage UUID
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success message
+</ResponseField>

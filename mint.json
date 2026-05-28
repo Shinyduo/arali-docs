@@ -98,16 +98,79 @@
         {
             "group": "Calls",
             "pages": [
+                "api-reference/calls/create-calls",
                 "api-reference/calls/list-calls",
                 "api-reference/calls/get-call"
             ]
         },
         {
+            "group": "Call Recordings",
+            "pages": [
+                "api-reference/call-recordings/ingest-call-recording"
+            ]
+        },
+        {
             "group": "Meetings",
             "pages": [
+                "api-reference/meetings/create-meeting",
                 "api-reference/meetings/list-meetings",
                 "api-reference/meetings/get-meeting",
                 "api-reference/meetings/delete-meeting"
+            ]
+        },
+        {
+            "group": "Meeting Recordings",
+            "pages": [
+                "api-reference/meeting-recordings/ingest-meeting-recording"
+            ]
+        },
+        {
+            "group": "Deals",
+            "pages": [
+                "api-reference/deals/create-deals",
+                "api-reference/deals/list-deals",
+                "api-reference/deals/get-deal",
+                "api-reference/deals/update-deal",
+                "api-reference/deals/delete-deal",
+                "api-reference/deals/deal-contacts",
+                "api-reference/deals/deal-interactions"
+            ]
+        },
+        {
+            "group": "Pipelines",
+            "pages": [
+                "api-reference/pipelines/create-pipelines",
+                "api-reference/pipelines/list-pipelines",
+                "api-reference/pipelines/get-pipeline",
+                "api-reference/pipelines/update-pipeline",
+                "api-reference/pipelines/delete-pipeline"
+            ]
+        },
+        {
+            "group": "Pipeline Stages",
+            "pages": [
+                "api-reference/pipeline-stages/create-stages",
+                "api-reference/pipeline-stages/list-stages",
+                "api-reference/pipeline-stages/get-stage",
+                "api-reference/pipeline-stages/update-stage",
+                "api-reference/pipeline-stages/delete-stage"
+            ]
+        },
+        {
+            "group": "Conversations",
+            "pages": [
+                "api-reference/conversations/list-conversations",
+                "api-reference/conversations/create-conversation",
+                "api-reference/conversations/conversation-messages",
+                "api-reference/conversations/mark-conversation-read"
+            ]
+        },
+        {
+            "group": "Notifications",
+            "pages": [
+                "api-reference/notifications/list-notifications",
+                "api-reference/notifications/mark-all-read",
+                "api-reference/notifications/mark-notification-read"
             ]
         },
         {
@@ -128,6 +191,16 @@
             ]
         },
         {
+            "group": "Product Lines",
+            "pages": [
+                "api-reference/product-lines/create-product-lines",
+                "api-reference/product-lines/list-product-lines",
+                "api-reference/product-lines/get-product-line",
+                "api-reference/product-lines/update-product-line",
+                "api-reference/product-lines/delete-product-line"
+            ]
+        },
+        {
             "group": "Products",
             "pages": [
                 "api-reference/products/create-products",
@@ -144,6 +217,7 @@
                 "api-reference/plans/list-plans",
                 "api-reference/plans/get-plan",
                 "api-reference/plans/update-plan",
+                "api-reference/plans/delete-plan",
                 "api-reference/plans/add-product",
                 "api-reference/plans/remove-product"
             ]
@@ -212,6 +286,42 @@
                 "api-reference/notes/get-note",
                 "api-reference/notes/update-note",
                 "api-reference/notes/delete-note"
+            ]
+        },
+        {
+            "group": "Interactions",
+            "pages": [
+                "api-reference/interactions/link-interaction-contact"
+            ]
+        },
+        {
+            "group": "Metric Definitions",
+            "pages": [
+                "api-reference/metric-definitions/create-metric-definitions",
+                "api-reference/metric-definitions/list-metric-definitions",
+                "api-reference/metric-definitions/get-metric-definition",
+                "api-reference/metric-definitions/update-metric-definition",
+                "api-reference/metric-definitions/delete-metric-definition"
+            ]
+        },
+        {
+            "group": "Metric Computations",
+            "pages": [
+                "api-reference/metric-computations/ingest-metric-computations",
+                "api-reference/metric-computations/query-metric-computations"
+            ]
+        },
+        {
+            "group": "Metric Aggregates",
+            "pages": [
+                "api-reference/metric-aggregates/query-metric-aggregates"
+            ]
+        },
+        {
+            "group": "Product Events",
+            "pages": [
+                "api-reference/product-events/ingest-product-events",
+                "api-reference/product-events/query-product-events"
             ]
         }
     ],

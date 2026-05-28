@@ -1,58 +1,53 @@
 ---
 title: 'List Contacts'
 api: 'GET /api/v1/contacts'
-description: 'Get all contacts for your enterprise'
+description: 'Get all contacts for your enterprise with optional filtering'
 ---
-
-## Overview
-
-Retrieves a paginated list of contacts.
-
-**Required scope:** `contacts:read`
 
 ## Query Parameters
 
 <ParamField query="limit" type="integer" default="50">
-  Number of contacts to return (max: 100)
+  Number of results per page. Maximum is 100.
 </ParamField>
 
 <ParamField query="offset" type="integer" default="0">
-  Number of contacts to skip
+  Number of results to skip
 </ParamField>
 
-## Example Request
+<ParamField query="externalId" type="string">
+  Filter by external ID
+</ParamField>
 
-```bash
-curl -X GET "https://api.arali.ai/api/v1/contacts?limit=10&offset=0" \
-  -H "Authorization: Api-Key YOUR_STATIC_KEY"
-```
+<ParamField query="companyId" type="string">
+  Filter by company UUID
+</ParamField>
+
+<ParamField query="email" type="string">
+  Filter by email address
+</ParamField>
+
+<ParamField query="phone" type="string">
+  Filter by phone number
+</ParamField>
+
+<ParamField query="search" type="string">
+  Search by name (case-insensitive partial match)
+</ParamField>
 
 ## Response
 
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440001",
-      "enterpriseId": "550e8400-e29b-41d4-a716-446655440000",
-      "fullName": "John Doe",
-      "title": "VP of Engineering",
-      "ownerUserId": null,
-      "attributes": {},
-      "emails": [{ "email": "john.doe@acme.com", "isPrimary": true, "label": "Work" }],
-      "phones": [{ "phone": "+1-555-123-4567", "isPrimary": true, "label": "Mobile" }],
-      "createdAt": "2026-02-03T10:00:00.000Z",
-      "updatedAt": "2026-02-03T10:00:00.000Z"
-    }
-  ],
-  "pagination": { "limit": 10, "offset": 0, "total": 1 }
-}
-```
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
 
-## Error Responses
+<ResponseField name="data" type="array">
+  Array of contact objects
+</ResponseField>
 
-| Status | Description |
-|--------|-------------|
-| `401` | Unauthorized - Missing or invalid token |
-| `403` | Forbidden - Insufficient permissions |
+<ResponseField name="meta" type="object">
+  <Expandable title="Meta Object">
+    <ResponseField name="total" type="integer">Total number of matching contacts</ResponseField>
+    <ResponseField name="offset" type="integer">Current offset</ResponseField>
+    <ResponseField name="limit" type="integer">Results per page</ResponseField>
+  </Expandable>
+</ResponseField>

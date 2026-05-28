@@ -1,0 +1,51 @@
+---
+title: 'Create Pipelines'
+api: 'POST /api/v1/pipelines'
+description: 'Batch create or update pipeline records'
+---
+
+## Request Body
+
+<ParamField body="pipelines" type="array" required>
+  Array of pipeline objects to create or update
+  
+  <Expandable title="Pipeline Object">
+    <ParamField body="id" type="string">
+      Pipeline UUID. Provide to update an existing pipeline.
+    </ParamField>
+
+    <ParamField body="name" type="string" required>
+      Pipeline display name
+    </ParamField>
+
+    <ParamField body="entityType" type="string" default="action_item">
+      Entity type this pipeline applies to. One of: `deal`, `action_item`, `ticket`
+    </ParamField>
+
+    <ParamField body="orgUnitId" type="string">
+      Org unit ID (required only for `action_item` pipelines)
+    </ParamField>
+
+    <ParamField body="description" type="string">
+      Pipeline description
+    </ParamField>
+
+    <ParamField body="isDefault" type="boolean" default="false">
+      Whether this is the default pipeline for its entity type
+    </ParamField>
+
+    <ParamField body="createdByUserId" type="string">
+      User UUID who created this pipeline
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of created/updated pipeline objects
+</ResponseField>

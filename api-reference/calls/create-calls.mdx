@@ -6,70 +6,120 @@ description: 'Batch create call records'
 
 ## Request Body
 
+<ParamField body="providerKey" type="string" required>
+  Integration provider key (e.g. `aircall`, `twilio`, `nooks`)
+</ParamField>
+
 <ParamField body="calls" type="array" required>
-  Array of call objects
+  Array of call objects to create
   
   <Expandable title="Call Object">
     <ParamField body="externalCallId" type="string" required>
       External unique ID from call provider
     </ParamField>
-    
+
     <ParamField body="direction" type="string" default="unknown">
-      Call direction. Options: `inbound`, `outbound`, `unknown`
+      Call direction. One of: `inbound`, `outbound`, `unknown`
     </ParamField>
-    
+
     <ParamField body="status" type="string" default="completed">
-      Call status. Options: `completed`, `missed`, `voicemail`, `failed`, `busy`, `cancelled`, `unknown`
+      Call status. One of: `completed`, `missed`, `voicemail`, `failed`, `busy`, `cancelled`, `unknown`
     </ParamField>
-    
+
     <ParamField body="fromNumber" type="string">
       Phone number the call originated from
     </ParamField>
-    
+
     <ParamField body="toNumber" type="string">
       Phone number the call was made to
     </ParamField>
-    
+
     <ParamField body="durationSeconds" type="number">
       Call duration in seconds
     </ParamField>
-    
+
     <ParamField body="ringDurationSeconds" type="number">
       Ring duration before answer
     </ParamField>
-    
+
     <ParamField body="startTimestamp" type="string">
       Call start time (ISO 8601)
     </ParamField>
-    
+
     <ParamField body="endTimestamp" type="string">
       Call end time (ISO 8601)
     </ParamField>
-    
+
     <ParamField body="recordingUrl" type="string">
       URL to call recording
     </ParamField>
-    
+
     <ParamField body="customer" type="object">
-      Customer info with `phone`, `email`, and `name` fields
+      Customer info: `{ phone?, email?, name? }`
     </ParamField>
-    
+
     <ParamField body="orgUnitIds" type="array">
-      Array of org unit UUIDs this call belongs to
+      Array of org unit IDs
     </ParamField>
-    
+
     <ParamField body="orgUnitId" type="string">
-      Single org unit UUID (alternative to orgUnitIds)
+      Single org unit ID
     </ParamField>
-    
+
     <ParamField body="metadata" type="object">
       Additional metadata
     </ParamField>
-    
+
     <ParamField body="title" type="string">
-      Call title (auto-generated if not provided)
+      Call title
     </ParamField>
   </Expandable>
 </ParamField>
 
+## Response
 
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="summary" type="object">
+  <Expandable title="Summary Object">
+    <ResponseField name="total" type="integer">Total calls processed</ResponseField>
+    <ResponseField name="success" type="integer">Successfully created</ResponseField>
+    <ResponseField name="failed" type="integer">Failed</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of result objects
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/calls \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "providerKey": "aircall",
+    "calls": [
+      {
+        "externalCallId": "call_12345",
+        "direction": "inbound",
+        "status": "completed",
+        "fromNumber": "+1-555-123-4567",
+        "toNumber": "+1-555-987-6543",
+        "durationSeconds": 300,
+        "startTimestamp": "2024-01-15T10:00:00Z",
+        "endTimestamp": "2024-01-15T10:05:00Z",
+        "recordingUrl": "https://recordings.example.com/call_12345.mp3",
+        "customer": {
+          "phone": "+1-555-123-4567",
+          "name": "John Doe",
+          "email": "john.doe@acme.com"
+        },
+        "title": "Sales Follow-up Call"
+      }
+    ]
+  }'
+```

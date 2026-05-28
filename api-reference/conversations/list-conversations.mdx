@@ -1,0 +1,33 @@
+---
+title: 'List Conversations'
+api: 'GET /api/v1/conversations'
+description: 'List conversations for the authenticated user'
+---
+
+## Overview
+
+Returns a paginated list of conversations for the authenticated user.
+
+<Note>
+  This endpoint requires JWT authentication (not API keys). The `subject` claim from the JWT is used to identify the user.
+</Note>
+
+## Query Parameters
+
+<ParamField query="page" type="integer" default="1">
+  Page number for pagination (starts at 1)
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Number of results per page. Maximum is 100.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of conversation objects
+</ResponseField>

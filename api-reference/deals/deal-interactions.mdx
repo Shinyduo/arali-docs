@@ -1,0 +1,69 @@
+---
+title: 'Deal Interactions'
+api: 'POST /api/v1/deals/{id}/interactions'
+description: 'Add or remove interactions from a deal'
+---
+
+## Add Interactions to Deal
+
+### Endpoint
+
+`POST /api/v1/deals/{id}/interactions`
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  Deal UUID
+</ParamField>
+
+### Request Body
+
+<ParamField body="interactions" type="array" required>
+  Array of interaction objects to link
+  
+  <Expandable title="Interaction Object">
+    <ParamField body="interactionId" type="string" required>
+      Interaction UUID
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/deals/DEAL_UUID/interactions \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "interactions": [
+      {
+        "interactionId": "INTERACTION_UUID"
+      }
+    ]
+  }'
+```
+
+---
+
+## Remove Interaction from Deal
+
+### Endpoint
+
+`DELETE /api/v1/deals/{id}/interactions/{interactionId}`
+
+### Path Parameters
+
+<ParamField path="id" type="string" required>
+  Deal UUID
+</ParamField>
+
+<ParamField path="interactionId" type="string" required>
+  Interaction UUID to remove
+</ParamField>
+
+### Example Request
+
+```bash
+curl -X DELETE https://api.arali.ai/api/v1/deals/DEAL_UUID/interactions/INTERACTION_UUID \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY"
+```

@@ -1,0 +1,45 @@
+---
+title: 'Link Interaction to Contact'
+api: 'POST /api/v1/interactions/link-contact'
+description: 'Link an interaction to a contact and optionally a deal'
+---
+
+## Overview
+
+Link an interaction (call, meeting, or thread) to a contact. Optionally also link the interaction to a deal.
+
+<Note>
+  Requires `interactions:write` or `deals:write` scope.
+</Note>
+
+## Request Body
+
+<ParamField body="interactionId" type="string" required>
+  Interaction UUID
+</ParamField>
+
+<ParamField body="contactId" type="string" required>
+  Contact UUID
+</ParamField>
+
+<ParamField body="dealId" type="string">
+  Optional deal UUID to also link the interaction to
+</ParamField>
+
+<ParamField body="role" type="string">
+  Role of the contact in this interaction
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/interactions/link-contact \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "interactionId": "INTERACTION_UUID",
+    "contactId": "CONTACT_UUID",
+    "dealId": "DEAL_UUID",
+    "role": "decision_maker"
+  }'
+```

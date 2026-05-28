@@ -1,0 +1,25 @@
+---
+title: 'List Metric Definitions'
+api: 'GET /api/v1/metric-definitions'
+description: 'Get all metric definitions for your enterprise'
+---
+
+## Query Parameters
+
+<ParamField query="limit" type="integer" default="100">
+  Number of results per page. Maximum is 500.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of metric definition objects
+</ResponseField>

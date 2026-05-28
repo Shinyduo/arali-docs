@@ -1,0 +1,53 @@
+---
+title: 'Query Metric Computations'
+api: 'GET /api/v1/metric-computations'
+description: 'Query metric computation records'
+---
+
+## Query Parameters
+
+<ParamField query="limit" type="integer" default="100">
+  Number of results per page. Maximum is 500.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip
+</ParamField>
+
+<ParamField query="metricId" type="string">
+  Filter by metric definition UUID
+</ParamField>
+
+<ParamField query="companyId" type="string">
+  Filter by company UUID
+</ParamField>
+
+<ParamField query="accountId" type="string">
+  Filter by account UUID
+</ParamField>
+
+<ParamField query="productId" type="string">
+  Filter by product UUID
+</ParamField>
+
+<ParamField query="eventKey" type="string">
+  Filter by event key
+</ParamField>
+
+<ParamField query="startAt" type="string">
+  Filter computations after this timestamp (ISO 8601)
+</ParamField>
+
+<ParamField query="endAt" type="string">
+  Filter computations before this timestamp (ISO 8601)
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of metric computation objects
+</ResponseField>

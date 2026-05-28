@@ -1,73 +1,92 @@
 ---
 title: 'Create Contacts'
 api: 'POST /api/v1/contacts'
-description: 'Bulk create or update contacts (upsert by externalId)'
+description: 'Batch create or update contact records'
 ---
-
-## Overview
-
-Create new contacts or update existing ones in a single request. Contacts are upserted by `externalId`.
-
-**Required scope:** `contacts:write`
-
-<Note>
-  Company associations are managed via the Associations API. This endpoint does not accept a `companies` array in the request body.
-</Note>
 
 ## Request Body
 
+<ParamField body="providerKey" type="string" required>
+  Integration provider key (e.g. `hubspot`, `salesforce`)
+</ParamField>
+
 <ParamField body="contacts" type="array" required>
-  Array of contact objects to create or update (upsert by `externalId`)
+  Array of contact objects to create or update
   
   <Expandable title="Contact Object">
     <ParamField body="externalId" type="string" required>
       External unique ID from integration source
     </ParamField>
-    
+
     <ParamField body="fullName" type="string">
-      Contact's full name (`string` or `null`)
+      Contact's full name
     </ParamField>
-    
+
     <ParamField body="title" type="string">
-      Job title (`string` or `null`)
+      Job title
     </ParamField>
-    
+
     <ParamField body="ownerUserId" type="string">
-      Owner user UUID (`uuid` or `null`)
+      Owner user UUID
     </ParamField>
-    
+
     <ParamField body="emails" type="array">
-      List of email objects (`{ email, isPrimary?, label? }`). `email` is required.
+      Array of email objects: `{ email: string, isPrimary?: boolean, label?: string }`
     </ParamField>
-    
+
     <ParamField body="phones" type="array">
-      List of phone objects (`{ phone, isPrimary?, label? }`). `phone` is required.
+      Array of phone objects: `{ phone: string, isPrimary?: boolean, label?: string }`
     </ParamField>
-    
+
     <ParamField body="attributes" type="object">
-      Free-form key-value store saved directly on the contact record (JSONB column). Use for unstructured metadata like `linkedin`, `timezone`, etc.
-    </ParamField>
-    
-    <ParamField body="properties" type="object">
-      Typed custom field values saved to the `field_values` table. Keys must match a `fieldKey` defined in your `field_definitions`. Values are coerced to the field's declared type (text, number, date, boolean, enum, json).
+      Custom key-value attributes
     </ParamField>
 
     <ParamField body="stageKey" type="string">
-      Lifecycle stage key for the contact. Must match the `key` field of a `stage_definition` record with `scope = "contact"` for your enterprise (e.g. `"prospect"`, `"customer"`, `"churned"`). If the key is not found, the contact's stage is left unchanged. Pass `null` to explicitly clear the stage.
+      Contact stage key
+    </ParamField>
+
+    <ParamField body="stageDefinitionId" type="string">
+      Stage definition UUID
+    </ParamField>
+
+    <ParamField body="properties" type="object">
+      Custom field values
     </ParamField>
 
     <ParamField body="createdAt" type="string">
-      ISO 8601 creation timestamp. If provided, this value is used as the contact's `created_at` instead of the current time. Applied on both insert and upsert.
+      ISO 8601 creation timestamp override
     </ParamField>
 
-    <Info>
-      **Email & Phone behavior**
-      - Only one email can be `isPrimary: true` per contact (same for phone numbers).
-      - If multiple entries are sent as primary, only the first is kept as primary.
-      - If a new email/phone is set as primary, the existing primary is automatically set to `isPrimary: false`.
-    </Info>
+    <ParamField body="key_roles" type="array">
+      Array of key role assignments.
+      
+      <Expandable title="Key Role Object">
+        <ParamField body="roleKey" type="string" required>Role key</ParamField>
+        <ParamField body="userEmail" type="string">Email of the assigned user</ParamField>
+        <ParamField body="userId" type="string">UUID of the assigned user</ParamField>
+      </Expandable>
+    </ParamField>
   </Expandable>
 </ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="summary" type="object">
+  <Expandable title="Summary Object">
+    <ResponseField name="total" type="integer">Total contacts processed</ResponseField>
+    <ResponseField name="success" type="integer">Successfully created/updated</ResponseField>
+    <ResponseField name="failed" type="integer">Failed</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of result objects
+</ResponseField>
 
 ## Example Request
 
@@ -76,55 +95,22 @@ curl -X POST https://api.arali.ai/api/v1/contacts \
   -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
+    "providerKey": "hubspot",
     "contacts": [
       {
-        "externalId": "hubspot_contact_12345",
+        "externalId": "contact_12345",
         "fullName": "John Doe",
         "title": "VP of Engineering",
-        "stageKey": "prospect",
         "emails": [
-          { "email": "john.doe@acme.com", "isPrimary": true, "label": "Work" },
-          { "email": "johndoe@gmail.com", "isPrimary": false, "label": "Personal" }
+          { "email": "john.doe@acme.com", "isPrimary": true, "label": "Work" }
         ],
         "phones": [
           { "phone": "+1-555-123-4567", "isPrimary": true, "label": "Mobile" }
         ],
-        "attributes": { "timezone": "America/New_York" }
+        "attributes": {
+          "linkedin": "https://linkedin.com/in/johndoe"
+        }
       }
     ]
   }'
-```
-
-## Response
-
-### Success (200)
-
-```json
-{
-  "success": true,
-  "summary": { "total": 1, "success": 1, "failed": 0 },
-  "results": [
-    {
-      "externalId": "hubspot_contact_12345",
-      "contactId": "550e8400-e29b-41d4-a716-446655440001",
-      "status": "success"
-    }
-  ]
-}
-```
-
-## Error Responses
-
-| Status | Description |
-|--------|-------------|
-| `400` | Bad Request - Invalid input |
-| `401` | Unauthorized - Missing or invalid token |
-| `403` | Forbidden - Insufficient permissions |
-| `500` | Internal Server Error |
-
-```json
-{
-  "error": "Error message here",
-  "details": "Additional details if available"
-}
 ```

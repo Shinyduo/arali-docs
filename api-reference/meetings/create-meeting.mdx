@@ -1,33 +1,37 @@
 ---
 title: 'Create Meeting'
 api: 'POST /api/v1/meetings'
-description: 'Create or update a meeting record'
+description: 'Create or upsert a meeting record'
 ---
+
+## Overview
+
+Create a new meeting or update an existing one. The API upserts based on the composite key `(externalMeetingId, scheduledStartAt)`.
 
 ## Request Body
 
-<ParamField body="scheduledStartAt" type="string" required>
-  Scheduled start time (ISO 8601)
-</ParamField>
-
-<ParamField body="scheduledEndAt" type="string" required>
-  Scheduled end time (ISO 8601). Must be after start and in the future.
-</ParamField>
-
-<ParamField body="title" type="string" default="empty title">
-  Meeting title/subject
+<ParamField body="title" type="string">
+  Meeting title
 </ParamField>
 
 <ParamField body="channel" type="string">
-  Meeting channel. Options: `gmeet`, `zoom`, `teams`, `offline`
+  Meeting channel. One of: `gmeet`, `zoom`, `teams`, `offline`
 </ParamField>
 
 <ParamField body="joinUrl" type="string">
   URL to join the meeting
 </ParamField>
 
+<ParamField body="scheduledStartAt" type="string" required>
+  Scheduled start time (ISO 8601)
+</ParamField>
+
+<ParamField body="scheduledEndAt" type="string" required>
+  Scheduled end time (ISO 8601)
+</ParamField>
+
 <ParamField body="status" type="string" default="scheduled">
-  Meeting status. Options: `scheduled`, `skip`, `in_progress`, `cancelled`, `completed`, `deleted`, `error`
+  Meeting status. One of: `scheduled`, `skip`, `in_progress`, `cancelled`, `completed`, `deleted`, `error`
 </ParamField>
 
 <ParamField body="externalMeetingId" type="string">
@@ -43,11 +47,11 @@ description: 'Create or update a meeting record'
 </ParamField>
 
 <ParamField body="orgUnitIds" type="array">
-  Array of org unit UUIDs this meeting belongs to
+  Array of org unit IDs
 </ParamField>
 
 <ParamField body="orgUnitId" type="string">
-  Single org unit UUID (alternative to orgUnitIds)
+  Single org unit ID
 </ParamField>
 
 <ParamField body="recurringMeetingId" type="string">
@@ -55,11 +59,29 @@ description: 'Create or update a meeting record'
 </ParamField>
 
 <ParamField body="type" type="string">
-  Meeting type. Options: `external`, `internal` (auto-determined from participant domains if not provided)
+  Meeting type. One of: `external`, `internal`. Auto-determined from participant domains if not provided.
 </ParamField>
 
 <ParamField body="metadata" type="object">
   Additional metadata
 </ParamField>
 
+## Example Request
 
+```bash
+curl -X POST https://api.arali.ai/api/v1/meetings \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Weekly Team Sync",
+    "channel": "gmeet",
+    "joinUrl": "https://meet.google.com/abc-defg-hij",
+    "scheduledStartAt": "2024-01-20T10:00:00Z",
+    "scheduledEndAt": "2024-01-20T11:00:00Z",
+    "status": "scheduled",
+    "externalMeetingId": "calendar_event_abc123",
+    "hostEmail": "john@example.com",
+    "participantEmails": ["john@example.com", "jane@example.com"],
+    "type": "internal"
+  }'
+```

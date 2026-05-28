@@ -1,0 +1,33 @@
+---
+title: 'Get Deal'
+api: 'GET /api/v1/deals/{id}'
+description: 'Get a single deal by ID with contacts, interactions, and stage history'
+---
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Deal UUID
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Deal object with the following enriched fields:
+  
+  <Expandable title="Enriched fields">
+    <ResponseField name="contacts" type="array">
+      Attached contacts with their roles
+    </ResponseField>
+    <ResponseField name="interactions" type="array">
+      Linked interactions (calls, meetings, threads)
+    </ResponseField>
+    <ResponseField name="stageHistory" type="array">
+      Stage transition history
+    </ResponseField>
+  </Expandable>
+</ResponseField>

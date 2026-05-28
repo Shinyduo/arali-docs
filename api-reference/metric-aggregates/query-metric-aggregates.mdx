@@ -1,0 +1,49 @@
+---
+title: 'Query Metric Aggregates'
+api: 'GET /api/v1/metric-aggregates'
+description: 'Query aggregated metric windows'
+---
+
+## Query Parameters
+
+<ParamField query="limit" type="integer" default="100">
+  Number of results per page. Maximum is 500.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip
+</ParamField>
+
+<ParamField query="metricId" type="string">
+  Filter by metric definition UUID
+</ParamField>
+
+<ParamField query="companyId" type="string">
+  Filter by company UUID
+</ParamField>
+
+<ParamField query="productId" type="string">
+  Filter by product UUID
+</ParamField>
+
+<ParamField query="grain" type="string">
+  Time grain for aggregation. One of: `minute`, `hour`, `day`
+</ParamField>
+
+<ParamField query="windowStart" type="string">
+  Start of the query window (ISO 8601)
+</ParamField>
+
+<ParamField query="windowEnd" type="string">
+  End of the query window (ISO 8601)
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of aggregate window objects
+</ResponseField>

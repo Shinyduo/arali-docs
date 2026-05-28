@@ -1,0 +1,21 @@
+---
+title: 'List Product Lines'
+api: 'GET /api/v1/product-lines'
+description: 'Get all product lines for your enterprise'
+---
+
+## Query Parameters
+
+<ParamField query="status" type="string">
+  Filter by status. One of: `active`, `archived`
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of product line objects
+</ResponseField>

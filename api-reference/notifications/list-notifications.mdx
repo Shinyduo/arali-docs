@@ -1,0 +1,37 @@
+---
+title: 'List Notifications'
+api: 'GET /api/v1/notifications'
+description: 'List notifications for the authenticated user'
+---
+
+## Overview
+
+Returns the 100 most recent notifications for the authenticated user.
+
+<Note>
+  This endpoint requires JWT authentication with a `subject` claim (userId).
+</Note>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of notification objects
+  
+  <Expandable title="Notification Object">
+    <ResponseField name="id" type="string">Notification UUID</ResponseField>
+    <ResponseField name="userId" type="string">User UUID</ResponseField>
+    <ResponseField name="enterpriseId" type="string">Enterprise UUID</ResponseField>
+    <ResponseField name="type" type="string">Notification type</ResponseField>
+    <ResponseField name="sourceId" type="string">Source entity ID</ResponseField>
+    <ResponseField name="title" type="string">Notification title</ResponseField>
+    <ResponseField name="body" type="string">Notification body</ResponseField>
+    <ResponseField name="isRead" type="boolean">Whether the notification has been read</ResponseField>
+    <ResponseField name="readAt" type="string">Timestamp when read (ISO 8601)</ResponseField>
+    <ResponseField name="metadata" type="object">Custom metadata</ResponseField>
+    <ResponseField name="createdAt" type="string">Creation timestamp (ISO 8601)</ResponseField>
+  </Expandable>
+</ResponseField>
