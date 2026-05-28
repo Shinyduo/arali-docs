@@ -98,21 +98,6 @@ components:
           format: uuid
           nullable: true
           description: Owner user ID
-        healthScore:
-          type: integer
-          minimum: 0
-          maximum: 100
-          nullable: true
-          description: Health score (0-100)
-        healthScoreComputedAt:
-          type: string
-          format: date-time
-          nullable: true
-          description: When health score was computed
-        healthScoreBreakdown:
-          type: object
-          nullable: true
-          description: Health score component breakdown
         arr:
           type: integer
           nullable: true
@@ -1040,9 +1025,8 @@ paths:
                   externalId: "hubspot_12345"
                   externalCompanyId: "CRM_001"
                   domain: "acme.com"
-                  lifecycleStage: "customer"
-                  healthScore: 85
-                  arr: 120000
+                   lifecycleStage: "customer"
+                   arr: 120000
                   attributes:
                     industry: "Technology"
                     employee_count: 500
@@ -2568,7 +2552,7 @@ paths:
     get:
       operationId: getDeal
       summary: Get Deal
-      description: Get a single deal by ID
+      description: Get a single deal by internal ID or externalDealId
       tags:
         - Deals
       security:
@@ -2579,7 +2563,7 @@ paths:
           required: true
           schema:
             type: string
-            format: uuid
+          description: Deal UUID or externalDealId
       responses:
         '200':
           description: Deal details
@@ -2593,7 +2577,7 @@ paths:
     put:
       operationId: updateDeal
       summary: Update Deal
-      description: Update a single deal
+      description: Update a single deal by internal ID or externalDealId
       tags:
         - Deals
       security:
@@ -2604,7 +2588,7 @@ paths:
           required: true
           schema:
             type: string
-            format: uuid
+          description: Deal UUID or externalDealId
       requestBody:
         required: true
         content:
@@ -2624,7 +2608,7 @@ paths:
     delete:
       operationId: deleteDeal
       summary: Delete Deal
-      description: Delete a deal
+      description: Delete a deal by internal ID or externalDealId
       tags:
         - Deals
       security:
@@ -2635,7 +2619,7 @@ paths:
           required: true
           schema:
             type: string
-            format: uuid
+          description: Deal UUID or externalDealId
       responses:
         '200':
           description: Deal deleted
