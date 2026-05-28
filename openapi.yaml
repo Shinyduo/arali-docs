@@ -1025,8 +1025,8 @@ paths:
                   externalId: "hubspot_12345"
                   externalCompanyId: "CRM_001"
                   domain: "acme.com"
-                   lifecycleStage: "customer"
-                   arr: 120000
+                  lifecycleStage: "customer"
+                  arr: 120000
                   attributes:
                     industry: "Technology"
                     employee_count: 500
@@ -1300,15 +1300,14 @@ paths:
                     $ref: '#/components/schemas/Account'
             example:
               accounts:
-                - name: "Acme Enterprise Account"
-                  externalId: "vitally_acc_12345"
-                  externalAccountId: "CRM_ACC_001"
-                  externalCompanyId: "hubspot_12345"
-                  domain: "acme.com"
-                  accountType: "enterprise"
-                  healthScore: 85
-                  arr: 120000
-                  metadata:
+                 - name: "Acme Enterprise Account"
+                   externalId: "vitally_acc_12345"
+                   externalAccountId: "CRM_ACC_001"
+                   externalCompanyId: "hubspot_12345"
+                   domain: "acme.com"
+                   accountType: "enterprise"
+                   arr: 120000
+                   metadata:
                     tier: "premium"
                     contract_start: "2024-01-01"
       responses:
