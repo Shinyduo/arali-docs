@@ -1,13 +1,13 @@
 ---
 title: 'Get Deal'
 api: 'GET /api/v1/deals/{id}'
-description: 'Get a single deal by ID with contacts, interactions, and stage history'
+description: 'Get a single enriched deal by ID'
 ---
 
 ## Path Parameters
 
 <ParamField path="id" type="string" required>
-  Deal UUID or `externalDealId`. You can use either the internal Arali deal ID or your own external deal identifier.
+  Deal UUID or `externalDealId`
 </ParamField>
 
 ## Response
@@ -17,17 +17,166 @@ description: 'Get a single deal by ID with contacts, interactions, and stage his
 </ResponseField>
 
 <ResponseField name="data" type="object">
-  Deal object with the following enriched fields:
-  
-  <Expandable title="Enriched fields">
+  Enriched deal object with related company, account, contacts, and transitions.
+
+  <Expandable title="Deal fields">
+    <ResponseField name="id" type="string">Deal UUID</ResponseField>
+    <ResponseField name="enterpriseId" type="string">Enterprise UUID</ResponseField>
+    <ResponseField name="pipelineId" type="string">Pipeline UUID</ResponseField>
+    <ResponseField name="currentStageId" type="string">Current stage UUID</ResponseField>
+    <ResponseField name="companyId" type="string | null">Parent company UUID</ResponseField>
+    <ResponseField name="accountId" type="string | null">Linked account UUID</ResponseField>
+    <ResponseField name="name" type="string">Deal name</ResponseField>
+    <ResponseField name="lifecycleStage" type="string">`open`, `won`, `lost`, `cancelled`</ResponseField>
+    <ResponseField name="amountCents" type="number | null">Amount in minor currency units</ResponseField>
+    <ResponseField name="currency" type="string">Currency code (default: INR)</ResponseField>
+    <ResponseField name="expectedCloseDate" type="string | null">Expected close date</ResponseField>
+    <ResponseField name="actualCloseDate" type="string | null">Actual close timestamp</ResponseField>
+    <ResponseField name="parentDealId" type="string | null">Parent deal UUID</ResponseField>
+    <ResponseField name="externalDealId" type="string | null">External deal ID</ResponseField>
+    <ResponseField name="attributes" type="object">Custom key-value attributes</ResponseField>
+    <ResponseField name="createdAt" type="string">Creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">Last updated timestamp</ResponseField>
+
+    <ResponseField name="stage" type="object">Current pipeline stage</ResponseField>
+    <ResponseField name="pipeline" type="object">Pipeline</ResponseField>
+
+    <ResponseField name="fieldValues" type="array">
+      Custom field values.
+      <Expandable title="Field value properties">
+        <ResponseField name="fieldKey" type="string">Field key</ResponseField>
+        <ResponseField name="fieldName" type="string">Field name</ResponseField>
+        <ResponseField name="fieldType" type="string">Field type</ResponseField>
+        <ResponseField name="value" type="any">Value</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="company" type="object | null">
+      Parent company.
+      <Expandable title="Company properties">
+        <ResponseField name="id" type="string">Company UUID</ResponseField>
+        <ResponseField name="name" type="string">Company name</ResponseField>
+        <ResponseField name="domain" type="string">Domain</ResponseField>
+        <ResponseField name="stage" type="object">Stage definition</ResponseField>
+        <ResponseField name="fieldValues" type="array">Custom field values</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="account" type="object | null">
+      Linked account.
+      <Expandable title="Account properties">
+        <ResponseField name="id" type="string">Account UUID</ResponseField>
+        <ResponseField name="name" type="string">Account name</ResponseField>
+        <ResponseField name="stage" type="object">Stage definition</ResponseField>
+      </Expandable>
+    </ResponseField>
+
     <ResponseField name="contacts" type="array">
-      Attached contacts with their roles
+      Attached contacts with roles.
+      <Expandable title="Deal contact properties">
+        <ResponseField name="id" type="string">Deal contact UUID</ResponseField>
+        <ResponseField name="enterpriseId" type="string">Enterprise UUID</ResponseField>
+        <ResponseField name="dealId" type="string">Deal UUID</ResponseField>
+        <ResponseField name="contactId" type="string">Contact UUID</ResponseField>
+        <ResponseField name="role" type="string">Role</ResponseField>
+        <ResponseField name="isPrimary" type="boolean">Is primary</ResponseField>
+        <ResponseField name="createdAt" type="string">Creation timestamp</ResponseField>
+        <ResponseField name="updatedAt" type="string">Last updated timestamp</ResponseField>
+        <ResponseField name="contact" type="object">Contact details (id, fullName, title, emails, phones)</ResponseField>
+      </Expandable>
     </ResponseField>
-    <ResponseField name="interactions" type="array">
-      Linked interactions (calls, meetings, threads)
-    </ResponseField>
-    <ResponseField name="stageHistory" type="array">
-      Stage transition history
+
+    <ResponseField name="transitions" type="array">
+      Stage transition history.
+      <Expandable title="Transition properties">
+        <ResponseField name="id" type="string">Transition UUID</ResponseField>
+        <ResponseField name="dealId" type="string">Deal UUID</ResponseField>
+        <ResponseField name="fromPipelineId" type="string | null">From pipeline UUID</ResponseField>
+        <ResponseField name="fromStageId" type="string | null">From stage UUID</ResponseField>
+        <ResponseField name="toPipelineId" type="string">To pipeline UUID</ResponseField>
+        <ResponseField name="toStageId" type="string">To stage UUID</ResponseField>
+        <ResponseField name="changedAt" type="string">Timestamp</ResponseField>
+        <ResponseField name="changedByUserId" type="string | null">User UUID</ResponseField>
+      </Expandable>
     </ResponseField>
   </Expandable>
 </ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "enterpriseId": "550e8400-e29b-41d4-a716-446655440001",
+    "pipelineId": "550e8400-e29b-41d4-a716-446655440002",
+    "currentStageId": "550e8400-e29b-41d4-a716-446655440003",
+    "companyId": "550e8400-e29b-41d4-a716-446655440004",
+    "accountId": "550e8400-e29b-41d4-a716-446655440005",
+    "name": "Acme Expansion FY26",
+    "lifecycleStage": "open",
+    "amountCents": null,
+    "currency": "INR",
+    "expectedCloseDate": null,
+    "actualCloseDate": null,
+    "parentDealId": null,
+    "externalDealId": null,
+    "attributes": {},
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "stage": { "id": "...", "key": "...", "name": "...", "pipelineId": "...", "sortOrder": 1 },
+    "pipeline": { "id": "...", "name": "...", "isActive": true },
+    "fieldValues": [
+      { "fieldKey": "priority", "fieldName": "Priority", "fieldType": "enum", "value": "high" }
+    ],
+    "company": {
+      "id": "550e8400-e29b-41d4-a716-446655440004",
+      "name": "Acme Corporation",
+      "domain": "acme.com",
+      "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." },
+      "fieldValues": [{ "fieldKey": "...", "fieldName": "...", "fieldType": "...", "value": "..." }]
+    },
+    "account": {
+      "id": "550e8400-e29b-41d4-a716-446655440005",
+      "name": "Acme Enterprise",
+      "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." }
+    },
+    "contacts": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440006",
+        "enterpriseId": "550e8400-e29b-41d4-a716-446655440001",
+        "dealId": "550e8400-e29b-41d4-a716-446655440000",
+        "contactId": "550e8400-e29b-41d4-a716-446655440007",
+        "role": "unknown",
+        "isPrimary": false,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "contact": {
+          "id": "550e8400-e29b-41d4-a716-446655440007",
+          "fullName": "John Doe",
+          "title": "VP of Engineering",
+          "emails": [
+            { "id": "550e8400-e29b-41d4-a716-446655440008", "email": "john@acme.com", "isPrimary": false }
+          ],
+          "phones": [
+            { "id": "550e8400-e29b-41d4-a716-446655440009", "phone": "+1-555-123-4567", "isPrimary": false }
+          ]
+        }
+      }
+    ],
+    "transitions": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440010",
+        "dealId": "550e8400-e29b-41d4-a716-446655440000",
+        "fromPipelineId": null,
+        "fromStageId": null,
+        "toPipelineId": "550e8400-e29b-41d4-a716-446655440002",
+        "toStageId": "550e8400-e29b-41d4-a716-446655440003",
+        "changedAt": "2026-01-01T00:00:00.000Z",
+        "changedByUserId": null
+      }
+    ]
+  }
+}
+```

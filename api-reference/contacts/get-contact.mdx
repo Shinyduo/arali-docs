@@ -1,18 +1,8 @@
 ---
 title: 'Get Contact'
 api: 'GET /api/v1/contacts/{id}'
-description: 'Get a single contact by ID (includes emails, phones, companies)'
+description: 'Get a single enriched contact by ID'
 ---
-
-## Overview
-
-Retrieves a single contact by ID.
-
-**Required scope:** `contacts:read`
-
-<Note>
-  If present, `companies` reflects relationships created via the Associations API.
-</Note>
 
 ## Path Parameters
 
@@ -20,16 +10,85 @@ Retrieves a single contact by ID.
   Contact UUID
 </ParamField>
 
-## Example Request
-
-```bash
-curl -X GET "https://api.arali.ai/api/v1/contacts/550e8400-e29b-41d4-a716-446655440001" \
-  -H "Authorization: Api-Key YOUR_STATIC_KEY"
-```
-
 ## Response
 
-Returns a contact record, including emails, phones, and company associations (if present).
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Enriched contact object with related companies, deals, and accounts.
+
+  <Expandable title="Contact fields">
+    <ResponseField name="id" type="string">Contact UUID</ResponseField>
+    <ResponseField name="enterpriseId" type="string">Enterprise UUID</ResponseField>
+    <ResponseField name="fullName" type="string | null">Full name</ResponseField>
+    <ResponseField name="title" type="string | null">Job title</ResponseField>
+    <ResponseField name="ownerUserId" type="string | null">Owner user UUID</ResponseField>
+    <ResponseField name="toAnalyze" type="boolean">Flag to analyze</ResponseField>
+    <ResponseField name="stageDefinitionId" type="string | null">Stage definition UUID</ResponseField>
+    <ResponseField name="attributes" type="object">Custom key-value attributes</ResponseField>
+    <ResponseField name="externalContactId" type="string | null">External contact ID</ResponseField>
+    <ResponseField name="createdAt" type="string">Creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">Last updated timestamp</ResponseField>
+
+    <ResponseField name="stage" type="object | null">
+      Resolved stage definition.
+      <Expandable title="Stage properties">
+        <ResponseField name="id" type="string">Stage UUID</ResponseField>
+        <ResponseField name="key" type="string">Stage key</ResponseField>
+        <ResponseField name="name" type="string">Stage name</ResponseField>
+        <ResponseField name="bucket" type="string">Stage bucket</ResponseField>
+        <ResponseField name="scope" type="string">Stage scope</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="fieldValues" type="array">
+      Custom field values.
+      <Expandable title="Field value properties">
+        <ResponseField name="fieldKey" type="string">Field key</ResponseField>
+        <ResponseField name="fieldName" type="string">Field name</ResponseField>
+        <ResponseField name="fieldType" type="string">Field type</ResponseField>
+        <ResponseField name="value" type="any">Value</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="emails" type="array">[{ id, email, isPrimary }]</ResponseField>
+    <ResponseField name="phones" type="array">[{ id, phone, isPrimary }]</ResponseField>
+
+    <ResponseField name="companies" type="array">
+      Related companies.
+      <Expandable title="Company properties">
+        <ResponseField name="id" type="string">Company UUID</ResponseField>
+        <ResponseField name="name" type="string">Company name</ResponseField>
+        <ResponseField name="domain" type="string">Domain</ResponseField>
+        <ResponseField name="stage" type="object">Stage definition</ResponseField>
+        <ResponseField name="fieldValues" type="array">Custom field values</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="deals" type="array">
+      Related deals.
+      <Expandable title="Deal properties">
+        <ResponseField name="id" type="string">Deal UUID</ResponseField>
+        <ResponseField name="name" type="string">Deal name</ResponseField>
+        <ResponseField name="stage" type="object">Pipeline stage</ResponseField>
+        <ResponseField name="pipeline" type="object">Pipeline</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="accounts" type="array">
+      Related accounts.
+      <Expandable title="Account properties">
+        <ResponseField name="id" type="string">Account UUID</ResponseField>
+        <ResponseField name="name" type="string">Account name</ResponseField>
+        <ResponseField name="stage" type="object">Stage definition</ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example Response
 
 ```json
 {
@@ -37,31 +96,55 @@ Returns a contact record, including emails, phones, and company associations (if
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440001",
     "enterpriseId": "550e8400-e29b-41d4-a716-446655440000",
-    "externalId": "hubspot_contact_12345",
     "fullName": "John Doe",
     "title": "VP of Engineering",
     "ownerUserId": null,
+    "toAnalyze": true,
+    "stageDefinitionId": "550e8400-e29b-41d4-a716-446655440002",
     "attributes": {},
-    "emails": [{ "email": "john.doe@acme.com", "isPrimary": true, "label": "Work" }],
-    "phones": [{ "phone": "+1-555-123-4567", "isPrimary": true, "label": "Mobile" }],
+    "externalContactId": null,
+    "createdAt": "2026-02-03T10:00:00.000Z",
+    "updatedAt": "2026-02-03T10:00:00.000Z",
+    "stage": {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "key": "lead",
+      "name": "Lead",
+      "bucket": "pre_sale",
+      "scope": "contact"
+    },
+    "fieldValues": [
+      { "fieldKey": "source", "fieldName": "Source", "fieldType": "text", "value": "Website" }
+    ],
+    "emails": [
+      { "id": "550e8400-e29b-41d4-a716-446655440003", "email": "john.doe@acme.com", "isPrimary": false }
+    ],
+    "phones": [
+      { "id": "550e8400-e29b-41d4-a716-446655440004", "phone": "+1-555-123-4567", "isPrimary": false }
+    ],
     "companies": [
       {
-        "companyId": "550e8400-e29b-41d4-a716-446655440000",
-        "relation": "employee",
-        "isPrimary": true,
-        "attributes": {}
+        "id": "550e8400-e29b-41d4-a716-446655440005",
+        "name": "Acme Corporation",
+        "domain": "acme.com",
+        "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." },
+        "fieldValues": [{ "fieldKey": "...", "fieldName": "...", "fieldType": "...", "value": "..." }]
       }
     ],
-    "createdAt": "2026-02-03T10:00:00.000Z",
-    "updatedAt": "2026-02-03T10:00:00.000Z"
+    "deals": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440006",
+        "name": "Acme Deal",
+        "stage": { "id": "...", "key": "...", "name": "...", "pipelineId": "...", "sortOrder": 1 },
+        "pipeline": { "id": "...", "name": "...", "isActive": true }
+      }
+    ],
+    "accounts": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440007",
+        "name": "Acme Account",
+        "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." }
+      }
+    ]
   }
 }
 ```
-
-## Error Responses
-
-| Status | Description |
-|--------|-------------|
-| `401` | Unauthorized - Missing or invalid token |
-| `403` | Forbidden - Insufficient permissions |
-| `404` | Not Found - Contact doesn't exist |

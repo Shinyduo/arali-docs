@@ -42,6 +42,58 @@ The API supports three flows for creating associations:
 
 ## Endpoints
 
+### GET /api/v1/associations
+
+Fetch enriched related entities for a contact, deal, company, or account.
+
+**Required Scope:** `associations:read`
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `entityType` | string | Yes | Type of entity: `contact`, `deal`, `company`, `account` |
+| `external_id` | string | Conditional* | External ID of the entity |
+| `internal_id` | string (UUID) | Conditional* | Internal UUID of the entity |
+| `providerKey` | string | No | Provider key for external ID lookup. Defaults to `api` |
+
+\* Provide exactly one of `external_id` or `internal_id`
+
+#### Response by Entity Type
+
+| Entity Type | Returns |
+|-------------|---------|
+| **contact** | `companies[]`, `deals[]`, `accounts[]` |
+| **deal** | `contacts[]`, `company`, `account` |
+| **company** | `contacts[]`, `deals[]`, `accounts[]` |
+| **account** | `contacts[]`, `deals[]`, `company` |
+
+All returned entities are fully enriched with `stage`, `fieldValues`, emails, phones, and pipeline/stage details where applicable.
+
+#### Example Request
+
+```bash
+curl -G "https://api.arali.ai/api/v1/associations" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  --data-urlencode "entityType=contact" \
+  --data-urlencode "external_id=hubspot_contact_12345"
+```
+
+#### Example Response
+
+```json
+{
+  "success": true,
+  "entityType": "contact",
+  "entityId": "550e8400-e29b-41d4-a716-446655440000",
+  "companies": [...],
+  "deals": [...],
+  "accounts": [...]
+}
+```
+
+---
+
 ### GET /api/v1/associations/schema
 
 Returns API documentation and schema information.

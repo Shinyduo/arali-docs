@@ -1,7 +1,7 @@
 ---
 title: 'Get Account'
 api: 'GET /api/v1/accounts/{id}'
-description: 'Get a single account by ID'
+description: 'Get a single enriched account by ID'
 ---
 
 ## Path Parameters
@@ -10,4 +10,154 @@ description: 'Get a single account by ID'
   Account UUID
 </ParamField>
 
+## Response
 
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Enriched account object with related company, contacts, and deals.
+
+  <Expandable title="Account fields">
+    <ResponseField name="id" type="string">Account UUID</ResponseField>
+    <ResponseField name="enterpriseId" type="string">Enterprise UUID</ResponseField>
+    <ResponseField name="companyId" type="string">Parent company UUID</ResponseField>
+    <ResponseField name="name" type="string">Account display name</ResponseField>
+    <ResponseField name="domain" type="string | null">Account domain</ResponseField>
+    <ResponseField name="accountType" type="string | null">Account type/tier</ResponseField>
+    <ResponseField name="ownerUserId" type="string | null">Owner user UUID</ResponseField>
+    <ResponseField name="stageDefinitionId" type="string | null">Stage definition UUID</ResponseField>
+    <ResponseField name="healthScore" type="integer | null">Health score (0-100)</ResponseField>
+    <ResponseField name="healthScoreComputedAt" type="string | null">ISO 8601 datetime</ResponseField>
+    <ResponseField name="healthScoreBreakdown" type="object | null">Breakdown object</ResponseField>
+    <ResponseField name="ARR" type="integer | null">Annual Recurring Revenue</ResponseField>
+    <ResponseField name="currency" type="string">Currency code (default: USD)</ResponseField>
+    <ResponseField name="externalId" type="string | null">Primary External ID</ResponseField>
+    <ResponseField name="externalAccountId" type="string | null">Secondary External ID</ResponseField>
+    <ResponseField name="externalCompanyId" type="string | null">Parent company external ID</ResponseField>
+    <ResponseField name="metadata" type="object">Custom key-value metadata</ResponseField>
+    <ResponseField name="createdAt" type="string">Creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">Last updated timestamp</ResponseField>
+
+    <ResponseField name="stage" type="object | null">
+      Resolved stage definition.
+      <Expandable title="Stage properties">
+        <ResponseField name="id" type="string">Stage UUID</ResponseField>
+        <ResponseField name="key" type="string">Stage key</ResponseField>
+        <ResponseField name="name" type="string">Stage name</ResponseField>
+        <ResponseField name="bucket" type="string">Stage bucket</ResponseField>
+        <ResponseField name="scope" type="string">Stage scope</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="fieldValues" type="array">
+      Custom field values.
+      <Expandable title="Field value properties">
+        <ResponseField name="fieldKey" type="string">Field key</ResponseField>
+        <ResponseField name="fieldName" type="string">Field name</ResponseField>
+        <ResponseField name="fieldType" type="string">Field type</ResponseField>
+        <ResponseField name="value" type="any">Value</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="company" type="object | null">
+      Parent company.
+      <Expandable title="Company properties">
+        <ResponseField name="id" type="string">Company UUID</ResponseField>
+        <ResponseField name="name" type="string">Company name</ResponseField>
+        <ResponseField name="domain" type="string">Domain</ResponseField>
+        <ResponseField name="stage" type="object">Stage definition</ResponseField>
+        <ResponseField name="fieldValues" type="array">Custom field values</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="contacts" type="array">
+      Related contacts.
+      <Expandable title="Contact properties">
+        <ResponseField name="id" type="string">Contact UUID</ResponseField>
+        <ResponseField name="fullName" type="string">Full name</ResponseField>
+        <ResponseField name="title" type="string">Job title</ResponseField>
+        <ResponseField name="emails" type="array">[{ id, email, isPrimary }]</ResponseField>
+        <ResponseField name="phones" type="array">[{ id, phone, isPrimary }]</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    <ResponseField name="deals" type="array">
+      Related deals.
+      <Expandable title="Deal properties">
+        <ResponseField name="id" type="string">Deal UUID</ResponseField>
+        <ResponseField name="name" type="string">Deal name</ResponseField>
+        <ResponseField name="stage" type="object">Pipeline stage</ResponseField>
+        <ResponseField name="pipeline" type="object">Pipeline</ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "enterpriseId": "550e8400-e29b-41d4-a716-446655440001",
+    "companyId": "550e8400-e29b-41d4-a716-446655440002",
+    "name": "Acme Enterprise Account",
+    "domain": "acme.com",
+    "accountType": "enterprise",
+    "ownerUserId": null,
+    "stageDefinitionId": "550e8400-e29b-41d4-a716-446655440003",
+    "healthScore": null,
+    "healthScoreComputedAt": null,
+    "healthScoreBreakdown": null,
+    "ARR": null,
+    "currency": "USD",
+    "externalId": null,
+    "externalAccountId": null,
+    "externalCompanyId": null,
+    "metadata": {},
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "stage": {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "key": "live",
+      "name": "Live",
+      "bucket": "live",
+      "scope": "account"
+    },
+    "fieldValues": [
+      { "fieldKey": "tier", "fieldName": "Tier", "fieldType": "enum", "value": "enterprise" }
+    ],
+    "company": {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "name": "Acme Corporation",
+      "domain": "acme.com",
+      "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." },
+      "fieldValues": [{ "fieldKey": "...", "fieldName": "...", "fieldType": "...", "value": "..." }]
+    },
+    "contacts": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440004",
+        "fullName": "John Doe",
+        "title": "VP of Engineering",
+        "emails": [
+          { "id": "550e8400-e29b-41d4-a716-446655440005", "email": "john@acme.com", "isPrimary": false }
+        ],
+        "phones": [
+          { "id": "550e8400-e29b-41d4-a716-446655440006", "phone": "+1-555-123-4567", "isPrimary": false }
+        ]
+      }
+    ],
+    "deals": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440007",
+        "name": "Acme Expansion",
+        "stage": { "id": "...", "key": "...", "name": "...", "pipelineId": "...", "sortOrder": 1 },
+        "pipeline": { "id": "...", "name": "...", "isActive": true }
+      }
+    ]
+  }
+}
+```

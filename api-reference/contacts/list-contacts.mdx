@@ -41,7 +41,7 @@ description: 'Get all contacts for your enterprise with optional filtering'
 </ResponseField>
 
 <ResponseField name="data" type="array">
-  Array of contact objects
+  Array of enriched contact objects. Each object has the same shape as the `GET /api/v1/contacts/{id}` response.
 </ResponseField>
 
 <ResponseField name="meta" type="object">
@@ -51,3 +51,71 @@ description: 'Get all contacts for your enterprise with optional filtering'
     <ResponseField name="limit" type="integer">Results per page</ResponseField>
   </Expandable>
 </ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "enterpriseId": "550e8400-e29b-41d4-a716-446655440000",
+      "fullName": "John Doe",
+      "title": "VP of Engineering",
+      "ownerUserId": null,
+      "toAnalyze": true,
+      "stageDefinitionId": "550e8400-e29b-41d4-a716-446655440002",
+      "attributes": {},
+      "externalContactId": null,
+      "createdAt": "2026-02-03T10:00:00.000Z",
+      "updatedAt": "2026-02-03T10:00:00.000Z",
+      "stage": {
+        "id": "550e8400-e29b-41d4-a716-446655440002",
+        "key": "lead",
+        "name": "Lead",
+        "bucket": "pre_sale",
+        "scope": "contact"
+      },
+      "fieldValues": [
+        { "fieldKey": "source", "fieldName": "Source", "fieldType": "text", "value": "Website" }
+      ],
+      "emails": [
+        { "id": "550e8400-e29b-41d4-a716-446655440003", "email": "john.doe@acme.com", "isPrimary": false }
+      ],
+      "phones": [
+        { "id": "550e8400-e29b-41d4-a716-446655440004", "phone": "+1-555-123-4567", "isPrimary": false }
+      ],
+      "companies": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440005",
+          "name": "Acme Corporation",
+          "domain": "acme.com",
+          "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." },
+          "fieldValues": [{ "fieldKey": "...", "fieldName": "...", "fieldType": "...", "value": "..." }]
+        }
+      ],
+      "deals": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440006",
+          "name": "Acme Deal",
+          "stage": { "id": "...", "key": "...", "name": "...", "pipelineId": "...", "sortOrder": 1 },
+          "pipeline": { "id": "...", "name": "...", "isActive": true }
+        }
+      ],
+      "accounts": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440007",
+          "name": "Acme Account",
+          "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "total": 50,
+    "offset": 0,
+    "limit": 50
+  }
+}
+```

@@ -37,15 +37,14 @@ description: 'Get all accounts for your enterprise'
 </ResponseField>
 
 <ResponseField name="data" type="array">
-  Array of enriched account objects. Each account includes standard fields plus:
-  
+  Array of enriched account objects. Each object has the same shape as the `GET /api/v1/accounts/{id}` response.
+
   <Expandable title="Enriched fields">
-    <ResponseField name="stage" type="object | null">
-      Resolved stage definition details
-    </ResponseField>
-    <ResponseField name="fieldValues" type="array">
-      Custom field values associated with this account
-    </ResponseField>
+    <ResponseField name="stage" type="object | null">Resolved stage definition details</ResponseField>
+    <ResponseField name="fieldValues" type="array">Custom field values</ResponseField>
+    <ResponseField name="company" type="object | null">Parent company</ResponseField>
+    <ResponseField name="contacts" type="array">Related contacts</ResponseField>
+    <ResponseField name="deals" type="array">Related deals</ResponseField>
   </Expandable>
 </ResponseField>
 
@@ -57,3 +56,78 @@ description: 'Get all accounts for your enterprise'
     <ResponseField name="totalPages" type="integer">Total number of pages</ResponseField>
   </Expandable>
 </ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "enterpriseId": "550e8400-e29b-41d4-a716-446655440001",
+      "companyId": "550e8400-e29b-41d4-a716-446655440002",
+      "name": "Acme Enterprise Account",
+      "domain": "acme.com",
+      "accountType": "enterprise",
+      "ownerUserId": null,
+      "stageDefinitionId": "550e8400-e29b-41d4-a716-446655440003",
+      "healthScore": null,
+      "healthScoreComputedAt": null,
+      "healthScoreBreakdown": null,
+      "ARR": null,
+      "currency": "USD",
+      "externalId": null,
+      "externalAccountId": null,
+      "externalCompanyId": null,
+      "metadata": {},
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "stage": {
+        "id": "550e8400-e29b-41d4-a716-446655440003",
+        "key": "live",
+        "name": "Live",
+        "bucket": "live",
+        "scope": "account"
+      },
+      "fieldValues": [
+        { "fieldKey": "tier", "fieldName": "Tier", "fieldType": "enum", "value": "enterprise" }
+      ],
+      "company": {
+        "id": "550e8400-e29b-41d4-a716-446655440002",
+        "name": "Acme Corporation",
+        "domain": "acme.com",
+        "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." },
+        "fieldValues": [{ "fieldKey": "...", "fieldName": "...", "fieldType": "...", "value": "..." }]
+      },
+      "contacts": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440004",
+          "fullName": "John Doe",
+          "title": "VP of Engineering",
+          "emails": [
+            { "id": "550e8400-e29b-41d4-a716-446655440005", "email": "john@acme.com", "isPrimary": false }
+          ],
+          "phones": [
+            { "id": "550e8400-e29b-41d4-a716-446655440006", "phone": "+1-555-123-4567", "isPrimary": false }
+          ]
+        }
+      ],
+      "deals": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440007",
+          "name": "Acme Expansion",
+          "stage": { "id": "...", "key": "...", "name": "...", "pipelineId": "...", "sortOrder": 1 },
+          "pipeline": { "id": "...", "name": "...", "isActive": true }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "total": 50,
+    "page": 1,
+    "limit": 50,
+    "totalPages": 1
+  }
+}
+```

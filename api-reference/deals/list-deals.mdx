@@ -6,7 +6,7 @@ description: 'Get all deals for your enterprise with optional filtering'
 
 ## Overview
 
-Returns a list of deals for your enterprise with optional filtering by company, account, pipeline, stage, status, and owner.
+Returns a list of enriched deals for your enterprise with optional filtering by company, account, pipeline, stage, status, and owner.
 
 ## Query Parameters
 
@@ -43,7 +43,7 @@ Returns a list of deals for your enterprise with optional filtering by company, 
 </ParamField>
 
 <ParamField query="search" type="string">
-  Search by deal title (case-insensitive partial match).
+  Search by deal name (case-insensitive partial match).
 </ParamField>
 
 ## Response
@@ -53,7 +53,7 @@ Returns a list of deals for your enterprise with optional filtering by company, 
 </ResponseField>
 
 <ResponseField name="data" type="array">
-  Array of deal objects
+  Array of enriched deal objects. Each object has the same shape as the `GET /api/v1/deals/{id}` response.
 </ResponseField>
 
 <ResponseField name="meta" type="object">
@@ -61,3 +61,87 @@ Returns a list of deals for your enterprise with optional filtering by company, 
     <ResponseField name="total" type="integer">Total number of matching deals</ResponseField>
   </Expandable>
 </ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "enterpriseId": "550e8400-e29b-41d4-a716-446655440001",
+      "pipelineId": "550e8400-e29b-41d4-a716-446655440002",
+      "currentStageId": "550e8400-e29b-41d4-a716-446655440003",
+      "companyId": "550e8400-e29b-41d4-a716-446655440004",
+      "accountId": "550e8400-e29b-41d4-a716-446655440005",
+      "name": "Acme Expansion FY26",
+      "lifecycleStage": "open",
+      "amountCents": null,
+      "currency": "INR",
+      "expectedCloseDate": null,
+      "actualCloseDate": null,
+      "parentDealId": null,
+      "externalDealId": null,
+      "attributes": {},
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "stage": { "id": "...", "key": "...", "name": "...", "pipelineId": "...", "sortOrder": 1 },
+      "pipeline": { "id": "...", "name": "...", "isActive": true },
+      "fieldValues": [
+        { "fieldKey": "priority", "fieldName": "Priority", "fieldType": "enum", "value": "high" }
+      ],
+      "company": {
+        "id": "550e8400-e29b-41d4-a716-446655440004",
+        "name": "Acme Corporation",
+        "domain": "acme.com",
+        "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." },
+        "fieldValues": [{ "fieldKey": "...", "fieldName": "...", "fieldType": "...", "value": "..." }]
+      },
+      "account": {
+        "id": "550e8400-e29b-41d4-a716-446655440005",
+        "name": "Acme Enterprise",
+        "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." }
+      },
+      "contacts": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440006",
+          "enterpriseId": "550e8400-e29b-41d4-a716-446655440001",
+          "dealId": "550e8400-e29b-41d4-a716-446655440000",
+          "contactId": "550e8400-e29b-41d4-a716-446655440007",
+          "role": "unknown",
+          "isPrimary": false,
+          "createdAt": "2026-01-01T00:00:00.000Z",
+          "updatedAt": "2026-01-01T00:00:00.000Z",
+          "contact": {
+            "id": "550e8400-e29b-41d4-a716-446655440007",
+            "fullName": "John Doe",
+            "title": "VP of Engineering",
+            "emails": [
+              { "id": "550e8400-e29b-41d4-a716-446655440008", "email": "john@acme.com", "isPrimary": false }
+            ],
+            "phones": [
+              { "id": "550e8400-e29b-41d4-a716-446655440009", "phone": "+1-555-123-4567", "isPrimary": false }
+            ]
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440010",
+          "dealId": "550e8400-e29b-41d4-a716-446655440000",
+          "fromPipelineId": null,
+          "fromStageId": null,
+          "toPipelineId": "550e8400-e29b-41d4-a716-446655440002",
+          "toStageId": "550e8400-e29b-41d4-a716-446655440003",
+          "changedAt": "2026-01-01T00:00:00.000Z",
+          "changedByUserId": null
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "total": 1
+  }
+}
+```

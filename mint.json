@@ -92,6 +92,7 @@
         {
             "group": "Associations",
             "pages": [
+                "api-reference/associations/get-associations",
                 "api-reference/associations/create-associations"
             ]
         },

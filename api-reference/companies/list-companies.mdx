@@ -6,7 +6,7 @@ description: 'Get all companies for your enterprise with optional filtering and 
 
 ## Overview
 
-Returns a paginated list of companies for your enterprise. Each company in the response is enriched with its **stage details** and **custom field values**.
+Returns a paginated list of companies for your enterprise. Each company in the response is enriched with its **stage details**, **custom field values**, and related **contacts**, **deals**, and **accounts**.
 
 You can filter companies by stage, custom field values, or external company ID. Multiple filters are combined with AND logic.
 
@@ -40,25 +40,6 @@ You can filter companies by stage, custom field values, or external company ID. 
   **Examples:**
   - `?fields[tier]=enterprise` — companies where the "tier" field is "enterprise"
   - `?fields[tier]=enterprise&fields[region]=us` — companies matching both fields
-  - `?fields[customer_subtype]=Group Dealer` — companies with a specific enum value
-
-  > [!NOTE]
-  > **Using n8n, axios, or other HTTP clients?** Tools that use the `qs` library (including n8n's HTTP Request node) automatically parse `fields[key]` as a nested object. The API handles both formats:
-  >
-  > **Format 1 — curl / raw URL:**
-  > ```
-  > ?fields[customer_subtype]=Group Dealer
-  > ```
-  >
-  > **Format 2 — n8n "Using JSON" mode** (set the key with brackets as-is):
-  > ```json
-  > {
-  >   "fields[customer_subtype]": "Group Dealer",
-  >   "limit": "200"
-  > }
-  > ```
-  >
-  > Both are supported. To find your exact `fieldKey` values, call `GET /api/v1/fields/definitions?entityType=company`.
 </ParamField>
 
 <ParamField query="page" type="integer" default="1">
@@ -76,30 +57,7 @@ You can filter companies by stage, custom field values, or external company ID. 
 </ResponseField>
 
 <ResponseField name="data" type="array">
-  Array of enriched company objects. Each company includes all standard fields plus:
-
-  <Expandable title="Enriched fields">
-    <ResponseField name="stage" type="object | null">
-      Resolved stage definition details for the company's current stage.
-      <Expandable title="Stage properties">
-        <ResponseField name="id" type="string">Stage definition UUID</ResponseField>
-        <ResponseField name="key" type="string">Stage key (e.g. `"lead"`, `"customer"`)</ResponseField>
-        <ResponseField name="name" type="string">Display name (e.g. `"Lead"`, `"Customer"`)</ResponseField>
-        <ResponseField name="bucket" type="string">Stage bucket: `pre_sale`, `onboarding`, `live`, `paused`, or `churned`</ResponseField>
-        <ResponseField name="scope" type="string">Stage scope: `company` or `account`</ResponseField>
-      </Expandable>
-    </ResponseField>
-
-    <ResponseField name="fieldValues" type="array">
-      Custom field values associated with this company.
-      <Expandable title="Field value properties">
-        <ResponseField name="fieldKey" type="string">Key of the field definition</ResponseField>
-        <ResponseField name="fieldName" type="string">Display name of the field</ResponseField>
-        <ResponseField name="fieldType" type="string">Type: `text`, `number`, `date`, `boolean`, `json`, or `enum`</ResponseField>
-        <ResponseField name="value" type="any">The field value (type depends on `fieldType`)</ResponseField>
-      </Expandable>
-    </ResponseField>
-  </Expandable>
+  Array of enriched company objects. Each object has the same shape as the `GET /api/v1/companies/{id}` response.
 </ResponseField>
 
 <ResponseField name="meta" type="object">
@@ -112,6 +70,82 @@ You can filter companies by stage, custom field values, or external company ID. 
     <ResponseField name="enterpriseId" type="string">Your enterprise UUID</ResponseField>
   </Expandable>
 </ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "enterpriseId": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Acme Corporation",
+      "domain": "acme.com",
+      "ownerUserId": null,
+      "healthScore": null,
+      "healthScoreComputedAt": null,
+      "healthScoreBreakdown": null,
+      "ARR": null,
+      "currency": "USD",
+      "stageDefinitionId": "550e8400-e29b-41d4-a716-446655440002",
+      "attributes": {},
+      "externalCompanyId": null,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "stage": {
+        "id": "550e8400-e29b-41d4-a716-446655440002",
+        "key": "customer",
+        "name": "Customer",
+        "bucket": "live",
+        "scope": "company"
+      },
+      "fieldValues": [
+        { "fieldKey": "tier", "fieldName": "Tier", "fieldType": "enum", "value": "enterprise" }
+      ],
+      "contacts": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440003",
+          "fullName": "John Doe",
+          "title": "VP of Engineering",
+          "emails": [
+            { "id": "550e8400-e29b-41d4-a716-446655440004", "email": "john@acme.com", "isPrimary": false }
+          ],
+          "phones": [
+            { "id": "550e8400-e29b-41d4-a716-446655440005", "phone": "+1-555-123-4567", "isPrimary": false }
+          ]
+        }
+      ],
+      "deals": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440006",
+          "name": "Acme Expansion",
+          "amountCents": null,
+          "currency": "INR",
+          "stage": { "id": "...", "key": "...", "name": "...", "pipelineId": "...", "sortOrder": 1 },
+          "pipeline": { "id": "...", "name": "...", "isActive": true }
+        }
+      ],
+      "accounts": [
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440007",
+          "name": "Acme Enterprise",
+          "domain": "acme.com",
+          "accountType": "enterprise",
+          "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "total": 100,
+    "page": 1,
+    "limit": 50,
+    "totalPages": 2,
+    "enterpriseId": "550e8400-e29b-41d4-a716-446655440001"
+  }
+}
+```
 
 ## Examples
 

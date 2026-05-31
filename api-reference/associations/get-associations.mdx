@@ -1,0 +1,181 @@
+---
+title: 'Get Associations'
+api: 'GET /api/v1/associations'
+description: 'Fetch enriched related entities for a contact, deal, company, or account'
+---
+
+## Query Parameters
+
+<ParamField query="entityType" type="string" required>
+  Type of entity to look up associations for. One of: `contact`, `deal`, `company`, `account`
+</ParamField>
+
+<ParamField query="external_id" type="string">
+  External ID of the entity. Use exactly one of `external_id` or `internal_id`.
+</ParamField>
+
+<ParamField query="internal_id" type="string">
+  Internal UUID of the entity. Use exactly one of `external_id` or `internal_id`.
+</ParamField>
+
+<ParamField query="providerKey" type="string" default="api">
+  Optional provider key for integration_object_mapping lookup when resolving external IDs.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request was successful
+</ResponseField>
+
+<ResponseField name="entityType" type="string">
+  The entity type queried (contact, deal, company, or account)
+</ResponseField>
+
+<ResponseField name="entityId" type="string">
+  The internal UUID of the resolved entity
+</ResponseField>
+
+The remaining fields depend on the `entityType`:
+
+### Contact → returns companies, deals, accounts
+
+<ResponseField name="companies" type="array">
+  Enriched company objects with `stage`, `fieldValues`, and all company fields
+</ResponseField>
+
+<ResponseField name="deals" type="array">
+  Enriched deal objects with `stage`, `pipeline`, `fieldValues`, and all deal fields
+</ResponseField>
+
+<ResponseField name="accounts" type="array">
+  Enriched account objects with `stage`, `fieldValues`, and all account fields
+</ResponseField>
+
+### Deal → returns contacts, company, account
+
+<ResponseField name="contacts" type="array">
+  Enriched deal-contact objects with nested `contact` (includes `emails`, `phones`)
+</ResponseField>
+
+<ResponseField name="company" type="object">
+  Enriched company object with `stage`, `fieldValues`, and all company fields
+</ResponseField>
+
+<ResponseField name="account" type="object">
+  Enriched account object with `stage`, `fieldValues`, and all account fields
+</ResponseField>
+
+### Company → returns contacts, deals, accounts
+
+<ResponseField name="contacts" type="array">
+  Enriched contact objects with `emails`, `phones`, `stage`, `fieldValues`
+</ResponseField>
+
+<ResponseField name="deals" type="array">
+  Enriched deal objects with `stage`, `pipeline`, `fieldValues`
+</ResponseField>
+
+<ResponseField name="accounts" type="array">
+  Enriched account objects with `stage`, `fieldValues`
+</ResponseField>
+
+### Account → returns contacts, deals, company
+
+<ResponseField name="contacts" type="array">
+  Enriched contact objects with `emails`, `phones`, `stage`, `fieldValues`
+</ResponseField>
+
+<ResponseField name="deals" type="array">
+  Enriched deal objects with `stage`, `pipeline`, `fieldValues`
+</ResponseField>
+
+<ResponseField name="company" type="object">
+  Enriched company object with `stage`, `fieldValues`
+</ResponseField>
+
+## Examples
+
+### Contact associations (by external ID)
+
+```bash
+curl -G "https://api.arali.ai/api/v1/associations" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  --data-urlencode "entityType=contact" \
+  --data-urlencode "external_id=hubspot_contact_12345"
+```
+
+### Deal associations (by internal ID)
+
+```bash
+curl -G "https://api.arali.ai/api/v1/associations" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  --data-urlencode "entityType=deal" \
+  --data-urlencode "internal_id=550e8400-e29b-41d4-a716-446655440000"
+```
+
+### Company associations (by external ID)
+
+```bash
+curl -G "https://api.arali.ai/api/v1/associations" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  --data-urlencode "entityType=company" \
+  --data-urlencode "external_id=hubspot_company_67890"
+```
+
+### Account associations (by internal ID)
+
+```bash
+curl -G "https://api.arali.ai/api/v1/associations" \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  --data-urlencode "entityType=account" \
+  --data-urlencode "internal_id=550e8400-e29b-41d4-a716-446655440001"
+```
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "entityType": "contact",
+  "entityId": "550e8400-e29b-41d4-a716-446655440000",
+  "companies": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Acme Corporation",
+      "domain": "acme.com",
+      "stage": { "id": "...", "key": "customer", "name": "Customer", "bucket": "active", "scope": "company" },
+      "fieldValues": [{ "fieldKey": "industry", "fieldName": "Industry", "fieldType": "text", "value": "Technology" }]
+    }
+  ],
+  "deals": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "name": "Acme Renewal",
+      "lifecycleStage": "open",
+      "stage": { "id": "...", "key": "discovery", "name": "Discovery", "pipelineId": "...", "sortOrder": 1 },
+      "pipeline": { "id": "...", "name": "Sales Pipeline", "isActive": true },
+      "fieldValues": []
+    }
+  ],
+  "accounts": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "name": "Acme Enterprise Account",
+      "domain": "acme.com",
+      "stage": { "id": "...", "key": "healthy", "name": "Healthy", "bucket": "active", "scope": "account" },
+      "fieldValues": []
+    }
+  ]
+}
+```
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400` | Missing `entityType` or neither/both `external_id` and `internal_id` provided |
+| `401` | Unauthorized — invalid or missing token |
+| `403` | Forbidden — requires `associations:read` scope |
+| `404` | Entity not found for the given ID |
+| `500` | Internal server error |
