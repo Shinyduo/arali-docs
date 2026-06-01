@@ -72,7 +72,7 @@ description: 'Get messages in a conversation and send new messages'
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/conversations/CONVERSATION_UUID/messages \
-  -H "Authorization: Bearer YOUR_JWT" \
+  -H "Authorization: Api-Key YOUR_Api-Key" \
   -H "Content-Type: application/json" \
   -d '{
     "textBody": "Can you share the latest update?"

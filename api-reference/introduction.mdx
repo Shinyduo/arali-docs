@@ -17,11 +17,10 @@ The current API version is `v1`. All endpoints are prefixed with `/api/v1`.
 
 ## Authentication
 
-All endpoints require either JWT bearer tokens or static API keys:
+All endpoints require static API keys:
 
 ```bash
-Authorization: Bearer <JWT>
-Authorization: Api-Key <static_key>
+Authorization: Api-Key <api_key>
 ```
 
 See the [Authentication](/authentication) page for more details.
@@ -42,7 +41,7 @@ See the [Authentication](/authentication) page for more details.
     Manage CRM deals with pipeline stages and interactions
   </Card>
   <Card title="Associations" icon="link" href="/api-reference/associations/create-associations">
-    Create contact-company and contact-account relationships
+    Create contact-company, contact-account, and contact-deal relationships
   </Card>
   <Card title="Calls" icon="phone" href="/api-reference/calls/create-calls">
     Create and manage call records

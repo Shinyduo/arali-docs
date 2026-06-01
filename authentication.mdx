@@ -1,21 +1,19 @@
 ---
 title: 'Authentication'
-description: 'Secure your API requests with JWT bearer tokens or static API keys'
+description: 'Secure your API requests with static API keys'
 ---
 
 ## Overview
 
-All Arali API endpoints require authentication via either JWT bearer tokens or static API keys. Pass credentials in the `Authorization` header of every request.
+All Arali API endpoints require authentication via static API keys. Pass credentials in the `Authorization` header of every request.
 
 ```bash
-Authorization: Bearer <JWT>
-Authorization: Api-Key <static_key>
+Authorization: Api-Key <api_key>
 ```
 
 ## Authentication Context
 
-- `Bearer <JWT>`: `enterpriseId` is read from JWT claims (`scopes` claim is optional).
-- `Api-Key <static_key>`: `enterpriseId` and `scopes` are read from your public API key record.
+- `Api-Key <api_key>`: `enterpriseId` and `scopes` are read from your public API key record.
 
 ## Available Scopes
 
@@ -72,7 +70,8 @@ Scopes control what actions your API credentials can perform. When creating a ke
   <Accordion title="Associations" icon="link">
     | Scope | Permission |
     |-------|------------|
-    | `associations:write` | Create contact-company/account associations |
+    | `associations:read` | Fetch entity associations |
+    | `associations:write` | Create contact-company/account/deal associations |
   </Accordion>
 
   <Accordion title="Interactions" icon="arrows-rotate">
@@ -221,7 +220,7 @@ Returned when the credential lacks the required scope for the operation.
 
 <CardGroup cols={2}>
   <Card title="Keep Credentials Secret" icon="shield">
-    Never expose API keys or JWTs in client-side code, public repositories, or logs.
+    Never expose API keys in client-side code, public repositories, or logs.
   </Card>
   <Card title="Use Minimal Scopes" icon="minimize">
     Only request the scopes you actually need. This limits potential damage if a key is compromised.
@@ -230,20 +229,15 @@ Returned when the credential lacks the required scope for the operation.
     Rotate API keys periodically, especially if team members leave or credentials may have been exposed.
   </Card>
   <Card title="Use Environment Variables" icon="terminal">
-    Store API keys and JWTs in environment variables rather than hardcoding them in your application.
+    Store API keys in environment variables rather than hardcoding them in your application.
   </Card>
 </CardGroup>
 
 ## Example: Validate Authentication
 
 ```bash
-# JWT
 curl -X GET 'https://api.arali.ai/api/v1/companies' \
-  -H 'Authorization: Bearer YOUR_JWT'
-
-# Static API Key
-curl -X GET 'https://api.arali.ai/api/v1/companies' \
-  -H 'Authorization: Api-Key YOUR_STATIC_KEY'
+  -H 'Authorization: Api-Key YOUR_API_KEY'
 ```
 
 A successful response indicates your credentials are valid and include the `companies:read` scope.

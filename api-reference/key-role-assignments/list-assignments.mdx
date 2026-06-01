@@ -31,37 +31,37 @@ description: 'Retrieve all internal team assignments or filter by entity or role
 ### Get All Role Assignments
 ```bash
 curl -X GET https://api.arali.ai/api/v1/key-role-assignments \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  -H "Authorization: Api-Key YOUR_TOKEN"
 ```
 
 ### Get All Team Members Assigned to a Company (by External ID)
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?entityType=company&externalEntityId=acme-corp" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  -H "Authorization: Api-Key YOUR_TOKEN"
 ```
 
 ### Get All Team Members Assigned to a Company (by Internal ID)
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?entityType=company&entityId=00f65964-5129-4eac-b88e-285d4096fe83" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  -H "Authorization: Api-Key YOUR_TOKEN"
 ```
 
 ### Get All Team Members Assigned to an Account
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?entityType=account&externalEntityId=acme-enterprise-account" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  -H "Authorization: Api-Key YOUR_TOKEN"
 ```
 
 ### Get All CSM Assignments
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  -H "Authorization: Api-Key YOUR_TOKEN"
 ```
 
 ### Get All Companies Assigned to a Specific Team Member
 ```bash
 curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm&userId=888843a2-8d54-4716-a44b-718ebb6a00f2" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  -H "Authorization: Api-Key YOUR_TOKEN"
 ```
 
 ## Response

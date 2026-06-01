@@ -9,7 +9,7 @@ description: 'Create a new conversation'
 Create a new conversation with specified participants. Optionally send an initial message.
 
 <Note>
-  This endpoint requires JWT authentication.
+  This endpoint requires Api-Key authentication.
 </Note>
 
 ## Request Body
@@ -30,7 +30,7 @@ Create a new conversation with specified participants. Optionally send an initia
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/conversations \
-  -H "Authorization: Bearer YOUR_JWT" \
+  -H "Authorization: Api-Key YOUR_Api-Key" \
   -H "Content-Type: application/json" \
   -d '{
     "subject": "Q1 Planning Discussion",

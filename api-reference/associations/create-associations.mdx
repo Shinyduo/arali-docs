@@ -1,7 +1,7 @@
 ---
 title: 'Create Associations'
 api: 'POST /api/v1/associations'
-description: 'Batch create contact-company and contact-account relationships'
+description: 'Batch create contact-company, contact-account, and contact-deal relationships'
 ---
 
 ## Request Body
@@ -49,16 +49,29 @@ description: 'Batch create contact-company and contact-account relationships'
     <ParamField body="role" type="string">
       Role for the contact_account association
     </ParamField>
+
+    <ParamField body="dealId" type="string">
+      Internal UUID of the deal (bypasses mapping lookup; optional if `externalDealId` provided)
+    </ParamField>
+
+    <ParamField body="externalDealId" type="string">
+      External ID of the deal (creates `deal_contact`; optional if `dealId` provided)
+    </ParamField>
+
+    <ParamField body="dealRole" type="string" default="unknown">
+      Role for the deal_contact association. One of: `decision_maker`, `economic_buyer`, `champion`, `influencer`, `user`, `stakeholder`, `admin`, `other`, `unknown`
+    </ParamField>
   </Expandable>
 </ParamField>
 
 ## Validation Rules
 
 1. **Contact Identifier:** Must provide either `contactId` OR `externalContactId`
-2. **Company/Account Identifier:** Must provide at least one of:
+2. **Company/Account/Deal Identifier:** Must provide at least one of:
    - `companyId` or `externalCompanyId` (for company-only associations)
    - `accountId` or `externalAccountId` (for account-based associations)
-   - Both (for associations with both company and account)
+   - `dealId` or `externalDealId` (for deal-based associations)
+   - Any combination of the above
 
 ## Association Flows
 
@@ -67,6 +80,8 @@ description: 'Batch create contact-company and contact-account relationships'
 | **Company-only** | contactId/externalContactId + companyId/externalCompanyId | `customer_company` |
 | **Account-based** | contactId/externalContactId + accountId/externalAccountId | `contact_account`, `customer_company` (from account.companyId) |
 | **Account + Company** | contactId/externalContactId + accountId/externalAccountId + companyId/externalCompanyId | `contact_account`, `customer_company` (for both companies) |
+| **Deal-based** | contactId/externalContactId + dealId/externalDealId | `deal_contact`, `interaction_deal`, `customer_company` (from deal.companyId) |
+| **Deal + Account** | contactId/externalContactId + dealId/externalDealId + accountId/externalAccountId | `deal_contact`, `interaction_deal`, `contact_account`, `customer_company` (for both deal and account companies) |
 
 ## Example Request
 
@@ -87,6 +102,12 @@ curl -X POST https://api.arali.ai/api/v1/associations \
         "externalContactId": "contact_12345",
         "externalAccountId": "acc_abc123",
         "role": "decision_maker"
+      },
+      {
+        "externalContactId": "contact_12345",
+        "externalDealId": "deal_xyz789",
+        "dealRole": "champion",
+        "isPrimary": true
       }
     ]
   }'

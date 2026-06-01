@@ -121,6 +121,14 @@ You can provide recordings in one of three formats:
   Re-run enrichment on existing meeting
 </ParamField>
 
+<ParamField body="enqueueAnalyze" type="boolean" default="false">
+  Whether to enqueue a metadata analysis job after ingestion. When true, a `metadata.analyze` job is queued with `meeting_objective: { meeting_type: meetingType }`.
+</ParamField>
+
+<ParamField body="meetingType" type="string">
+  Meeting type classification (e.g. "discovery", "demo", "negotiation", "standup"). Passed to the metadata analysis job as `meeting_objective.meeting_type` when `enqueueAnalyze` is true.
+</ParamField>
+
 ## Response Fields
 
 <ResponseField name="reingested" type="boolean">

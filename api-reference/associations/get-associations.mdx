@@ -66,6 +66,10 @@ The remaining fields depend on the `entityType`:
   Enriched account object with `stage`, `fieldValues`, and all account fields
 </ResponseField>
 
+<Note>
+When creating deal associations via POST, the system also creates `interaction_deal` records linking the contact's interactions to the deal.
+</Note>
+
 ### Company → returns contacts, deals, accounts
 
 <ResponseField name="contacts" type="array">

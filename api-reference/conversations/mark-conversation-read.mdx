@@ -20,7 +20,7 @@ description: 'Mark a conversation or specific message as read'
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/conversations/CONVERSATION_UUID/read \
-  -H "Authorization: Bearer YOUR_JWT"
+  -H "Authorization: Api-Key YOUR_Api-Key"
 ```
 
 ---
@@ -45,5 +45,5 @@ curl -X POST https://api.arali.ai/api/v1/conversations/CONVERSATION_UUID/read \
 
 ```bash
 curl -X POST https://api.arali.ai/api/v1/conversations/CONVERSATION_UUID/messages/MESSAGE_UUID/read \
-  -H "Authorization: Bearer YOUR_JWT"
+  -H "Authorization: Api-Key YOUR_Api-Key"
 ```
