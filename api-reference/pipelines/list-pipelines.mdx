@@ -19,3 +19,13 @@ description: 'Get all pipelines for your enterprise'
 <ResponseField name="data" type="array">
   Array of pipeline objects
 </ResponseField>
+
+<ResponseField name="meta" type="object">
+  Response metadata
+
+  <Expandable title="Meta Object">
+    <ResponseField name="total" type="number">
+      Total number of pipelines returned
+    </ResponseField>
+  </Expandable>
+</ResponseField>

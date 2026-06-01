@@ -127,10 +127,10 @@ You can use either internal UUIDs or external IDs for all entities.
 | `externalAccountId` | string | Conditional** | External account ID |
 | `dealId` | string (UUID) | Conditional** | Internal deal ID |
 | `externalDealId` | string | Conditional** | External deal ID |
-| `relation` | enum | No | Relationship type (default: "employee") |
-| `isPrimary` | boolean | No | Primary company flag (default: false) |
+| `relation` | enum | No | Relationship type (default: "employee"). Invalid values silently default to `employee` |
+| `isPrimary` | boolean | No | Primary company flag (default: false). Forced to `false` for account-based associations |
 | `role` | string | No | Role in account (for contact_account) |
-| `dealRole` | string | No | Role in deal (for deal_contact). Default: "unknown" |
+| `dealRole` | string | No | Role in deal (for deal_contact). Default: "unknown". Invalid values silently default to `unknown` |
 
 \* Must provide either `contactId` OR `externalContactId`  
 \** Must provide at least one of: `companyId`, `externalCompanyId`, `accountId`, `externalAccountId`, `dealId`, `externalDealId`
@@ -265,7 +265,7 @@ curl -X POST https://api.arali.ai/api/v1/associations \
       {
         "externalContactId": "sf_contact_001",
         "externalCompanyId": "sf_company_002",
-        "relation": "influencer",
+        "relation": "consultant",
         "isPrimary": false
       },
       {
@@ -283,17 +283,21 @@ curl -X POST https://api.arali.ai/api/v1/associations \
 
 ```json
 {
-  "success": true,
-  "summary": { "total": 3, "success": 3, "failed": 0 },
+  "status": "success",
+  "summary": { "total": 3, "successful": 3, "skipped": 0, "failed": 0 },
+  "processingTimeMs": 245,
   "results": [
     {
-      "status": "success"
+      "status": "success",
+      "flow": "company_direct"
     },
     {
-      "status": "success"
+      "status": "success",
+      "flow": "account_based"
     },
     {
-      "status": "success"
+      "status": "success",
+      "flow": "deal_direct"
     }
   ]
 }

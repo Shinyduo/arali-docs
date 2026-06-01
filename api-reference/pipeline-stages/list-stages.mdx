@@ -19,3 +19,13 @@ description: 'Get all stages for a pipeline'
 <ResponseField name="data" type="array">
   Array of stage objects ordered by sortOrder
 </ResponseField>
+
+<ResponseField name="meta" type="object">
+  Response metadata
+
+  <Expandable title="Meta Object">
+    <ResponseField name="total" type="number">
+      Total number of stages returned
+    </ResponseField>
+  </Expandable>
+</ResponseField>

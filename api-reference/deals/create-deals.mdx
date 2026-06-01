@@ -46,24 +46,32 @@ Create or update deals in batch. When `externalDealId` is provided, the API will
       Stage display name (e.g. `Prospecting`, `Demo Booked`). Alternative to `currentStageId` or `currentStageKey`.
     </ParamField>
 
+    <ParamField body="stageName" type="string">
+      Alias for `currentStageName`.
+    </ParamField>
+
     <ParamField body="stageKey" type="string">
       Shorthand for current stage key. Same as `currentStageKey`.
     </ParamField>
 
     <ParamField body="title" type="string">
-      Deal title. Also accepted as `name`.
+      Deal title.
+    </ParamField>
+
+    <ParamField body="name" type="string">
+      Alias for `title`.
     </ParamField>
 
     <ParamField body="dealType" type="string">
       Deal type. One of: `new_business`, `expansion`, `renewal`, `upsell`, `contraction`, `churn_save`
     </ParamField>
 
-    <ParamField body="status" type="string">
-      Deal status. One of: `open`, `won`, `lost`, `cancelled`
+    <ParamField body="lifecycleStage" type="string">
+      Deal lifecycle stage. One of: `open`, `won`, `lost`, `cancelled`
     </ParamField>
 
     <ParamField body="ownerUserId" type="string">
-      Deal owner user UUID.
+      Deal owner user UUID. This field is validated but not persisted (no database column).
     </ParamField>
 
     <ParamField body="amountCents" type="number">
@@ -108,6 +116,18 @@ Create or update deals in batch. When `externalDealId` is provided, the API will
 
     <ParamField body="transitionReason" type="string">
       Audit note when creating or changing stage.
+    </ParamField>
+
+    <ParamField body="contactId" type="string">
+      Top-level shortcut to attach a single contact to the deal by its UUID.
+    </ParamField>
+
+    <ParamField body="contactProperties" type="object">
+      Custom properties for the contact specified by `contactId`.
+    </ParamField>
+
+    <ParamField body="contactKeyRoles" type="array">
+      Key roles for the contact specified by `contactId`.
     </ParamField>
 
     <ParamField body="contacts" type="array">
@@ -179,7 +199,7 @@ curl -X POST https://api.arali.ai/api/v1/deals \
         "accountId": "ACCOUNT_UUID",
         "currentStageName": "Prospecting",
         "dealType": "expansion",
-        "status": "open",
+        "lifecycleStage": "open",
         "amountCents": 2500000,
         "currency": "USD",
         "externalDealId": "crm_deal_123",

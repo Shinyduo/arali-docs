@@ -33,9 +33,7 @@ description: 'Get a single enriched account by ID'
     <ResponseField name="healthScoreBreakdown" type="object | null">Breakdown object</ResponseField>
     <ResponseField name="ARR" type="integer | null">Annual Recurring Revenue</ResponseField>
     <ResponseField name="currency" type="string">Currency code (default: USD)</ResponseField>
-    <ResponseField name="externalId" type="string | null">Primary External ID</ResponseField>
-    <ResponseField name="externalAccountId" type="string | null">Secondary External ID</ResponseField>
-    <ResponseField name="externalCompanyId" type="string | null">Parent company external ID</ResponseField>
+    <ResponseField name="externalId" type="string | null">External Account ID</ResponseField>
     <ResponseField name="metadata" type="object">Custom key-value metadata</ResponseField>
     <ResponseField name="createdAt" type="string">Creation timestamp</ResponseField>
     <ResponseField name="updatedAt" type="string">Last updated timestamp</ResponseField>
@@ -115,8 +113,6 @@ description: 'Get a single enriched account by ID'
     "ARR": null,
     "currency": "USD",
     "externalId": null,
-    "externalAccountId": null,
-    "externalCompanyId": null,
     "metadata": {},
     "createdAt": "2026-01-01T00:00:00.000Z",
     "updatedAt": "2026-01-01T00:00:00.000Z",

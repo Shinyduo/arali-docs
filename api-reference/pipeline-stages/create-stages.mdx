@@ -22,6 +22,10 @@ description: 'Batch create or update pipeline stage records'
       Stage display name
     </ParamField>
 
+    <ParamField body="key" type="string">
+      Stage key identifier
+    </ParamField>
+
     <ParamField body="bucket" type="string" default="open">
       Stage bucket. One of: `open`, `in_progress`, `blocked`, `done`, `archived`
     </ParamField>
@@ -54,6 +58,42 @@ description: 'Batch create or update pipeline stage records'
   Whether the operation was successful
 </ResponseField>
 
-<ResponseField name="data" type="array">
-  Array of created/updated stage objects
+<ResponseField name="summary" type="object">
+  Summary of the batch operation
+
+  <Expandable title="Summary Object">
+    <ResponseField name="total" type="number">
+      Total number of stages submitted
+    </ResponseField>
+
+    <ResponseField name="success" type="number">
+      Number of stages successfully created/updated
+    </ResponseField>
+
+    <ResponseField name="failed" type="number">
+      Number of stages that failed
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of individual operation results
+
+  <Expandable title="Result Object">
+    <ResponseField name="name" type="string">
+      Stage name
+    </ResponseField>
+
+    <ResponseField name="stageId" type="string">
+      UUID of the created/updated stage (present on success)
+    </ResponseField>
+
+    <ResponseField name="status" type="string">
+      Result status. One of: `created`, `updated`, `error`
+    </ResponseField>
+
+    <ResponseField name="error" type="string">
+      Error message if the operation failed
+    </ResponseField>
+  </Expandable>
 </ResponseField>

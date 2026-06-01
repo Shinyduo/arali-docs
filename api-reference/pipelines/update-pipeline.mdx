@@ -4,36 +4,8 @@ api: 'PUT /api/v1/pipelines/{id}'
 description: 'Update a single pipeline by ID'
 ---
 
-## Path Parameters
+<Note>
+  PUT `/api/v1/pipelines/{id}` is **not implemented**.
 
-<ParamField path="id" type="string" required>
-  Pipeline UUID
-</ParamField>
-
-## Request Body
-
-<ParamField body="name" type="string">
-  Pipeline display name
-</ParamField>
-
-<ParamField body="description" type="string">
-  Pipeline description
-</ParamField>
-
-<ParamField body="isDefault" type="boolean">
-  Whether this is the default pipeline
-</ParamField>
-
-<ParamField body="entityType" type="string">
-  Entity type. One of: `deal`, `action_item`, `ticket`
-</ParamField>
-
-<ParamField body="orgUnitId" type="string">
-  Org unit ID
-</ParamField>
-
-## Response
-
-<ResponseField name="success" type="boolean">
-  Whether the operation was successful
-</ResponseField>
+  To update a pipeline, use **POST `/api/v1/pipelines`** (batch upsert) and include the `id` field in the pipeline object you want to update.
+</Note>

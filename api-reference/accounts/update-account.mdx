@@ -4,38 +4,7 @@ api: 'PUT /api/v1/accounts/{id}'
 description: 'Update a single account'
 ---
 
-## Path Parameters
-
-<ParamField path="id" type="string" required>
-  Account UUID
-</ParamField>
-
-## Request Body
-
-<ParamField body="name" type="string">
-  Account display name
-</ParamField>
-
-<ParamField body="domain" type="string">
-  Account domain
-</ParamField>
-
-<ParamField body="accountType" type="string">
-  Account type/tier
-</ParamField>
-
-<ParamField body="stageKey" type="string">
-  Account stage key
-</ParamField>
-
-
-
-<ParamField body="metadata" type="object">
-  Custom key-value metadata
-</ParamField>
-
-<ParamField body="properties" type="object">
-  Custom field values
-</ParamField>
-
-
+<Warning>
+  The `PUT /api/v1/accounts/{id}` endpoint is not implemented. 
+  To update an account, use the [POST /api/v1/accounts](/api-reference/accounts/create-accounts) batch upsert endpoint instead.
+</Warning>

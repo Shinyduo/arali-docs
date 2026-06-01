@@ -38,13 +38,13 @@ description: 'Batch create contact-company, contact-account, and contact-deal re
       External ID of the account (creates `contact_account` and auto-resolves company; optional if `accountId` provided)
     </ParamField>
 
-    <ParamField body="relation" type="string" default="employee">
-      Relationship type. One of: `employee`, `consultant`, `contractor`, `partner`, `agency`, `other`
-    </ParamField>
+<ParamField body="relation" type="string" default="employee">
+  Relationship type. One of: `employee`, `consultant`, `contractor`, `partner`, `agency`, `other`. Invalid values silently default to `employee`.
+</ParamField>
 
-    <ParamField body="isPrimary" type="boolean" default="false">
-      Is primary company for contact
-    </ParamField>
+<ParamField body="isPrimary" type="boolean" default="false">
+  Is primary company for contact. Forced to `false` for account-based associations.
+</ParamField>
 
     <ParamField body="role" type="string">
       Role for the contact_account association
@@ -58,9 +58,9 @@ description: 'Batch create contact-company, contact-account, and contact-deal re
       External ID of the deal (creates `deal_contact`; optional if `dealId` provided)
     </ParamField>
 
-    <ParamField body="dealRole" type="string" default="unknown">
-      Role for the deal_contact association. One of: `decision_maker`, `economic_buyer`, `champion`, `influencer`, `user`, `stakeholder`, `admin`, `other`, `unknown`
-    </ParamField>
+<ParamField body="dealRole" type="string" default="unknown">
+  Role for the deal_contact association. One of: `decision_maker`, `economic_buyer`, `champion`, `influencer`, `user`, `stakeholder`, `admin`, `other`, `unknown`. Invalid values silently default to `unknown`.
+</ParamField>
   </Expandable>
 </ParamField>
 
@@ -115,18 +115,26 @@ curl -X POST https://api.arali.ai/api/v1/associations \
 
 ## Response
 
-<ResponseField name="success" type="boolean">
-  Whether the operation was successful
+<ResponseField name="status" type="string">
+  Operation status. Always `"success"` for a completed batch request (individual failures are in `results`)
 </ResponseField>
 
 <ResponseField name="summary" type="object">
   <Expandable title="Summary Object">
     <ResponseField name="total" type="integer">Total associations processed</ResponseField>
-    <ResponseField name="success" type="integer">Successfully created</ResponseField>
+    <ResponseField name="successful" type="integer">Successfully created</ResponseField>
+    <ResponseField name="skipped" type="integer">Skipped (e.g. missing entity)</ResponseField>
     <ResponseField name="failed" type="integer">Failed</ResponseField>
   </Expandable>
 </ResponseField>
 
+<ResponseField name="processingTimeMs" type="integer">
+  Time taken to process the batch in milliseconds
+</ResponseField>
+
 <ResponseField name="results" type="array">
-  Array of result objects
+  Array of result objects. Each object contains:
+  - `status`: `"success"`, `"skipped"`, or `"error"`
+  - `flow`: The association flow that was used. One of: `company_direct`, `account_based`, `deal_direct`, `deal_and_account`
+  - Additional fields depending on the outcome
 </ResponseField>

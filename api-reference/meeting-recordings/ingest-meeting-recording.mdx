@@ -24,10 +24,25 @@ You can provide recordings in one of three formats:
 
 **Format 3 — Batch with metadata (preferred):**
 <ParamField body="recordings" type="array">
-  Array of objects: `{ recordingUrl, title?, externalMeetingId?, metadata? }`
+  Array of objects with per-item overrides. Each item supports:
+  
+  - `recordingUrl` (string) — URL to the recording
+  - `title` (string) — Meeting title for this item
+  - `externalMeetingId` (string) — External meeting ID for upsert
+  - `metadata` (object) — Additional metadata. Supports `metadata.force` (boolean) to force re-ingestion.
+  - `transcript` (string) — Per-item transcript (URL or plain text)
+  - `force` (boolean) — Per-item force re-ingestion (delete and recreate if meeting already exists)
+  - `forceAnalyze` (boolean) — Per-item force re-analysis
+  - `createTranscript` (boolean) — Per-item transcript creation override
+  - `uploadToR2` (boolean) — Per-item R2 upload override
+  - `skipEmail` (boolean) — Per-item email skip override
+  - `skipNotifications` (boolean) — Per-item notifications skip override
+  - `skipInsightsEmbed` (boolean) — Per-item insights embed skip override
+  - `enqueueAnalyze` (boolean) — Per-item metadata analyze job queue override
+  - `meetingType` (string) — Per-item meeting type for analyze job
 </ParamField>
 
-### Common Fields
+### Top-Level Common Fields
 
 <ParamField body="title" type="string" default="Ingested Recording">
   Meeting title
@@ -47,6 +62,10 @@ You can provide recordings in one of three formats:
 
 <ParamField body="channel" type="string" default="offline">
   Meeting channel. One of: `gmeet`, `zoom`, `teams`, `offline`
+</ParamField>
+
+<ParamField body="type" type="string">
+  Meeting classification type. One of: `external`, `internal`
 </ParamField>
 
 <ParamField body="joinUrl" type="string">
@@ -85,6 +104,14 @@ You can provide recordings in one of three formats:
   Additional metadata
 </ParamField>
 
+<ParamField body="transcript" type="string">
+  Plain text transcript (fallback when no recording URL is provided)
+</ParamField>
+
+<ParamField body="transcripts" type="array">
+  Array of plain text transcripts aligned with `recordingUrls`, one transcript per URL
+</ParamField>
+
 <ParamField body="enqueuePreanalyze" type="boolean" default="true">
   Whether to enqueue pre-analysis
 </ParamField>
@@ -113,10 +140,6 @@ You can provide recordings in one of three formats:
   Whether to skip insights embedding
 </ParamField>
 
-<ParamField body="force" type="boolean" default="false">
-  Delete and recreate if meeting already exists
-</ParamField>
-
 <ParamField body="forceAnalyze" type="boolean" default="false">
   Re-run enrichment on existing meeting
 </ParamField>
@@ -129,18 +152,110 @@ You can provide recordings in one of three formats:
   Meeting type classification (e.g. "discovery", "demo", "negotiation", "standup"). Passed to the metadata analysis job as `meeting_objective.meeting_type` when `enqueueAnalyze` is true.
 </ParamField>
 
-## Response Fields
+### Per-Item Overrides
+
+All top-level boolean and string fields also work as per-item overrides inside each `recordings[]` item. The top-level value serves as the fallback default when a per-item value is not specified.
+
+The following fields are commonly overridden per-item:
+- `title`, `externalMeetingId`, `metadata`
+- `transcript`, `createTranscript`, `uploadToR2`
+- `skipEmail`, `skipNotifications`, `skipInsightsEmbed`
+- `force`, `forceAnalyze`
+- `enqueueAnalyze`, `meetingType`
+
+**Note:** `force` is **not** a top-level field. It only works inside `recordings[]` items or as `recordings[].metadata.force`.
+
+## Job Flow
+
+1. **Transcript creation** — If `createTranscript` is true, the system attempts to generate a transcript from the recording (or uses the provided `transcript`).
+2. **Pre-analysis** — A `metadata.preanalyze` job is queued only when transcript creation succeeds.
+3. **Analysis** — A `metadata.analyze` job is queued after preanalysis completes, but only when `enqueueAnalyze` is true.
+
+## Response
+
+### HTTP Status Codes
+
+- `201 Created` — Normal successful ingestion
+- `200 OK` — Returned when `waitForTranscript=true` and transcription has completed before the response is sent
+
+### Single Recording Response
+
+When ingesting a single recording, the response contains:
+
+<ResponseField name="success" type="boolean">
+  Whether the ingestion succeeded
+</ResponseField>
+
+<ResponseField name="itemIndex" type="number">
+  Index of the recording in the batch (usually 0 for single recordings)
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Meeting title
+</ResponseField>
+
+<ResponseField name="recordingUrl" type="string">
+  Original recording URL
+</ResponseField>
+
+<ResponseField name="meetingId" type="string">
+  Unique meeting ID
+</ResponseField>
+
+<ResponseField name="interactionId" type="string">
+  Interaction ID
+</ResponseField>
+
+<ResponseField name="recordingId" type="string">
+  Recording ID
+</ResponseField>
+
+<ResponseField name="transcriptId" type="string">
+  Transcript ID
+</ResponseField>
+
+<ResponseField name="hostParticipantId" type="string">
+  Host participant ID
+</ResponseField>
+
+<ResponseField name="orgUnitIds" type="array">
+  Array of org unit IDs associated with the meeting
+</ResponseField>
+
+<ResponseField name="utteranceCount" type="number">
+  Number of utterances in the transcript
+</ResponseField>
+
+<ResponseField name="processingStatus" type="string">
+  Current processing status of the recording
+</ResponseField>
+
+<ResponseField name="warning" type="string">
+  Optional warning message (present only when applicable)
+</ResponseField>
 
 <ResponseField name="reingested" type="boolean">
-  True when an existing meeting was upserted
+  True when an existing meeting was upserted (duplicate `externalMeetingId`). **Only present on re-ingestion.**
 </ResponseField>
 
 <ResponseField name="metricsExist" type="boolean">
-  True when metrics data already exists
+  True when metrics data already exists. **Only present on re-ingestion.**
 </ResponseField>
 
-<ResponseField name="forceAnalyzed" type="boolean">
-  True when forceAnalyze was used
+### Multiple Recordings Response
+
+When ingesting multiple recordings, the response wraps individual results:
+
+<ResponseField name="success" type="boolean">
+  Whether the batch ingestion succeeded
+</ResponseField>
+
+<ResponseField name="count" type="number">
+  Number of recordings processed
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of individual recording results, each with the same shape as the single recording response above
 </ResponseField>
 
 ## Example Request

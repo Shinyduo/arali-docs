@@ -18,7 +18,7 @@ There are **two ways** to link an account to its parent company:
         {
           "name": "Acme Enterprise Account",
           "companyId": "550e8400-e29b-41d4-a716-446655440000",
-          "externalId": "vitally_acc_12345",
+          "externalAccountId": "vitally_acc_12345",
           "domain": "acme.com",
           "accountType": "enterprise"
         }
@@ -27,7 +27,7 @@ There are **two ways** to link an account to its parent company:
     ```
     
     - `companyId`: The internal UUID of the company (from creating the company or querying your database)
-    - `externalId`: The unique ID from your integration source (e.g., Vitally, Salesforce)
+    - `externalAccountId`: The unique ID from your integration source (e.g., Vitally, Salesforce)
     - This **directly links** the account to the company without needing to look up the company
   </Accordion>
 
@@ -41,8 +41,7 @@ There are **two ways** to link an account to its parent company:
         {
           "name": "Acme Enterprise Account",
           "externalCompanyId": "hubspot_company_12345",
-          "externalId": "vitally_acc_12345",
-          "externalAccountId": "SF_ACC_001",
+          "externalAccountId": "vitally_acc_12345",
           "domain": "acme.com",
           "accountType": "enterprise",
           "metadata": {
@@ -59,8 +58,7 @@ There are **two ways** to link an account to its parent company:
       2. The **Custom Organization ID** (e.g. `ORG_123`) stored on the company record.
     - The API looks for a match in that order.
     - The company **must already exist**.
-    - `externalId`: The unique ID for this account from your integration (stored in mapping table)
-    - `externalAccountId`: Optional secondary ID stored directly on the account record (used for upsert)
+    - `externalAccountId`: The unique ID for this account from your integration (stored directly on the account record)
   </Accordion>
 </AccordionGroup>
 
@@ -92,22 +90,16 @@ There are **two ways** to link an account to its parent company:
       **External company ID**. Use when syncing from integrations. Mutually exclusive with `companyId`.
     </ParamField>
     
-    <ParamField body="externalId" type="string">
-      **Integration Source ID**. The ID of this record in the source system (e.g. HubSpot Company ID).
-      *Required if `externalAccountId` is not provided.*
-    </ParamField>
-    
     <ParamField body="externalAccountId" type="string">
-      **Custom Account ID**. Your internal unique ID (e.g. `ACC_123`).
-      *Required if `externalId` is not provided.*
+      **External Account ID**. Your internal unique ID for this account from your integration source (e.g. `ACC_123`).
+      *Required.*
     </ParamField>
 
     <Info>
       **Upsert Logic:**
-      You must provide either `externalId` or `externalAccountId` (or both).
-      1. **Mapping Lookup**: Checks for mapping using `externalId` (or `externalAccountId` if missing).
-      2. **DB Constraint**: Validates/Upserts on `externalAccountId` (or `externalId` if missing).
-      3. **Company Link**: Must resolve `companyId` (Internal UUID) OR `externalCompanyId` (Integration ID or Custom ID) to an existing parent company.
+      You must provide `externalAccountId`.
+      1. **DB Constraint**: Validates/Upserts on `externalAccountId`.
+      2. **Company Link**: Must resolve `companyId` (Internal UUID) OR `externalCompanyId` (Integration ID or Custom ID) to an existing parent company.
     </Info>
     
     <ParamField body="domain" type="string">

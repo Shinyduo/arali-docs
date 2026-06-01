@@ -6,16 +6,12 @@ description: 'Get all deals for your enterprise with optional filtering'
 
 ## Overview
 
-Returns a list of enriched deals for your enterprise with optional filtering by company, account, pipeline, stage, status, and owner.
+Returns a list of enriched deals for your enterprise with optional filtering by company, account, and pipeline.
 
 ## Query Parameters
 
 <ParamField query="limit" type="integer" default="100">
   Number of results per page. Maximum is 200.
-</ParamField>
-
-<ParamField query="offset" type="integer" default="0">
-  Number of results to skip for pagination.
 </ParamField>
 
 <ParamField query="companyId" type="string">
@@ -30,18 +26,6 @@ Returns a list of enriched deals for your enterprise with optional filtering by 
   Filter by pipeline UUID.
 </ParamField>
 
-<ParamField query="stageId" type="string">
-  Filter by stage UUID.
-</ParamField>
-
-<ParamField query="status" type="string">
-  Filter by status. One of: `open`, `won`, `lost`, `cancelled`.
-</ParamField>
-
-<ParamField query="ownerUserId" type="string">
-  Filter by deal owner UUID.
-</ParamField>
-
 <ParamField query="search" type="string">
   Search by deal name (case-insensitive partial match).
 </ParamField>
@@ -52,14 +36,16 @@ Returns a list of enriched deals for your enterprise with optional filtering by 
   Whether the operation was successful
 </ResponseField>
 
+<ResponseField name="count" type="integer">
+  Total number of matching deals
+</ResponseField>
+
 <ResponseField name="data" type="array">
   Array of enriched deal objects. Each object has the same shape as the `GET /api/v1/deals/{id}` response.
 </ResponseField>
 
-<ResponseField name="meta" type="object">
-  <Expandable title="Meta Object">
-    <ResponseField name="total" type="integer">Total number of matching deals</ResponseField>
-  </Expandable>
+<ResponseField name="search" type="string | null">
+  The search query used, if any
 </ResponseField>
 
 ## Example Response
@@ -67,6 +53,7 @@ Returns a list of enriched deals for your enterprise with optional filtering by 
 ```json
 {
   "success": true,
+  "count": 1,
   "data": [
     {
       "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -140,8 +127,6 @@ Returns a list of enriched deals for your enterprise with optional filtering by 
       ]
     }
   ],
-  "meta": {
-    "total": 1
-  }
+  "search": null
 }
 ```

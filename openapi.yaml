@@ -56,13 +56,13 @@ components:
           items:
             type: object
             properties:
-              externalId:
-                type: string
               status:
                 type: string
-                enum: [success, skipped, failed]
+                enum: [success, skipped, error]
               reason:
                 type: string
+            additionalProperties: true
+            description: Result items include endpoint-specific IDs (e.g. externalCompanyId/companyId, externalContactId/contactId, externalAccountId/accountId)
 
     Company:
       type: object
@@ -115,12 +115,7 @@ components:
         externalCompanyId:
           type: string
           nullable: true
-          description: Secondary External ID. Stored on the record. Defaults to externalId if not provided.
-          example: "CRM_001"
-        externalId:
-          type: string
-          nullable: true
-          description: Primary External ID. Used for integration mapping lookup.
+          description: External Company ID. Used for integration mapping lookup and idempotent upserts.
           example: "hubspot_12345"
         createdAt:
           type: string
@@ -316,15 +311,10 @@ components:
         currency:
           type: string
           default: USD
-        externalId:
-          type: string
-          nullable: true
-          description: Primary External ID. Used for integration mapping lookup.
-          example: "vitally_acc_12345"
         externalAccountId:
           type: string
           nullable: true
-          description: Secondary External ID. Stored on the record. Defaults to externalId if not provided.
+          description: External Account ID. Used for integration mapping lookup and stored on the record.
           example: "CRM_ACC_001"
         externalCompanyId:
           type: string
@@ -482,11 +472,12 @@ components:
     ContactUpsert:
       type: object
       required:
-        - externalId
+        - fullName
       properties:
-        externalId:
+        externalContactId:
           type: string
-          description: External unique ID from integration source
+          nullable: true
+          description: External unique ID from integration source. Optional — if omitted, a new contact is created without external ID mapping.
           example: "hubspot_contact_12345"
         fullName:
           type: string
@@ -537,6 +528,26 @@ components:
           type: object
         properties:
           type: object
+          description: Custom field values (key-value pairs)
+        stageDefinitionId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Stage definition UUID to assign to the contact
+        stageKey:
+          type: string
+          nullable: true
+          description: Stage key to assign to the contact (alternative to stageDefinitionId)
+        key_roles:
+          type: array
+          items:
+            type: object
+            description: Key role assignments for this contact
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Override creation timestamp (optional, for backfills)
 
     ContactUpdate:
       type: object
@@ -806,7 +817,7 @@ components:
           description: External ID of the account
         relation:
           type: string
-          enum: [employee, decision_maker, champion, end_user, influencer]
+          enum: [employee, consultant, contractor, partner, agency, other]
           default: employee
         isPrimary:
           type: boolean
@@ -1265,6 +1276,10 @@ components:
           nullable: true
         name:
           type: string
+        title:
+          type: string
+          nullable: true
+          description: Alternative input field for deal name. If provided without name, title is used as the deal name.
         lifecycleStage:
           type: string
           enum: [open, won, lost, cancelled]
@@ -1286,6 +1301,11 @@ components:
           type: string
           format: uuid
           nullable: true
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Owner user UUID. Accepted in request but not persisted (no DB column on deals table).
         externalDealId:
           type: string
           nullable: true
@@ -1746,11 +1766,9 @@ paths:
             example:
               companies:
                 - name: "Acme Corporation"
-                  externalId: "hubspot_12345"
-                  externalCompanyId: "CRM_001"
+                  externalCompanyId: "hubspot_12345"
                   domain: "acme.com"
-                  lifecycleStage: "customer"
-                  arr: 120000
+                  ARR: 120000
                   attributes:
                     industry: "Technology"
                     employee_count: 500
@@ -1956,14 +1974,13 @@ paths:
                     $ref: '#/components/schemas/Account'
             example:
               accounts:
-                 - name: "Acme Enterprise Account"
-                   externalId: "vitally_acc_12345"
-                   externalAccountId: "CRM_ACC_001"
-                   externalCompanyId: "hubspot_12345"
-                   domain: "acme.com"
-                   accountType: "enterprise"
-                   arr: 120000
-                   metadata:
+                - name: "Acme Enterprise Account"
+                  externalAccountId: "CRM_ACC_001"
+                  externalCompanyId: "hubspot_12345"
+                  domain: "acme.com"
+                  accountType: "enterprise"
+                  ARR: 120000
+                  metadata:
                     tier: "premium"
                     contract_start: "2024-01-01"
       responses:
@@ -2094,7 +2111,7 @@ paths:
                     $ref: '#/components/schemas/ContactUpsert'
             example:
               contacts:
-                - externalId: "contact_12345"
+                - externalContactId: "contact_12345"
                   fullName: "John Doe"
                   title: "VP of Engineering"
                   emails:
@@ -3198,11 +3215,12 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: status
+        - name: lifecycleStage
           in: query
           schema:
             type: string
             enum: [open, won, lost, cancelled]
+          description: Filter by deal lifecycle stage
         - name: ownerUserId
           in: query
           schema:
@@ -3514,37 +3532,6 @@ paths:
         '403':
           description: Forbidden - requires pipelines:read scope
 
-    put:
-      operationId: updatePipeline
-      summary: Update Pipeline
-      description: Update a single pipeline
-      tags:
-        - Pipelines
-      security:
-        - ApiKeyAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Pipeline'
-      responses:
-        '200':
-          description: Pipeline updated
-        '404':
-          description: Pipeline not found
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden - requires pipelines:write scope
-
     delete:
       operationId: deletePipeline
       summary: Delete Pipeline
@@ -3652,37 +3639,6 @@ paths:
         '403':
           description: Forbidden - requires stages:read scope
 
-    put:
-      operationId: updatePipelineStage
-      summary: Update Pipeline Stage
-      description: Update a single pipeline stage
-      tags:
-        - Pipeline Stages
-      security:
-        - ApiKeyAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PipelineStage'
-      responses:
-        '200':
-          description: Stage updated
-        '404':
-          description: Stage not found
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden - requires stages:write scope
-
     delete:
       operationId: deletePipelineStage
       summary: Delete Pipeline Stage
@@ -3787,36 +3743,6 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden - requires product-lines:read scope
-
-    put:
-      operationId: updateProductLine
-      summary: Update Product Line
-      description: Update a single product line by key
-      tags:
-        - Product Lines
-      security:
-        - ApiKeyAuth: []
-      parameters:
-        - name: key
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProductLine'
-      responses:
-        '200':
-          description: Product line updated
-        '404':
-          description: Product line not found
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden - requires product-lines:write scope
 
   /api/v1/product-lines/{id}:
     delete:
@@ -4148,37 +4074,6 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden - requires metrics:definitions:read scope
-
-    put:
-      operationId: updateMetricDefinition
-      summary: Update Metric Definition
-      description: Update a single metric definition
-      tags:
-        - Metric Definitions
-      security:
-        - ApiKeyAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MetricDefinition'
-      responses:
-        '200':
-          description: Metric definition updated
-        '404':
-          description: Metric definition not found
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden - requires metrics:definitions:write scope
 
     delete:
       operationId: deleteMetricDefinition

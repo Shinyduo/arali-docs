@@ -6,28 +6,8 @@ description: 'Get all accounts for your enterprise'
 
 ## Query Parameters
 
-<ParamField query="externalId" type="string">
-  Filter to find a specific account by your custom internal ID (stored in `externalId` field).
-</ParamField>
-
-<ParamField query="stageKey" type="string">
-  Filter by stage key(s). Supports comma-separated values.
-</ParamField>
-
-<ParamField query="stageId" type="string">
-  Filter by stage definition UUID(s). Supports comma-separated UUIDs.
-</ParamField>
-
-<ParamField query="fields[fieldKey]" type="string">
-  Filter by custom field values. Replace `fieldKey` with the actual field key from your `field_definitions` table.
-</ParamField>
-
-<ParamField query="page" type="integer" default="1">
-  Page number for pagination (starts at 1)
-</ParamField>
-
-<ParamField query="limit" type="integer" default="50">
-  Number of results per page. Maximum is 200.
+<ParamField query="externalAccountId" type="string">
+  Filter to find a specific account by your external account ID (stored in `externalId` field).
 </ParamField>
 
 ## Response
@@ -51,9 +31,7 @@ description: 'Get all accounts for your enterprise'
 <ResponseField name="meta" type="object">
   <Expandable title="Meta Object">
     <ResponseField name="total" type="integer">Total number of matching accounts</ResponseField>
-    <ResponseField name="page" type="integer">Current page number</ResponseField>
-    <ResponseField name="limit" type="integer">Results per page</ResponseField>
-    <ResponseField name="totalPages" type="integer">Total number of pages</ResponseField>
+    <ResponseField name="enterpriseId" type="string">Enterprise UUID</ResponseField>
   </Expandable>
 </ResponseField>
 
@@ -78,8 +56,6 @@ description: 'Get all accounts for your enterprise'
       "ARR": null,
       "currency": "USD",
       "externalId": null,
-      "externalAccountId": null,
-      "externalCompanyId": null,
       "metadata": {},
       "createdAt": "2026-01-01T00:00:00.000Z",
       "updatedAt": "2026-01-01T00:00:00.000Z",
@@ -125,9 +101,7 @@ description: 'Get all accounts for your enterprise'
   ],
   "meta": {
     "total": 50,
-    "page": 1,
-    "limit": 50,
-    "totalPages": 1
+    "enterpriseId": "550e8400-e29b-41d4-a716-446655440001"
   }
 }
 ```

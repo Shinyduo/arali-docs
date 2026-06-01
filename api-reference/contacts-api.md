@@ -43,7 +43,7 @@ Returns API documentation and schema information.
 
 ### POST /api/v1/contacts
 
-Batch create or update multiple contacts. Uses upsert behavior based on `externalId`.
+Batch create or update multiple contacts. Uses upsert behavior based on `externalContactId`.
 
 **Required Scope:** `contacts:write`
 
@@ -57,7 +57,7 @@ Batch create or update multiple contacts. Uses upsert behavior based on `externa
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `externalId` | string | Yes | External unique identifier from integration source |
+| `externalContactId` | string | Yes | External unique identifier from integration source |
 | `fullName` | string \| null | No | Contact's full name |
 | `title` | string \| null | No | Job title |
 | `ownerUserId` | string (UUID) \| null | No | Internal user ID who owns this contact |
@@ -101,7 +101,7 @@ curl -X POST https://api.arali.ai/api/v1/contacts \
   -d '{
     "contacts": [
       {
-        "externalId": "hubspot_contact_12345",
+        "externalContactId": "hubspot_contact_12345",
         "fullName": "John Doe",
         "title": "VP of Engineering",
         "emails": [
@@ -128,7 +128,7 @@ curl -X POST https://api.arali.ai/api/v1/contacts \
   "summary": { "total": 1, "success": 1, "failed": 0 },
   "results": [
     {
-      "externalId": "hubspot_contact_12345",
+      "externalContactId": "hubspot_contact_12345",
       "contactId": "550e8400-e29b-41d4-a716-446655440001",
       "status": "success"
     }
@@ -206,7 +206,7 @@ If present, `companies` reflects relationships created via the Associations API.
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440001",
     "enterpriseId": "550e8400-e29b-41d4-a716-446655440000",
-    "externalId": "hubspot_contact_12345",
+    "externalContactId": "hubspot_contact_12345",
     "fullName": "John Doe",
     "title": "VP of Engineering",
     "ownerUserId": null,

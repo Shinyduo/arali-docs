@@ -4,44 +4,8 @@ api: 'PUT /api/v1/pipeline-stages/{id}'
 description: 'Update a single pipeline stage by ID'
 ---
 
-## Path Parameters
+<Note>
+  PUT `/api/v1/pipeline-stages/{id}` is **not implemented**.
 
-<ParamField path="id" type="string" required>
-  Stage UUID
-</ParamField>
-
-## Request Body
-
-<ParamField body="name" type="string">
-  Stage display name
-</ParamField>
-
-<ParamField body="bucket" type="string">
-  Stage bucket. One of: `open`, `in_progress`, `blocked`, `done`, `archived`
-</ParamField>
-
-<ParamField body="color" type="string">
-  Hex color code
-</ParamField>
-
-<ParamField body="icon" type="string">
-  Icon identifier
-</ParamField>
-
-<ParamField body="sortOrder" type="number">
-  Display order
-</ParamField>
-
-<ParamField body="isTerminal" type="boolean">
-  Whether this is a terminal stage
-</ParamField>
-
-<ParamField body="winProbability" type="number">
-  Win probability (0-100)
-</ParamField>
-
-## Response
-
-<ResponseField name="success" type="boolean">
-  Whether the operation was successful
-</ResponseField>
+  To update a pipeline stage, use **POST `/api/v1/pipeline-stages`** (batch upsert) and include the `id` field in the stage object you want to update.
+</Note>

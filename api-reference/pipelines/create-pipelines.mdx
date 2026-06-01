@@ -46,6 +46,42 @@ description: 'Batch create or update pipeline records'
   Whether the operation was successful
 </ResponseField>
 
-<ResponseField name="data" type="array">
-  Array of created/updated pipeline objects
+<ResponseField name="summary" type="object">
+  Summary of the batch operation
+
+  <Expandable title="Summary Object">
+    <ResponseField name="total" type="number">
+      Total number of pipelines submitted
+    </ResponseField>
+
+    <ResponseField name="success" type="number">
+      Number of pipelines successfully created/updated
+    </ResponseField>
+
+    <ResponseField name="failed" type="number">
+      Number of pipelines that failed
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of individual operation results
+
+  <Expandable title="Result Object">
+    <ResponseField name="name" type="string">
+      Pipeline name
+    </ResponseField>
+
+    <ResponseField name="pipelineId" type="string">
+      UUID of the created/updated pipeline (present on success)
+    </ResponseField>
+
+    <ResponseField name="status" type="string">
+      Result status. One of: `created`, `updated`, `error`
+    </ResponseField>
+
+    <ResponseField name="error" type="string">
+      Error message if the operation failed
+    </ResponseField>
+  </Expandable>
 </ResponseField>

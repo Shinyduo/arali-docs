@@ -14,7 +14,7 @@ description: 'Batch create or update contact records'
   Array of contact objects to create or update
   
   <Expandable title="Contact Object">
-    <ParamField body="externalId" type="string" required>
+    <ParamField body="externalContactId" type="string" required>
       External unique ID from integration source
     </ParamField>
 
@@ -98,7 +98,7 @@ curl -X POST https://api.arali.ai/api/v1/contacts \
     "providerKey": "hubspot",
     "contacts": [
       {
-        "externalId": "contact_12345",
+        "externalContactId": "contact_12345",
         "fullName": "John Doe",
         "title": "VP of Engineering",
         "emails": [

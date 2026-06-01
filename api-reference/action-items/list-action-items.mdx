@@ -6,15 +6,15 @@ description: 'List action items for your enterprise with optional filters'
 
 ## Query Parameters
 
-<ParamField query="interactionId" type="string">
-  Filter by interaction UUID — returns all action items linked to a specific call, meeting, or thread
+<ParamField query="interaction_id" type="string">
+  Filter by interaction UUID — returns all action items linked to a specific call, meeting, or thread. Also accepts `interactionId`.
 </ParamField>
 
-<ParamField query="ownerUserId" type="string">
+<ParamField query="owner_user_id" type="string">
   Filter by the UUID of the user who owns the action item
 </ParamField>
 
-<ParamField query="stageId" type="string">
+<ParamField query="stage_id" type="string">
   Filter by pipeline stage UUID.
 </ParamField>
 
@@ -22,11 +22,43 @@ description: 'List action items for your enterprise with optional filters'
   Filter by priority. One of: `low`, `medium`, `high`, `blocker`
 </ParamField>
 
-## Response
+<ParamField query="meeting_id" type="string">
+  Filter by meeting UUID
+</ParamField>
 
-<ResponseField name="success" type="boolean">
-  Whether the request succeeded
-</ResponseField>
+<ParamField query="pipeline_id" type="string">
+  Filter by pipeline UUID
+</ParamField>
+
+<ParamField query="kind" type="string">
+  Filter by action item kind
+</ParamField>
+
+<ParamField query="company_id" type="string">
+  Filter by company UUID
+</ParamField>
+
+<ParamField query="unassigned" type="boolean">
+  When `true`, return only action items with no owner
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number for pagination
+</ParamField>
+
+<ParamField query="limit" type="integer" default="20">
+  Number of results per page
+</ParamField>
+
+<ParamField query="sort_by" type="string">
+  Field to sort by
+</ParamField>
+
+<ParamField query="sort_order" type="string">
+  Sort order. One of: `asc`, `desc`
+</ParamField>
+
+## Response
 
 <ResponseField name="data" type="array">
   Array of action item objects
@@ -52,6 +84,26 @@ description: 'List action items for your enterprise with optional filters'
   </Expandable>
 </ResponseField>
 
-<ResponseField name="meta.total" type="integer">
-  Total number of results returned
+<ResponseField name="pagination" type="object">
+  <Expandable title="Pagination Object">
+    <ResponseField name="total" type="integer">Total number of matching results</ResponseField>
+    <ResponseField name="page" type="integer">Current page number</ResponseField>
+    <ResponseField name="limit" type="integer">Results per page</ResponseField>
+    <ResponseField name="hasMore" type="boolean">Whether more pages exist</ResponseField>
+    <ResponseField name="totalPages" type="integer">Total number of pages</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="filters" type="object">
+  Applied filters for the request
+</ResponseField>
+
+<ResponseField name="summary" type="object">
+  <Expandable title="Summary Object">
+    <ResponseField name="total" type="integer">Total action items</ResponseField>
+    <ResponseField name="todo" type="integer">Count in todo state</ResponseField>
+    <ResponseField name="inProgress" type="integer">Count in progress</ResponseField>
+    <ResponseField name="done" type="integer">Count completed</ResponseField>
+    <ResponseField name="blocked" type="integer">Count blocked</ResponseField>
+  </Expandable>
 </ResponseField>

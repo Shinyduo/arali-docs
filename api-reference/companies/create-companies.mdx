@@ -20,27 +20,14 @@ description: 'Batch create or update company records'
       Company display name
     </ParamField>
     
-    <ParamField body="externalId" type="string">
-      **Integration Source ID**. The ID of this record in the source system (e.g. HubSpot Company ID). 
-      *Required if `externalCompanyId` is not provided.*
-    </ParamField>
-    
     <ParamField body="domain" type="string">
       Company website domain
     </ParamField>
     
     <ParamField body="externalCompanyId" type="string">
-      **Custom Organization ID**. Your internal unique ID (e.g. `ORG_123`). 
-      *Required if `externalId` is not provided.*
-      If you provide this but not `externalId`, this value is used as the integration key.
+      **External Company ID**. Your internal unique ID for this company (e.g. `ORG_123`, HubSpot Company ID). 
+      Used for idempotent upserts — if a company with this `externalCompanyId` already exists, it will be updated instead of created.
     </ParamField>
-
-    <Info>
-      **Upsert Logic:**
-      You must provide either `externalId` or `externalCompanyId` (or both).
-      1. **Mapping Identity**: If `externalId` is missing, `externalCompanyId` is used as the key to identify/map the record.
-      2. **DB Constraint**: The system upserts based on `externalCompanyId`.
-    </Info>
     
     <ParamField body="stageKey" type="string" default="lead">
       Company stage key. Options: `lead`, `prospect`, `customer`, `expansion`, `churned`, `lost`, `partner`, `other`
