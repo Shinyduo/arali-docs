@@ -1511,6 +1511,102 @@ components:
                 format: uuid
                 nullable: true
 
+    DealCreate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        companyId:
+          type: string
+          format: uuid
+          nullable: true
+        accountId:
+          type: string
+          format: uuid
+          nullable: true
+        parentDealId:
+          type: string
+          format: uuid
+          nullable: true
+        pipelineId:
+          type: string
+          format: uuid
+        stageName:
+          type: string
+          description: Stage display name (e.g. Prospecting, Demo Booked). Alternative to stageKey.
+        stageKey:
+          type: string
+          description: Stage slug/key within the pipeline (e.g. prospecting, demo_booked). Alternative to stageName.
+        title:
+          type: string
+          nullable: true
+          description: Alternative input field for deal name. If provided without name, title is used as the deal name.
+        name:
+          type: string
+          description: Alias for title.
+        dealType:
+          type: string
+          enum: [new_business, expansion, renewal, upsell, contraction, churn_save]
+        expectedCloseDate:
+          type: string
+          format: date
+          nullable: true
+        closedAt:
+          type: string
+          format: date-time
+          nullable: true
+        externalDealId:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+        transitionReason:
+          type: string
+          nullable: true
+        contactId:
+          type: string
+          format: uuid
+          nullable: true
+        contacts:
+          type: array
+          items:
+            type: object
+            properties:
+              contactId:
+                type: string
+                format: uuid
+              role:
+                type: string
+              isPrimary:
+                type: boolean
+              properties:
+                type: object
+              keyRoles:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    roleKey:
+                      type: string
+                    userEmail:
+                      type: string
+                    userId:
+                      type: string
+        properties:
+          type: object
+        key_roles:
+          type: array
+          items:
+            type: object
+            properties:
+              roleKey:
+                type: string
+              userEmail:
+                type: string
+              userId:
+                type: string
+
     Pipeline:
       type: object
       properties:
@@ -3160,7 +3256,7 @@ paths:
                 deals:
                   type: array
                   items:
-                    $ref: '#/components/schemas/Deal'
+                    $ref: '#/components/schemas/DealCreate'
       responses:
         '200':
           description: Batch operation completed
