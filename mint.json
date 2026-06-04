@@ -105,24 +105,12 @@
             ]
         },
         {
-            "group": "Call Recordings",
-            "pages": [
-                "api-reference/call-recordings/ingest-call-recording"
-            ]
-        },
-        {
             "group": "Meetings",
             "pages": [
                 "api-reference/meetings/create-meeting",
                 "api-reference/meetings/list-meetings",
                 "api-reference/meetings/get-meeting",
                 "api-reference/meetings/delete-meeting"
-            ]
-        },
-        {
-            "group": "Meeting Recordings",
-            "pages": [
-                "api-reference/meeting-recordings/ingest-meeting-recording"
             ]
         },
         {
