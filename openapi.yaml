@@ -115,7 +115,7 @@ components:
         externalCompanyId:
           type: string
           nullable: true
-          description: External Company ID. Used for integration mapping lookup and idempotent upserts.
+          description: External Company ID stored on companies.external_company_id and used for idempotent upserts.
           example: "hubspot_12345"
         createdAt:
           type: string
@@ -314,12 +314,12 @@ components:
         externalAccountId:
           type: string
           nullable: true
-          description: External Account ID. Used for integration mapping lookup and stored on the record.
+          description: External Account ID stored on accounts.external_id and used for idempotent upserts.
           example: "CRM_ACC_001"
         externalCompanyId:
           type: string
           nullable: true
-          description: External ID of the parent company
+          description: Native external ID of the parent company from companies.external_company_id
           example: "hubspot_12345"
         metadata:
           type: object
@@ -477,7 +477,7 @@ components:
         externalContactId:
           type: string
           nullable: true
-          description: External unique ID from integration source. Optional — if omitted, a new contact is created without external ID mapping.
+          description: External unique ID stored on contacts.external_contact_id. Optional — if omitted, a new contact is created without an external ID.
           example: "hubspot_contact_12345"
         fullName:
           type: string
@@ -800,21 +800,21 @@ components:
           description: Internal UUID of the contact
         externalContactId:
           type: string
-          description: External ID of the contact
+          description: Native contact external ID from contacts.external_contact_id
         companyId:
           type: string
           format: uuid
           description: Internal UUID of the company
         externalCompanyId:
           type: string
-          description: External ID of the company
+          description: Native company external ID from companies.external_company_id
         accountId:
           type: string
           format: uuid
           description: Internal UUID of the account
         externalAccountId:
           type: string
-          description: External ID of the account
+          description: Native account external ID from accounts.external_id
         relation:
           type: string
           enum: [employee, consultant, contractor, partner, agency, other]
@@ -828,10 +828,10 @@ components:
         dealId:
           type: string
           format: uuid
-          description: Internal UUID of the deal (bypasses mapping lookup; optional if externalDealId provided)
+          description: Internal UUID of the deal (optional if externalDealId provided)
         externalDealId:
           type: string
-          description: External ID of the deal (via integration mapping; optional if dealId provided)
+          description: Native deal external ID from deals.external_deal_id (optional if dealId provided)
         dealRole:
           type: string
           description: Role for the deal_contact association (e.g. champion, decision_maker, economic_buyer)
@@ -2378,7 +2378,7 @@ paths:
           schema:
             type: string
             default: api
-          description: Optional provider key for integration_object_mapping lookup
+          description: Accepted for backward compatibility only. External IDs resolve from native CRM table columns.
       responses:
         '200':
           description: Enriched associations

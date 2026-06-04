@@ -32,11 +32,10 @@ There are **two ways** to link an account to its parent company:
   </Accordion>
 
   <Accordion title="Option 2: Using externalCompanyId (External Reference)" icon="link">
-    Use this when you only know the **external ID** of the company from your integration.
+    Use this when you only know the **native external ID** stored on the company record.
     
     ```json
     {
-      "providerKey": "hubspot",
       "accounts": [
         {
           "name": "Acme Enterprise Account",
@@ -53,10 +52,8 @@ There are **two ways** to link an account to its parent company:
     }
     ```
     
-    - `externalCompanyId`: The external ID of the parent company. This can be either:
-      1. The **Integration Source ID** (e.g. `hubspot_company_12345`) linked via mapping.
-      2. The **Custom Organization ID** (e.g. `ORG_123`) stored on the company record.
-    - The API looks for a match in that order.
+    - `externalCompanyId`: The external ID stored on `companies.external_company_id`.
+    - The API resolves this directly from the companies table.
     - The company **must already exist**.
     - `externalAccountId`: The unique ID for this account from your integration (stored directly on the account record)
   </Accordion>
@@ -69,9 +66,7 @@ There are **two ways** to link an account to its parent company:
 ## Request Body
 
 <ParamField body="providerKey" type="string">
-  Optional. The integration provider key (e.g. `hubspot`, `salesforce`). 
-  If provided, the API will look for existing mappings specific to this provider. 
-  If omitted, it defaults to a generic mapping.
+  Accepted for backward compatibility only. It is not used for account or company lookup.
 </ParamField>
 
 <ParamField body="accounts" type="array" required>
@@ -87,19 +82,19 @@ There are **two ways** to link an account to its parent company:
     </ParamField>
     
     <ParamField body="externalCompanyId" type="string">
-      **External company ID**. Use when syncing from integrations. Mutually exclusive with `companyId`.
+      **External company ID** stored on `companies.external_company_id`. Mutually exclusive with `companyId`.
     </ParamField>
     
     <ParamField body="externalAccountId" type="string">
-      **External Account ID**. Your internal unique ID for this account from your integration source (e.g. `ACC_123`).
+      **External Account ID** stored on `accounts.external_id`. Your internal unique ID for this account from your integration source (e.g. `ACC_123`).
       *Required.*
     </ParamField>
 
     <Info>
       **Upsert Logic:**
       You must provide `externalAccountId`.
-      1. **DB Constraint**: Validates/Upserts on `externalAccountId`.
-      2. **Company Link**: Must resolve `companyId` (Internal UUID) OR `externalCompanyId` (Integration ID or Custom ID) to an existing parent company.
+      1. **Native External ID Lookup**: Checks `accounts.external_id` in the current enterprise.
+      2. **Company Link**: Must resolve `companyId` (internal UUID) OR `externalCompanyId` (`companies.external_company_id`) to an existing parent company.
     </Info>
     
     <ParamField body="domain" type="string">

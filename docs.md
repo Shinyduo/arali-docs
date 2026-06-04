@@ -66,8 +66,7 @@ Manage company records for your enterprise.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `name` | string | Yes | Company display name |
-| `externalId` | string | Yes | **Primary External ID**. Used for integration mapping lookup. |
-| `externalCompanyId` | string | No | **Secondary External ID**. Stored on the record. Defaults to `externalId` if not provided. |
+| `externalCompanyId` | string | No | **External Company ID** stored on `companies.external_company_id`. Used for idempotent upserts. |
 | `domain` | string \| null | No | Company website domain |
 | `lifecycleStage` | enum | No | `lead`, `prospect`, `customer`, `expansion`, `churned`, `lost`, `partner`, `other` (default: `lead`) |
 | `ownerUserId` | UUID \| null | No | Owner user ID |
@@ -79,9 +78,9 @@ Manage company records for your enterprise.
 | `properties` | object | No | Custom field values (maps to `field_values` table) |
 
 ### Upsert Logic
-1. **Mapping Lookup**: The API first checks for an existing mapping using `externalId`. If found, it updates the linked company.
-2. **DB Constraint**: If no mapping is found, it attempts to insert. If a company with the same `externalCompanyId` exists in the database, it updates that record (and creates a new mapping).
-3. **Insert**: If neither is found, a new company is created.
+1. **Native External ID Lookup**: If `externalCompanyId` is provided, the API checks `companies.external_company_id` in the current enterprise.
+2. **Upsert**: If a matching company exists, it is updated. Otherwise, a new company is inserted with that external ID.
+3. **Insert Without External ID**: If no `externalCompanyId` is provided, a new company is created.
 
 ### cURL Examples
 
@@ -95,7 +94,6 @@ curl -X POST 'https://your-api-domain.com/api/v1/companies' \
     "companies": [
       {
         "name": "Acme Corporation",
-        "externalId": "hubspot_12345", 
         "externalCompanyId": "CRM_001", 
         "domain": "acme.com",
         "lifecycleStage": "customer",
@@ -106,7 +104,7 @@ curl -X POST 'https://your-api-domain.com/api/v1/companies' \
   }'
 ```
 
-> **Note:** `providerKey` is optional and defaults to `"api"` if not provided.
+> **Note:** Public company upserts no longer create or resolve `integration_object_mapping` rows. Legacy mapping rows are cleaned up if the company is deleted.
 
 #### List All Companies
 
@@ -164,9 +162,8 @@ Manage account records linked to companies.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `name` | string | Yes | Account display name |
-| `externalId` | string | Yes | **Primary External ID**. Used for integration mapping lookup. |
-| `externalAccountId` | string | No | **Secondary External ID**. Stored on the record. Defaults to `externalId` if not provided. |
-| `externalCompanyId` | string | Yes | External ID of the **parent company**. |
+| `externalAccountId` | string | Yes | **External Account ID** stored on `accounts.external_id`. Used for idempotent upserts. |
+| `externalCompanyId` | string | Yes | Native external ID of the **parent company**, resolved from `companies.external_company_id`. |
 | `domain` | string \| null | No | Account domain |
 | `accountType` | string \| null | No | Account type/tier (e.g., `enterprise`, `startup`, `smb`) |
 | `ownerUserId` | UUID \| null | No | Owner user ID |
@@ -178,9 +175,9 @@ Manage account records linked to companies.
 | `properties` | object | No | Custom field values (maps to `field_values` table) |
 
 ### Upsert Logic
-1. **Mapping Lookup**: Checks for mapping using `externalId`.
-2. **DB Constraint**: Validates/Upserts on `externalAccountId` (defaults to `externalId`).
-3. **Company Link**: Must resolve `externalCompanyId` to an existing parent company.
+1. **Native External ID Lookup**: Checks `accounts.external_id` in the current enterprise.
+2. **Upsert**: Updates the matching account or inserts a new account with `externalAccountId`.
+3. **Company Link**: Must resolve `companyId` or native `externalCompanyId` to an existing parent company.
 
 ### cURL Examples
 
@@ -194,7 +191,6 @@ curl -X POST 'https://your-api-domain.com/api/v1/accounts' \
     "accounts": [
       {
         "name": "Acme Enterprise Account",
-        "externalId": "vitally_acc_12345",
         "externalAccountId": "CRM_ACC_001",
         "externalCompanyId": "hubspot_12345",
         "domain": "acme.com",
@@ -210,7 +206,7 @@ curl -X POST 'https://your-api-domain.com/api/v1/accounts' \
   }'
 ```
 
-> **Note:** `providerKey` is optional and defaults to `"api"` if not provided.
+> **Note:** Public account upserts no longer create or resolve `integration_object_mapping` rows. Legacy mapping rows are cleaned up if the account is deleted.
 
 #### List All Accounts
 
@@ -267,7 +263,7 @@ Manage contact records for your enterprise.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `externalId` | string | Yes | External unique ID from integration source |
+| `externalContactId` | string | Yes | External unique ID stored on `contacts.external_contact_id` and used for idempotent upserts |
 | `fullName` | string \| null | No | Contact's full name |
 | `primaryEmail` | string \| null | No | Primary email address |
 | `primaryPhone` | string \| null | No | Primary phone number |
@@ -315,7 +311,7 @@ curl -X POST 'https://your-api-domain.com/api/v1/contacts' \
   -d '{
     "contacts": [
       {
-        "externalId": "contact_12345",
+        "externalContactId": "contact_12345",
         "fullName": "John Doe",
         "primaryEmail": "john.doe@acme.com",
         "primaryPhone": "+1-555-123-4567",
@@ -336,7 +332,7 @@ curl -X POST 'https://your-api-domain.com/api/v1/contacts' \
   }'
 ```
 
-> **Note:** `providerKey` is optional and defaults to `"api"` if not provided.
+> **Note:** Public contact upserts no longer create or resolve `integration_object_mapping` rows. Legacy mapping rows are cleaned up if the contact is deleted.
 
 #### List All Contacts
 
@@ -378,7 +374,7 @@ curl -X DELETE 'https://your-api-domain.com/api/v1/contacts/CONTACT_UUID' \
 
 ## Associations API
 
-Create contact-company and contact-account relationships. Supports both external IDs (via integration mappings) and direct internal database IDs.
+Create contact-company and contact-account relationships. Supports direct internal database IDs and native external IDs stored on CRM entity tables.
 
 ### Endpoints
 
@@ -391,12 +387,12 @@ Create contact-company and contact-account relationships. Supports both external
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `contactId` | UUID | No | Internal UUID of the contact (bypasses mapping lookup; optional if `externalContactId` provided) |
-| `externalContactId` | string | No | External ID of the contact (via integration mapping; optional if `contactId` provided) |
-| `companyId` | UUID | No | Internal UUID of the company (bypasses mapping lookup; optional if `externalCompanyId` provided) |
-| `externalCompanyId` | string | No | External ID of the company (creates `customer_company`; optional if `companyId` provided) |
-| `accountId` | UUID | No | Internal UUID of the account (bypasses mapping lookup and auto-resolves company; optional if `externalAccountId` provided) |
-| `externalAccountId` | string | No | External ID of the account (creates `contact_account` and auto-resolves company; optional if `accountId` provided) |
+| `contactId` | UUID | No | Internal UUID of the contact (optional if `externalContactId` provided) |
+| `externalContactId` | string | No | Native contact external ID from `contacts.external_contact_id` (optional if `contactId` provided) |
+| `companyId` | UUID | No | Internal UUID of the company (optional if `externalCompanyId` provided) |
+| `externalCompanyId` | string | No | Native company external ID from `companies.external_company_id` (creates `customer_company`; optional if `companyId` provided) |
+| `accountId` | UUID | No | Internal UUID of the account (auto-resolves company; optional if `externalAccountId` provided) |
+| `externalAccountId` | string | No | Native account external ID from `accounts.external_id` (creates `contact_account` and auto-resolves company; optional if `accountId` provided) |
 | `relation` | enum | No | `employee`, `consultant`, `contractor`, `partner`, `agency`, `other` (default: `employee`) |
 | `isPrimary` | boolean | No | Is primary company for contact (default: `false`) |
 | `role` | string | No | Role for the contact_account association |
@@ -481,7 +477,7 @@ curl -X POST 'https://your-api-domain.com/api/v1/associations' \
   }'
 ```
 
-> **Note:** `providerKey` is optional and defaults to `"api"` if not provided. Direct internal IDs (UUID format) bypass integration mapping lookups, making associations faster and more reliable when you have the database IDs available.
+> **Note:** Association lookup uses native entity columns only: `contacts.external_contact_id`, `companies.external_company_id`, and `accounts.external_id`. Legacy `integration_object_mapping` rows are not used for lookup.
 
 ---
 

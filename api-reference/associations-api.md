@@ -56,7 +56,7 @@ Fetch enriched related entities for a contact, deal, company, or account.
 | `entityType` | string | Yes | Type of entity: `contact`, `deal`, `company`, `account` |
 | `external_id` | string | Conditional* | External ID of the entity |
 | `internal_id` | string (UUID) | Conditional* | Internal UUID of the entity |
-| `providerKey` | string | No | Provider key for external ID lookup. Defaults to `api` |
+| `providerKey` | string | No | Accepted for backward compatibility only. It is not used for external ID lookup. |
 
 \* Provide exactly one of `external_id` or `internal_id`
 
@@ -115,18 +115,18 @@ Batch create or update associations between contacts and companies, accounts, an
 
 #### Association Object
 
-You can use either internal UUIDs or external IDs for all entities.
+You can use either internal UUIDs or native external IDs for all entities. External IDs resolve from the entity tables directly: `contacts.external_contact_id`, `companies.external_company_id`, `accounts.external_id`, and `deals.external_deal_id`.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `contactId` | string (UUID) | Conditional* | Internal contact ID |
-| `externalContactId` | string | Conditional* | External contact ID |
+| `externalContactId` | string | Conditional* | Native contact external ID from `contacts.external_contact_id` |
 | `companyId` | string (UUID) | Conditional** | Internal company ID |
-| `externalCompanyId` | string | Conditional** | External company ID |
+| `externalCompanyId` | string | Conditional** | Native company external ID from `companies.external_company_id` |
 | `accountId` | string (UUID) | Conditional** | Internal account ID |
-| `externalAccountId` | string | Conditional** | External account ID |
+| `externalAccountId` | string | Conditional** | Native account external ID from `accounts.external_id` |
 | `dealId` | string (UUID) | Conditional** | Internal deal ID |
-| `externalDealId` | string | Conditional** | External deal ID |
+| `externalDealId` | string | Conditional** | Native deal external ID from `deals.external_deal_id` |
 | `relation` | enum | No | Relationship type (default: "employee"). Invalid values silently default to `employee` |
 | `isPrimary` | boolean | No | Primary company flag (default: false). Forced to `false` for account-based associations |
 | `role` | string | No | Role in account (for contact_account) |
@@ -340,10 +340,10 @@ Some associations may be skipped (not failed) with reasons:
 
 | Reason | Description |
 |--------|-------------|
-| `Contact not found` | External ID not in integration_object_mapping |
-| `Company not found` | External ID not in integration_object_mapping |
-| `Account not found` | External ID not in integration_object_mapping |
-| `Deal not found` | External ID not in integration_object_mapping |
+| `Contact not found` | External ID not found in `contacts.external_contact_id` |
+| `Company not found` | External ID not found in `companies.external_company_id` |
+| `Account not found` | External ID not found in `accounts.external_id` |
+| `Deal not found` | External ID not found in `deals.external_deal_id` |
 | `Account has no associated company` | Account exists but has no companyId |
 | `Missing contact identifier` | Neither contactId nor externalContactId provided |
 | `Missing company/account/deal identifier` | No company, account, or deal identifier provided |

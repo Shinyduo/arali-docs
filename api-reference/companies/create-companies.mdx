@@ -7,9 +7,7 @@ description: 'Batch create or update company records'
 ## Request Body
 
 <ParamField body="providerKey" type="string">
-  Optional. The integration provider key (e.g. `hubspot`, `salesforce`). 
-  If provided, the API will look for existing mappings specific to this provider. 
-  If omitted, it defaults to a generic mapping.
+  Accepted for backward compatibility only. It is not used for company lookup.
 </ParamField>
 
 <ParamField body="companies" type="array" required>
@@ -26,7 +24,7 @@ description: 'Batch create or update company records'
     
     <ParamField body="externalCompanyId" type="string">
       **External Company ID**. Your internal unique ID for this company (e.g. `ORG_123`, HubSpot Company ID). 
-      Used for idempotent upserts — if a company with this `externalCompanyId` already exists, it will be updated instead of created.
+      Stored on `companies.external_company_id` and used for idempotent upserts. If a company with this `externalCompanyId` already exists, it will be updated instead of created.
     </ParamField>
     
     <ParamField body="stageKey" type="string" default="lead">

@@ -57,7 +57,7 @@ Batch create or update multiple contacts. Uses upsert behavior based on `externa
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `externalContactId` | string | Yes | External unique identifier from integration source |
+| `externalContactId` | string | Yes | External unique identifier stored on `contacts.external_contact_id` and used for idempotent upserts |
 | `fullName` | string \| null | No | Contact's full name |
 | `title` | string \| null | No | Job title |
 | `ownerUserId` | string (UUID) \| null | No | Internal user ID who owns this contact |

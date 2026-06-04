@@ -6,8 +6,8 @@ description: 'Batch create or update contact records'
 
 ## Request Body
 
-<ParamField body="providerKey" type="string" required>
-  Integration provider key (e.g. `hubspot`, `salesforce`)
+<ParamField body="providerKey" type="string">
+  Accepted for backward compatibility only. It is not used for contact lookup.
 </ParamField>
 
 <ParamField body="contacts" type="array" required>
@@ -15,7 +15,7 @@ description: 'Batch create or update contact records'
   
   <Expandable title="Contact Object">
     <ParamField body="externalContactId" type="string" required>
-      External unique ID from integration source
+      External unique ID stored on `contacts.external_contact_id` and used for idempotent upserts
     </ParamField>
 
     <ParamField body="fullName" type="string">
@@ -95,7 +95,6 @@ curl -X POST https://api.arali.ai/api/v1/contacts \
   -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "providerKey": "hubspot",
     "contacts": [
       {
         "externalContactId": "contact_12345",

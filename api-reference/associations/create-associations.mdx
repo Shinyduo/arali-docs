@@ -6,8 +6,8 @@ description: 'Batch create contact-company, contact-account, and contact-deal re
 
 ## Request Body
 
-<ParamField body="providerKey" type="string" required>
-  Integration provider key (e.g. `hubspot`, `salesforce`). Defaults to `"api"` if not provided.
+<ParamField body="providerKey" type="string">
+  Accepted for backward compatibility only. It is not used for external ID lookup.
 </ParamField>
 
 <ParamField body="associations" type="array" required>
@@ -15,27 +15,27 @@ description: 'Batch create contact-company, contact-account, and contact-deal re
   
   <Expandable title="Association Object">
     <ParamField body="contactId" type="string">
-      Internal UUID of the contact (bypasses mapping lookup; optional if `externalContactId` provided)
+      Internal UUID of the contact (optional if `externalContactId` provided)
     </ParamField>
 
     <ParamField body="externalContactId" type="string">
-      External ID of the contact (via integration mapping; optional if `contactId` provided)
+      Native contact external ID from `contacts.external_contact_id` (optional if `contactId` provided)
     </ParamField>
 
     <ParamField body="companyId" type="string">
-      Internal UUID of the company (bypasses mapping lookup; optional if `externalCompanyId` provided)
+      Internal UUID of the company (optional if `externalCompanyId` provided)
     </ParamField>
 
     <ParamField body="externalCompanyId" type="string">
-      External ID of the company (creates `customer_company`; optional if `companyId` provided)
+      Native company external ID from `companies.external_company_id` (creates `customer_company`; optional if `companyId` provided)
     </ParamField>
 
     <ParamField body="accountId" type="string">
-      Internal UUID of the account (bypasses mapping lookup and auto-resolves company; optional if `externalAccountId` provided)
+      Internal UUID of the account (auto-resolves company; optional if `externalAccountId` provided)
     </ParamField>
 
     <ParamField body="externalAccountId" type="string">
-      External ID of the account (creates `contact_account` and auto-resolves company; optional if `accountId` provided)
+      Native account external ID from `accounts.external_id` (creates `contact_account` and auto-resolves company; optional if `accountId` provided)
     </ParamField>
 
 <ParamField body="relation" type="string" default="employee">
@@ -51,11 +51,11 @@ description: 'Batch create contact-company, contact-account, and contact-deal re
     </ParamField>
 
     <ParamField body="dealId" type="string">
-      Internal UUID of the deal (bypasses mapping lookup; optional if `externalDealId` provided)
+      Internal UUID of the deal (auto-resolves company; optional if `externalDealId` provided)
     </ParamField>
 
     <ParamField body="externalDealId" type="string">
-      External ID of the deal (creates `deal_contact`; optional if `dealId` provided)
+      Native deal external ID from `deals.external_deal_id` (creates `deal_contact`; optional if `dealId` provided)
     </ParamField>
 
 <ParamField body="dealRole" type="string" default="unknown">
@@ -90,7 +90,6 @@ curl -X POST https://api.arali.ai/api/v1/associations \
   -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "providerKey": "hubspot",
     "associations": [
       {
         "externalContactId": "contact_12345",
