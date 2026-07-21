@@ -1,0 +1,79 @@
+---
+title: 'Aggregate Companies'
+api: 'GET /api/v1/companies/aggregate'
+description: 'Group companies by stage, owner, org unit, or a custom field — with counts per group'
+---
+
+Groups companies by a single dimension (or a compound cross-tab of several) and returns a
+count per group. Filters compose with any `groupBy` choice.
+
+## Query Parameters
+
+| Param | Description |
+|-------|-------------|
+| `groupBy` (required) | `stage`, `owner`, `org_unit`, or `field:<fieldKey>`. Comma-separate multiple (e.g. `stage,field:country`) for a compound cross-tab instead of a single breakdown. |
+| `stageKey`, `stageId` | Comma-separated. Filter to companies in these stage(s) before grouping. |
+| `fields[fieldKey]=value` | Filter to companies whose custom field matches this value. |
+| `fieldsAfter[fieldKey]`, `fieldsBefore[fieldKey]` | Range-filter by a custom `date`/`datetime` field. 400s if the field isn't a date type. |
+| `key_role_user_id`, `key_role_key` | Comma-separated. Filter to companies owned by these user(s)/role(s). |
+| `org_unit_id` | Comma-separated. Filter to companies owned by someone in these org unit(s) or their descendants. |
+| `date` | Shorthand for "created that single day" (system `createdAt`, UTC). |
+| `createdAfter`, `createdBefore` | Range filter on system `createdAt`. |
+| `granularity` | `day` (default) or `month` — bucket size when grouping by a `date`/`datetime` custom field. |
+
+## Response
+
+<ResponseField name="success" type="boolean">Whether the operation was successful</ResponseField>
+
+<ResponseField name="data" type="array">
+  Single-dimension mode: array of `{ groupKey, groupLabel, count }`. Compound mode (comma-separated `groupBy`): array of `{ dimensions: { <token>: value }, count }` — one row per combination.
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  <Expandable title="Meta Object">
+    <ResponseField name="entity" type="string">Always `"companies"`</ResponseField>
+    <ResponseField name="groupBy" type="string">The raw `groupBy` value you passed</ResponseField>
+    <ResponseField name="dimensions" type="array">Compound mode only — the parsed list of dimension tokens</ResponseField>
+    <ResponseField name="total" type="integer">Accurate distinct-company count matching the applied filters</ResponseField>
+    <ResponseField name="truncated" type="boolean">Compound mode only — `true` if more than 500 combinations existed and the result was capped</ResponseField>
+    <ResponseField name="enterpriseId" type="string">Your enterprise UUID</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<Warning>
+**Fan-out for `owner`, `org_unit`, and `multi_enum` custom fields:** a company with 2
+concurrent key-role assignments, or belonging to 2 org units, or with 2 selected values on
+a multi-select field, is counted once per group. `meta.total` always reports the accurate
+distinct-company count; `sum(data[].count)` can exceed it for these dimensions by design.
+Pass `key_role_key` to scope to a single role and avoid owner/org-unit fan-out.
+</Warning>
+
+<Note>
+`groupBy=field:<key>` supports `text`, `number`, `boolean`, `enum`, and `multi_enum`
+custom field types, plus `date`/`datetime` (bucketed via `granularity`). `json` fields
+are not yet supported and return a 400.
+</Note>
+
+## Example Response
+
+```bash
+curl -X GET 'https://api.arali.ai/api/v1/companies/aggregate?groupBy=stage' \
+  -H 'Authorization: Api-Key YOUR_API_KEY'
+```
+
+```json
+{
+  "success": true,
+  "data": [
+    { "groupKey": "550e8400-e29b-41d4-a716-446655440002", "groupLabel": "Customer", "count": 137 },
+    { "groupKey": "550e8400-e29b-41d4-a716-446655440003", "groupLabel": "Lead", "count": 42 },
+    { "groupKey": null, "groupLabel": "(no stage)", "count": 12 }
+  ],
+  "meta": {
+    "entity": "companies",
+    "groupBy": "stage",
+    "total": 191,
+    "enterpriseId": "550e8400-e29b-41d4-a716-446655440001"
+  }
+}
+```

@@ -23,7 +23,214 @@ components:
       name: Authorization
       description: "Enter your API key as: Api-Key <your_key>"
 
+  parameters:
+    AggGroupBy:
+      name: groupBy
+      in: query
+      required: true
+      schema:
+        type: string
+      description: >
+        Dimension(s) to group by. Single dimension: `stage`, `owner`, `org_unit`, or
+        `field:<fieldKey>` (deals also support `pipeline`). Compound mode: comma-separate
+        multiple dimensions (`stage` and/or `field:<fieldKey>` only, deals also `pipeline`)
+        to get one cross-tabbed result instead of a single breakdown, e.g.
+        `stage,field:country,field:lead_source`.
+      example: "field:lead_source"
+    AggStageKey:
+      name: stageKey
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Comma-separated stage keys to filter to before grouping.
+    AggStageId:
+      name: stageId
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Comma-separated stage UUIDs to filter to before grouping.
+    AggFields:
+      name: fields[fieldKey]
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >
+        Filter to entities whose custom field `fieldKey` matches `value` (exact/ILIKE
+        match). Repeatable — one per field key, e.g. `fields[ethnicity]=NRI`. AND-combined
+        if multiple are given.
+    AggFieldsAfter:
+      name: fieldsAfter[fieldKey]
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+      description: >
+        Filter to entities whose custom `date`/`datetime` field `fieldKey` is on or after
+        this date (inclusive). Only valid for date/datetime-typed custom fields — returns
+        400 for any other field type. Pair with `fieldsBefore[fieldKey]` for a range.
+      example: "fieldsAfter[created_at_cy]=2026-06-01"
+    AggFieldsBefore:
+      name: fieldsBefore[fieldKey]
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+      description: >
+        Filter to entities whose custom `date`/`datetime` field `fieldKey` is strictly
+        before this date. Only valid for date/datetime-typed custom fields.
+      example: "fieldsBefore[created_at_cy]=2026-07-01"
+    AggKeyRoleUserId:
+      name: key_role_user_id
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Comma-separated user UUIDs. Filter to entities owned by any of these users.
+    AggKeyRoleKey:
+      name: key_role_key
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Comma-separated key-role keys (e.g. `ae`, `csm`) to scope `key_role_user_id`/`org_unit_id`/`groupBy=owner`/`groupBy=org_unit` to specific roles only.
+    AggOrgUnitId:
+      name: org_unit_id
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Comma-separated org unit UUIDs. Filter to entities owned by someone in these org units (or their descendants).
+    AggDate:
+      name: date
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+      description: "Shorthand for \"that single day\" — filters to entities whose system `createdAt` falls on this UTC date. Mutually exclusive with `createdAfter`/`createdBefore`."
+      example: "2026-07-20"
+    AggCreatedAfter:
+      name: createdAfter
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+      description: Filter to entities with system `createdAt` on or after this ISO date/datetime.
+    AggCreatedBefore:
+      name: createdBefore
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+      description: Filter to entities with system `createdAt` strictly before this ISO date/datetime.
+    AggGranularity:
+      name: granularity
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [day, month]
+        default: day
+      description: Bucket size when `groupBy` (or a compound dimension) targets a `date`/`datetime` custom field. Defaults to `day`.
+
   schemas:
+    AggregateGroupCount:
+      type: object
+      properties:
+        groupKey:
+          type: string
+          nullable: true
+          description: The raw group value (stage/user/org-unit UUID, or field value). `null` for the "no value" bucket.
+        groupLabel:
+          type: string
+          description: Human-readable label — resolved stage/user/org-unit name, or the raw field value/date bucket.
+        count:
+          type: integer
+          description: Number of entities in this group. For `owner`/`org_unit`/`multi_enum` field dimensions, an entity can appear in more than one group (fan-out) — see description.
+      example:
+        groupKey: "1bd05980-ea79-433f-8bcd-2d6114b6e2aa"
+        groupLabel: "Customer"
+        count: 137
+
+    AggregateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AggregateGroupCount'
+        meta:
+          type: object
+          properties:
+            entity:
+              type: string
+              example: "contacts"
+            groupBy:
+              type: string
+              example: "stage"
+            total:
+              type: integer
+              description: Accurate distinct-entity count matching the applied filters. Can be less than `sum(data[].count)` for `owner`/`org_unit`/`multi_enum` dimensions — that's intentional fan-out, not a bug.
+            enterpriseId:
+              type: string
+              format: uuid
+
+    CompoundAggregateRow:
+      type: object
+      properties:
+        dimensions:
+          type: object
+          additionalProperties:
+            type: string
+            nullable: true
+          description: One key per requested dimension token (e.g. `stage`, `field:country`), value is that combination's group value (or `null`).
+        count:
+          type: integer
+      example:
+        dimensions:
+          stage: "New"
+          country: "United States"
+        count: 19
+
+    CompoundAggregateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompoundAggregateRow'
+        meta:
+          type: object
+          properties:
+            entity:
+              type: string
+            groupBy:
+              type: string
+              example: "stage,field:country"
+            dimensions:
+              type: array
+              items:
+                type: string
+            total:
+              type: integer
+            truncated:
+              type: boolean
+              description: True if more than 500 distinct combinations existed and the result was capped.
+            enterpriseId:
+              type: string
+              format: uuid
+
     Error:
       type: object
       properties:
@@ -1983,6 +2190,49 @@ paths:
         '403':
           description: Forbidden - requires companies:read scope
 
+  /api/v1/companies/aggregate:
+    get:
+      operationId: aggregateCompanies
+      summary: Aggregate Companies
+      description: >
+        Group companies by stage, owner, org unit, or a custom field, returning a count
+        per group. Pass a comma-separated `groupBy` (e.g. `stage,field:country`) for a
+        compound cross-tab instead of a single breakdown. Filters compose with any
+        `groupBy` choice.
+      tags:
+        - Companies
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AggGroupBy'
+        - $ref: '#/components/parameters/AggStageKey'
+        - $ref: '#/components/parameters/AggStageId'
+        - $ref: '#/components/parameters/AggFields'
+        - $ref: '#/components/parameters/AggFieldsAfter'
+        - $ref: '#/components/parameters/AggFieldsBefore'
+        - $ref: '#/components/parameters/AggKeyRoleUserId'
+        - $ref: '#/components/parameters/AggKeyRoleKey'
+        - $ref: '#/components/parameters/AggOrgUnitId'
+        - $ref: '#/components/parameters/AggDate'
+        - $ref: '#/components/parameters/AggCreatedAfter'
+        - $ref: '#/components/parameters/AggCreatedBefore'
+        - $ref: '#/components/parameters/AggGranularity'
+      responses:
+        '200':
+          description: Group counts (or cross-tabbed rows, if `groupBy` was comma-separated)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AggregateResponse'
+                  - $ref: '#/components/schemas/CompoundAggregateResponse'
+        '400':
+          description: Invalid groupBy, unknown field key, or unsupported field type for grouping
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires companies:read scope
+
   /api/v1/companies/{id}:
     get:
       operationId: getCompany
@@ -2115,6 +2365,49 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires accounts:read scope
+
+  /api/v1/accounts/aggregate:
+    get:
+      operationId: aggregateAccounts
+      summary: Aggregate Accounts
+      description: >
+        Group accounts by stage, owner, org unit, or a custom field, returning a count
+        per group. Pass a comma-separated `groupBy` (e.g. `stage,field:country`) for a
+        compound cross-tab instead of a single breakdown. Filters compose with any
+        `groupBy` choice.
+      tags:
+        - Accounts
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AggGroupBy'
+        - $ref: '#/components/parameters/AggStageKey'
+        - $ref: '#/components/parameters/AggStageId'
+        - $ref: '#/components/parameters/AggFields'
+        - $ref: '#/components/parameters/AggFieldsAfter'
+        - $ref: '#/components/parameters/AggFieldsBefore'
+        - $ref: '#/components/parameters/AggKeyRoleUserId'
+        - $ref: '#/components/parameters/AggKeyRoleKey'
+        - $ref: '#/components/parameters/AggOrgUnitId'
+        - $ref: '#/components/parameters/AggDate'
+        - $ref: '#/components/parameters/AggCreatedAfter'
+        - $ref: '#/components/parameters/AggCreatedBefore'
+        - $ref: '#/components/parameters/AggGranularity'
+      responses:
+        '200':
+          description: Group counts (or cross-tabbed rows, if `groupBy` was comma-separated)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AggregateResponse'
+                  - $ref: '#/components/schemas/CompoundAggregateResponse'
+        '400':
+          description: Invalid groupBy, unknown field key, or unsupported field type for grouping
         '401':
           description: Unauthorized
         '403':
@@ -2274,6 +2567,52 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Contact'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires contacts:read scope
+
+  /api/v1/contacts/aggregate:
+    get:
+      operationId: aggregateContacts
+      summary: Aggregate Contacts
+      description: >
+        Group contacts by stage, owner, org unit, or a custom field, returning a count
+        per group. Custom field grouping supports `text`, `number`, `boolean`, `enum`,
+        `multi_enum` (an entity with 2+ selected values is counted once per value), and
+        `date`/`datetime` (bucketed via `granularity`). Pass a comma-separated `groupBy`
+        (e.g. `stage,field:ad_id,field:country`) for a compound cross-tab — one row per
+        combination — instead of a single breakdown. Filters compose with any `groupBy`
+        choice, e.g. filter to a stage/date range then group by a different dimension.
+      tags:
+        - Contacts
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AggGroupBy'
+        - $ref: '#/components/parameters/AggStageKey'
+        - $ref: '#/components/parameters/AggStageId'
+        - $ref: '#/components/parameters/AggFields'
+        - $ref: '#/components/parameters/AggFieldsAfter'
+        - $ref: '#/components/parameters/AggFieldsBefore'
+        - $ref: '#/components/parameters/AggKeyRoleUserId'
+        - $ref: '#/components/parameters/AggKeyRoleKey'
+        - $ref: '#/components/parameters/AggOrgUnitId'
+        - $ref: '#/components/parameters/AggDate'
+        - $ref: '#/components/parameters/AggCreatedAfter'
+        - $ref: '#/components/parameters/AggCreatedBefore'
+        - $ref: '#/components/parameters/AggGranularity'
+      responses:
+        '200':
+          description: Group counts (or cross-tabbed rows, if `groupBy` was comma-separated)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AggregateResponse'
+                  - $ref: '#/components/schemas/CompoundAggregateResponse'
+        '400':
+          description: Invalid groupBy, unknown field key, or unsupported field type for grouping
         '401':
           description: Unauthorized
         '403':
@@ -3340,6 +3679,73 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Deal'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires deals:read scope
+
+  /api/v1/deals/aggregate:
+    get:
+      operationId: aggregateDeals
+      summary: Aggregate Deals
+      description: >
+        Group deals by stage, pipeline, owner, org unit, or a custom field, returning a
+        count per group. Deals use a different stage model than companies/accounts/contacts
+        (`deal_pipeline_stage` scoped to a `deal_pipeline`) — the returned stage label is
+        disambiguated with the pipeline name, e.g. `"Customer (Default)"`. Pass a
+        comma-separated `groupBy` (e.g. `stage,pipeline` or `field:ad_id,field:country`)
+        for a compound cross-tab instead of a single breakdown. Filters compose with any
+        `groupBy` choice.
+      tags:
+        - Deals
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AggGroupBy'
+        - name: pipelineId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter to deals in this pipeline. Also scopes `stageKey` resolution to this pipeline's stages.
+        - name: companyId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter to deals for this company.
+        - name: accountId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter to deals for this account.
+        - $ref: '#/components/parameters/AggStageKey'
+        - $ref: '#/components/parameters/AggStageId'
+        - $ref: '#/components/parameters/AggFields'
+        - $ref: '#/components/parameters/AggFieldsAfter'
+        - $ref: '#/components/parameters/AggFieldsBefore'
+        - $ref: '#/components/parameters/AggKeyRoleUserId'
+        - $ref: '#/components/parameters/AggKeyRoleKey'
+        - $ref: '#/components/parameters/AggOrgUnitId'
+        - $ref: '#/components/parameters/AggDate'
+        - $ref: '#/components/parameters/AggCreatedAfter'
+        - $ref: '#/components/parameters/AggCreatedBefore'
+        - $ref: '#/components/parameters/AggGranularity'
+      responses:
+        '200':
+          description: Group counts (or cross-tabbed rows, if `groupBy` was comma-separated)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AggregateResponse'
+                  - $ref: '#/components/schemas/CompoundAggregateResponse'
+        '400':
+          description: Invalid groupBy, unknown field key, or unsupported field type for grouping
         '401':
           description: Unauthorized
         '403':

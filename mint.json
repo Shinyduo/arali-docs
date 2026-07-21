@@ -64,6 +64,7 @@
             "pages": [
                 "api-reference/companies/create-companies",
                 "api-reference/companies/list-companies",
+                "api-reference/companies/aggregate-companies",
                 "api-reference/companies/get-company",
                 "api-reference/companies/update-company",
                 "api-reference/companies/delete-company"
@@ -74,6 +75,7 @@
             "pages": [
                 "api-reference/accounts/create-accounts",
                 "api-reference/accounts/list-accounts",
+                "api-reference/accounts/aggregate-accounts",
                 "api-reference/accounts/get-account",
                 "api-reference/accounts/update-account",
                 "api-reference/accounts/delete-account"
@@ -84,6 +86,7 @@
             "pages": [
                 "api-reference/contacts/create-contacts",
                 "api-reference/contacts/list-contacts",
+                "api-reference/contacts/aggregate-contacts",
                 "api-reference/contacts/get-contact",
                 "api-reference/contacts/update-contact",
                 "api-reference/contacts/delete-contact"
@@ -118,6 +121,7 @@
             "pages": [
                 "api-reference/deals/create-deals",
                 "api-reference/deals/list-deals",
+                "api-reference/deals/aggregate-deals",
                 "api-reference/deals/get-deal",
                 "api-reference/deals/update-deal",
                 "api-reference/deals/delete-deal",
