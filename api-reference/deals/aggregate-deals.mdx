@@ -8,9 +8,11 @@ Groups deals by a single dimension (or a compound cross-tab of several) and retu
 count per group. Filters compose with any `groupBy` choice.
 
 Deals use a different stage model than companies/accounts/contacts: a deal's stage is a
-`deal_pipeline_stage` scoped to a `deal_pipeline`, not a `stage_definition`. Because stage
-names can repeat across pipelines, the returned `groupLabel` disambiguates with the
-pipeline name, e.g. `"Customer (Default)"`.
+`deal_pipeline_stage` scoped to a `deal_pipeline`, not a `stage_definition`. The returned
+stage `groupLabel` is the plain stage name (e.g. `"Customer"`) — if you have multiple
+pipelines with same-named stages, add `pipeline` as a second `groupBy` dimension (or
+filter by `pipelineId`) to disambiguate, since the stage label itself does not include
+the pipeline name.
 
 ## Query Parameters
 
@@ -78,8 +80,8 @@ curl -X GET 'https://api.arali.ai/api/v1/deals/aggregate?groupBy=stage,pipeline'
 {
   "success": true,
   "data": [
-    { "dimensions": { "stage": "Prospecting (Default)", "pipeline": "Default" }, "count": 119422 },
-    { "dimensions": { "stage": "Customer (Default)", "pipeline": "Default" }, "count": 17254 },
+    { "dimensions": { "stage": "Prospecting", "pipeline": "Default" }, "count": 119422 },
+    { "dimensions": { "stage": "Customer", "pipeline": "Default" }, "count": 17254 },
     { "dimensions": { "stage": null, "pipeline": "Default" }, "count": 2927 }
   ],
   "meta": {
