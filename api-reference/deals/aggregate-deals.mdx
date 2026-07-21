@@ -42,7 +42,6 @@ pipeline name, e.g. `"Customer (Default)"`.
     <ResponseField name="groupBy" type="string">The raw `groupBy` value you passed</ResponseField>
     <ResponseField name="dimensions" type="array">Compound mode only — the parsed list of dimension tokens</ResponseField>
     <ResponseField name="total" type="integer">Accurate distinct-deal count matching the applied filters</ResponseField>
-    <ResponseField name="truncated" type="boolean">Compound mode only — `true` if more than 500 combinations existed and the result was capped</ResponseField>
     <ResponseField name="enterpriseId" type="string">Your enterprise UUID</ResponseField>
   </Expandable>
 </ResponseField>
@@ -53,6 +52,13 @@ concurrent key-role assignments, or belonging to 2 org units, or with 2 selected
 a multi-select field, is counted once per group. `meta.total` always reports the accurate
 distinct-deal count; `sum(data[].count)` can exceed it for these dimensions by design.
 Pass `key_role_key` to scope to a single role and avoid owner/org-unit fan-out.
+</Warning>
+
+<Warning>
+**Compound mode caps at 500 distinct combinations.** If your `groupBy` + filters would
+produce more than that, the request fails with a `400` and a message suggesting how to
+narrow it (shorter date range, more filters, or drop a high-cardinality dimension) — it
+does **not** silently return a partial/truncated result.
 </Warning>
 
 <Note>
@@ -81,7 +87,6 @@ curl -X GET 'https://api.arali.ai/api/v1/deals/aggregate?groupBy=stage,pipeline'
     "groupBy": "stage,pipeline",
     "dimensions": ["stage", "pipeline"],
     "total": 324915,
-    "truncated": false,
     "enterpriseId": "550e8400-e29b-41d4-a716-446655440001"
   }
 }
