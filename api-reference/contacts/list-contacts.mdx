@@ -21,7 +21,7 @@ description: 'Get all contacts for your enterprise with optional filtering'
 </ResponseField>
 
 <ResponseField name="data" type="array">
-  Array of enriched contact objects. Each object has the same shape as the `GET /api/v1/contacts/{id}` response.
+  Array of lightweight contact objects. Use `GET /api/v1/contacts/{id}` for full enriched contact details.
 </ResponseField>
 
 <ResponseField name="meta" type="object">
@@ -44,56 +44,38 @@ description: 'Get all contacts for your enterprise with optional filtering'
   "data": [
     {
       "id": "550e8400-e29b-41d4-a716-446655440001",
-      "enterpriseId": "550e8400-e29b-41d4-a716-446655440000",
       "fullName": "John Doe",
       "title": "VP of Engineering",
-      "ownerUserId": null,
-      "toAnalyze": true,
-      "stageDefinitionId": "550e8400-e29b-41d4-a716-446655440002",
-      "attributes": {},
+      "stageName": "Lead",
       "externalContactId": null,
-      "createdAt": "2026-02-03T10:00:00.000Z",
-      "updatedAt": "2026-02-03T10:00:00.000Z",
-      "stage": {
-        "id": "550e8400-e29b-41d4-a716-446655440002",
-        "key": "lead",
-        "name": "Lead",
-        "bucket": "pre_sale",
-        "scope": "contact"
-      },
-      "fieldValues": [
-        { "fieldKey": "source", "fieldName": "Source", "fieldType": "text", "value": "Website" }
-      ],
       "emails": [
-        { "id": "550e8400-e29b-41d4-a716-446655440003", "email": "john.doe@acme.com", "isPrimary": false }
+        {
+          "id": "550e8400-e29b-41d4-a716-446655440003",
+          "contactId": "550e8400-e29b-41d4-a716-446655440001",
+          "enterpriseId": "550e8400-e29b-41d4-a716-446655440000",
+          "email": "john.doe@acme.com",
+          "isPrimary": false,
+          "label": "Work",
+          "createdAt": "2026-02-03T10:00:00.000Z",
+          "updatedAt": "2026-02-03T10:00:00.000Z"
+        }
       ],
       "phones": [
-        { "id": "550e8400-e29b-41d4-a716-446655440004", "phone": "+1-555-123-4567", "isPrimary": false }
-      ],
-      "companies": [
         {
-          "id": "550e8400-e29b-41d4-a716-446655440005",
-          "name": "Acme Corporation",
-          "domain": "acme.com",
-          "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." },
-          "fieldValues": [{ "fieldKey": "...", "fieldName": "...", "fieldType": "...", "value": "..." }]
+          "id": "550e8400-e29b-41d4-a716-446655440004",
+          "contactId": "550e8400-e29b-41d4-a716-446655440001",
+          "enterpriseId": "550e8400-e29b-41d4-a716-446655440000",
+          "phone": "+1-555-123-4567",
+          "phoneNormalized": "15551234567",
+          "isPrimary": false,
+          "label": "Mobile",
+          "createdAt": "2026-02-03T10:00:00.000Z",
+          "updatedAt": "2026-02-03T10:00:00.000Z"
         }
       ],
-      "deals": [
-        {
-          "id": "550e8400-e29b-41d4-a716-446655440006",
-          "name": "Acme Deal",
-          "stage": { "id": "...", "key": "...", "name": "...", "pipelineId": "...", "sortOrder": 1 },
-          "pipeline": { "id": "...", "name": "...", "isActive": true }
-        }
-      ],
-      "accounts": [
-        {
-          "id": "550e8400-e29b-41d4-a716-446655440007",
-          "name": "Acme Account",
-          "stage": { "id": "...", "key": "...", "name": "...", "bucket": "...", "scope": "..." }
-        }
-      ]
+      "createdAt": "2026-02-03T10:00:00.000Z",
+      "updatedAt": "2026-02-03T10:00:00.000Z",
+      "lastAssignedAt": null
     }
   ],
   "meta": {

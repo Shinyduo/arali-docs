@@ -804,6 +804,96 @@ components:
         properties:
           type: object
 
+    ListContact:
+      type: object
+      description: Lightweight contact object returned by GET /api/v1/contacts
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+          nullable: true
+          description: Contact's full name
+        title:
+          type: string
+          nullable: true
+          description: Job title
+        stageName:
+          type: string
+          nullable: true
+          description: Current contact stage name
+        externalContactId:
+          type: string
+          nullable: true
+        emails:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              contactId:
+                type: string
+                format: uuid
+              enterpriseId:
+                type: string
+                format: uuid
+              email:
+                type: string
+              isPrimary:
+                type: boolean
+              label:
+                type: string
+                nullable: true
+              createdAt:
+                type: string
+                format: date-time
+              updatedAt:
+                type: string
+                format: date-time
+        phones:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              contactId:
+                type: string
+                format: uuid
+              enterpriseId:
+                type: string
+                format: uuid
+              phone:
+                type: string
+              phoneNormalized:
+                type: string
+                nullable: true
+              isPrimary:
+                type: boolean
+              label:
+                type: string
+                nullable: true
+              createdAt:
+                type: string
+                format: date-time
+              updatedAt:
+                type: string
+                format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        lastAssignedAt:
+          type: string
+          format: date-time
+          nullable: true
+
     Contact:
       type: object
       properties:
@@ -2564,7 +2654,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Contact'
+                      $ref: '#/components/schemas/ListContact'
                   meta:
                     type: object
                     properties:
