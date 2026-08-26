@@ -2641,6 +2641,56 @@ paths:
             minimum: 1
             maximum: 200
           description: "Number of contacts to return per page (max: 200)"
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Search by contact name, title, external contact ID, email, phone, or normalized phone
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Alias for search
+        - name: phone
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Exact phone lookup using digits-only normalization
+        - name: email
+          in: query
+          required: false
+          schema:
+            type: string
+            format: email
+          description: Exact email lookup
+        - name: company_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Filter by company UUID
+        - name: stage
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by contact stage key or stage definition UUID
+        - name: key_role_user_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by assigned key-role user UUID. Supports comma-separated values.
+        - name: key_role_key
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by key role key. Supports comma-separated values.
       responses:
         '200':
           description: List of contacts
