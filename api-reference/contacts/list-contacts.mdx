@@ -4,6 +4,16 @@ api: 'GET /api/v1/contacts'
 description: 'Get all contacts for your enterprise with optional filtering'
 ---
 
+## Query Parameters
+
+<ParamField query="page" type="integer" default="1">
+  Page number to return. Must be greater than 0.
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Number of results per page. Maximum is 200.
+</ParamField>
+
 ## Response
 
 <ResponseField name="success" type="boolean">
@@ -17,8 +27,12 @@ description: 'Get all contacts for your enterprise with optional filtering'
 <ResponseField name="meta" type="object">
   <Expandable title="Meta Object">
     <ResponseField name="total" type="integer">Total number of matching contacts</ResponseField>
-    <ResponseField name="offset" type="integer">Current offset</ResponseField>
+    <ResponseField name="count" type="integer">Number of contacts returned in this response</ResponseField>
+    <ResponseField name="page" type="integer">Current page number</ResponseField>
     <ResponseField name="limit" type="integer">Results per page</ResponseField>
+    <ResponseField name="totalPages" type="integer">Total number of pages for the current filters</ResponseField>
+    <ResponseField name="hasMore" type="boolean">Whether another page is available</ResponseField>
+    <ResponseField name="enterpriseId" type="string">Enterprise UUID used to scope the request</ResponseField>
   </Expandable>
 </ResponseField>
 
@@ -83,9 +97,14 @@ description: 'Get all contacts for your enterprise with optional filtering'
     }
   ],
   "meta": {
-    "total": 50,
-    "offset": 0,
-    "limit": 50
+    "entity": "contacts",
+    "total": 316947,
+    "count": 50,
+    "page": 1,
+    "limit": 50,
+    "totalPages": 6339,
+    "hasMore": true,
+    "enterpriseId": "550e8400-e29b-41d4-a716-446655440000"
   }
 }
 ```
