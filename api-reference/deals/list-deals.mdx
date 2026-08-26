@@ -1,14 +1,18 @@
 ---
 title: 'List Deals'
 api: 'GET /api/v1/deals'
-description: 'Get all deals for your enterprise with optional filtering'
+description: 'Get paginated deals for your enterprise with optional filtering'
 ---
 
 ## Overview
 
-Returns a list of enriched deals for your enterprise with optional filtering by company, account, and pipeline.
+Returns a paginated list of enriched deals for your enterprise with optional filtering by company, account, and pipeline.
 
 ## Query Parameters
+
+<ParamField query="page" type="integer" default="1">
+  Page number to return. Must be greater than 0.
+</ParamField>
 
 <ParamField query="limit" type="integer" default="100">
   Number of results per page. Maximum is 200.
@@ -36,16 +40,36 @@ Returns a list of enriched deals for your enterprise with optional filtering by 
   Whether the operation was successful
 </ResponseField>
 
-<ResponseField name="count" type="integer">
-  Total number of matching deals
-</ResponseField>
-
 <ResponseField name="data" type="array">
   Array of enriched deal objects. Each object has the same shape as the `GET /api/v1/deals/{id}` response.
 </ResponseField>
 
-<ResponseField name="search" type="string | null">
-  The search query used, if any
+<ResponseField name="meta" type="object">
+  Pagination and request metadata.
+</ResponseField>
+
+<ResponseField name="meta.total" type="integer">
+  Total number of matching deals.
+</ResponseField>
+
+<ResponseField name="meta.count" type="integer">
+  Number of deals returned in this response.
+</ResponseField>
+
+<ResponseField name="meta.page" type="integer">
+  Current page number.
+</ResponseField>
+
+<ResponseField name="meta.limit" type="integer">
+  Results per page.
+</ResponseField>
+
+<ResponseField name="meta.totalPages" type="integer">
+  Total number of pages for the current filters.
+</ResponseField>
+
+<ResponseField name="meta.hasMore" type="boolean">
+  Whether another page is available.
 </ResponseField>
 
 ## Example Response
@@ -53,7 +77,6 @@ Returns a list of enriched deals for your enterprise with optional filtering by 
 ```json
 {
   "success": true,
-  "count": 1,
   "data": [
     {
       "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -127,6 +150,20 @@ Returns a list of enriched deals for your enterprise with optional filtering by 
       ]
     }
   ],
-  "search": null
+  "meta": {
+    "entity": "deals",
+    "enterpriseId": "550e8400-e29b-41d4-a716-446655440001",
+    "total": 1,
+    "count": 1,
+    "page": 1,
+    "limit": 100,
+    "totalPages": 1,
+    "hasMore": false,
+    "search": {
+      "q": null,
+      "contactName": null,
+      "contactPhone": null
+    }
+  }
 }
 ```

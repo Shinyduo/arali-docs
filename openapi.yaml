@@ -3616,17 +3616,20 @@ paths:
       security:
         - ApiKeyAuth: []
       parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Page number to return
         - name: limit
           in: query
           schema:
             type: integer
             default: 100
+            minimum: 1
             maximum: 200
-        - name: offset
-          in: query
-          schema:
-            type: integer
-            default: 0
         - name: companyId
           in: query
           schema:
@@ -3676,6 +3679,41 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Deal'
+                  meta:
+                    type: object
+                    properties:
+                      entity:
+                        type: string
+                        example: deals
+                      enterpriseId:
+                        type: string
+                        format: uuid
+                      total:
+                        type: integer
+                        description: Total number of matching deals
+                      count:
+                        type: integer
+                        description: Number of deals returned in this response
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      totalPages:
+                        type: integer
+                      hasMore:
+                        type: boolean
+                      search:
+                        type: object
+                        properties:
+                          q:
+                            type: string
+                            nullable: true
+                          contactName:
+                            type: string
+                            nullable: true
+                          contactPhone:
+                            type: string
+                            nullable: true
         '401':
           description: Unauthorized
         '403':
