@@ -4,10 +4,103 @@ api: 'GET /api/v1/meetings/{id}'
 description: 'Get a single meeting by ID'
 ---
 
+## Overview
+
+Returns the meeting record together with its participants, recordings and — when
+one exists — its **full transcript**, including every speaker-attributed,
+timestamped segment. No separate transcript endpoint is required.
+
 ## Path Parameters
 
 <ParamField path="id" type="string" required>
-  Meeting UUID
+  Meeting UUID **or** the `interaction_id` of the meeting. Both resolve to the same
+  record, so an id taken from an interaction timeline can be used directly.
 </ParamField>
 
+## Response
 
+<ResponseField name="success" type="boolean" />
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="id" type="string">Meeting UUID</ResponseField>
+    <ResponseField name="interaction_id" type="string">
+      The interaction this meeting belongs to
+    </ResponseField>
+    <ResponseField name="participants" type="array">
+      Participants, resolved to Arali users or contacts where known
+    </ResponseField>
+    <ResponseField name="recordings" type="array">
+      Recordings for this meeting — `storage_url`, `duration_ms`, `status`
+    </ResponseField>
+    <ResponseField name="orgUnitIds" type="array">
+      Org units this meeting is mapped to
+    </ResponseField>
+    <ResponseField name="transcript" type="object">
+      Present whether or not a transcript exists — when none does, `segmentCount`
+      is `0` and `segments` is empty.
+      <Expandable title="properties">
+        <ResponseField name="id" type="string">Transcript UUID</ResponseField>
+        <ResponseField name="language" type="string">Detected language</ResponseField>
+        <ResponseField name="fullText" type="string">
+          The entire transcript as one block, without speaker attribution
+        </ResponseField>
+        <ResponseField name="segmentCount" type="integer">Number of segments</ResponseField>
+        <ResponseField name="segments" type="array">
+          <Expandable title="properties">
+            <ResponseField name="id" type="string">Segment UUID</ResponseField>
+            <ResponseField name="startMs" type="integer">Start offset in milliseconds</ResponseField>
+            <ResponseField name="endMs" type="integer">End offset in milliseconds</ResponseField>
+            <ResponseField name="timestamp" type="string">
+              `startMs` formatted as `HH:MM:SS`
+            </ResponseField>
+            <ResponseField name="speakerName" type="string">
+              Resolved speaker — the Arali user's name where the participant is
+              known, otherwise the display name, otherwise the raw diarised
+              label. Falls back to `Unknown`.
+            </ResponseField>
+            <ResponseField name="text" type="string">What was said</ResponseField>
+            <ResponseField name="participantId" type="string">
+              Participant this segment is attributed to, when resolved
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Required Scopes
+
+`meetings:read` or `meetings:write`.
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "data": {
+    "id": "9ac2f1e0-...",
+    "interaction_id": "b3f10a24-...",
+    "participants": [
+      { "user_name": "Akshat Agrawal", "user_email": "akshat@arali.ai" },
+      { "contact_name": "Priya Nair", "contact_email": "priya@acme.com" }
+    ],
+    "transcript": {
+      "id": "5d1c...",
+      "language": "en",
+      "fullText": "…",
+      "segmentCount": 412,
+      "segments": [
+        {
+          "startMs": 1284000,
+          "endMs": 1289500,
+          "timestamp": "00:21:24",
+          "speakerName": "Priya Nair",
+          "text": "we're comparing you against Gong on price mostly"
+        }
+      ]
+    }
+  }
+}
+```
+</ResponseExample>

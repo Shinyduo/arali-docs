@@ -22,7 +22,7 @@ Connect your Arali workspace to AI assistants like Claude and ChatGPT. Query you
         Click **Connect**. Sign in with your Arali credentials. You'll be redirected back to Claude automatically.
       </Step>
       <Step title="Start using">
-        Open a new conversation. 26 Arali tools are now available.
+        Open a new conversation. 34 Arali tools are now available.
       </Step>
     </Steps>
   </Tab>
@@ -62,33 +62,49 @@ Connect your Arali workspace to AI assistants like Claude and ChatGPT. Query you
 | `get-action-items` | Tasks, to-dos, overdue items |
 | `get-contacts` | Contacts, leads, people |
 | `get-open-signals` | Risk and opportunity signals |
-| `get-signal-details` | Why a signal exists — evidence and transcripts |
+| `get-signal-details` | Why a signal exists — evidence and transcript excerpts |
 | `get-insights` | Feature requests, objections, competitor mentions |
 | `get-interaction-timeline` | Chronological activity with a company |
+| `get-interaction` | **Reading one call, thread or ticket in full** — the complete transcript or every message |
 | `get-metrics` | NPS, CSAT, BANT scores, meeting summaries |
 | `get-billing-overview` | Subscriptions, plans, MRR, invoices |
 | `get-tickets` | Support tickets and resolution times |
+| `get-unanswered-threads` | Conversations awaiting a reply, and how long they have waited |
 | `get-portfolio-health-trend` | Health score trends over time |
 | `get-team-members` | Look up team members by name |
 | `get-team-portfolio` | Rep/team performance metrics |
-| `search-transcripts-keyword` | Full-text search on call transcripts |
-| `search-transcripts-semantic` | Conceptual/thematic transcript search |
-| `search-thread-messages` | Search emails, Slack, WhatsApp messages |
+| `search-transcripts` | Searching meeting and call transcripts (keyword + semantic) |
+| `search-thread-messages` | Searching emails, Slack, WhatsApp messages |
+| `search-ticket-messages` | Searching support ticket messages |
 | `brief-me` | Pre-call prep — overview + signals + action items in one shot |
 | `my-day-today` | Today's meetings, overdue items, new signals |
 | `weekly-digest` | Weekly summary — signals, health changes, activity |
+| `submit-feedback` | Logging a request when no tool covers it |
+
+<Note>
+  **Search then read.** The four `search-*` tools are built for finding *where*
+  something was said — they return a short excerpt per match. Each result carries
+  an `interactionId`; pass it to `get-interaction` to read the whole conversation.
+  `get-interaction-timeline`, `brief-me`, `my-day-today`, `get-tickets`,
+  `get-unanswered-threads` and `get-signal-details` return that id too, so you can
+  drill into anything they surface.
+</Note>
 
 ### Write Tools
 
 | Tool | What it does |
 |------|--------------|
+| `create-company` | Create a company |
+| `create-contact` | Create a contact |
 | `create-action-item` | Create a task with owner, pipeline, priority |
 | `update-action-item-stage` | Move a task to a different stage |
 | `dismiss-signal` | Dismiss a signal |
 | `update-company-stage` | Change a company's lifecycle stage |
+| `update-company-fields` | Update custom field values on a company |
+| `update-contact-stage` | Change a contact's lifecycle stage |
+| `update-contact-fields` | Update custom field values on a contact |
 | `assign-key-role` | Assign a user to a company key role |
 | `create-entity-note` | Add a note to a company, contact, or account |
-| `update-company-fields` | Update custom field values |
 
 <Note>
 Write tools require appropriate permissions in your Arali workspace. If you don't have write access, Claude will let you know.
@@ -106,6 +122,9 @@ Here are some things you can ask Claude once connected:
 | *"Which reps have the most open signals?"* | Returns team portfolio sorted by signal count |
 | *"Create an action item for John on Acme"* | Resolves John's email, creates the task |
 | *"What did we discuss about pricing this week?"* | Searches call transcripts for pricing mentions |
+| *"Read me the whole call with Acme yesterday"* | Finds the call, then returns its full transcript with speakers and timestamps |
+| *"Summarize the entire email thread with Acme"* | Returns every message in the thread, not just matching snippets |
+| *"Which threads are waiting on a reply?"* | Lists conversations awaiting a response, oldest first |
 | *"Show me companies stuck in negotiation for 5+ days"* | Filters by stage and duration |
 
 ## Permissions & Security
