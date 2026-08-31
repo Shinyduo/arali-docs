@@ -22,7 +22,7 @@ Connect your Arali workspace to AI assistants like Claude and ChatGPT. Query you
         Click **Connect**. Sign in with your Arali credentials. You'll be redirected back to Claude automatically.
       </Step>
       <Step title="Start using">
-        Open a new conversation. 34 Arali tools are now available.
+        Open a new conversation. 36 Arali tools are now available.
       </Step>
     </Steps>
   </Tab>
@@ -65,6 +65,7 @@ Connect your Arali workspace to AI assistants like Claude and ChatGPT. Query you
 | `get-signal-details` | Why a signal exists — evidence and transcript excerpts |
 | `get-insights` | Feature requests, objections, competitor mentions |
 | `get-interaction-timeline` | Chronological activity with a company |
+| `get-call-dispositions` | Call outcome breakdown — counts, share and average duration per disposition, by rep, company or over time |
 | `get-interaction` | **Reading one call, thread or ticket in full** — the complete transcript or every message |
 | `get-metrics` | NPS, CSAT, BANT scores, meeting summaries |
 | `get-metric-value` | Raw JSON value for a single metric on one interaction (mirrors `/api/v1/metrics`) |
@@ -83,7 +84,7 @@ Connect your Arali workspace to AI assistants like Claude and ChatGPT. Query you
 | `submit-feedback` | Logging a request when no tool covers it |
 
 <Note>
-  **Search then read.** The four `search-*` tools are built for finding *where*
+  **Search then read.** The three `search-*` tools are built for finding *where*
   something was said — they return a short excerpt per match. Each result carries
   an `interactionId`; pass it to `get-interaction` to read the whole conversation.
   `get-interaction-timeline`, `brief-me`, `my-day-today`, `get-tickets`,
@@ -126,6 +127,9 @@ Here are some things you can ask Claude once connected:
 | *"Read me the whole call with Acme yesterday"* | Finds the call, then returns its full transcript with speakers and timestamps |
 | *"Summarize the entire email thread with Acme"* | Returns every message in the thread, not just matching snippets |
 | *"Which threads are waiting on a reply?"* | Lists conversations awaiting a response, oldest first |
+| *"How did our calls go last week?"* | Returns the disposition breakdown — connects, voicemails, no-answers — with each one's share |
+| *"Who isn't logging call outcomes?"* | Groups dispositions by rep and reports the percentage logged |
+| *"What was the BANT score on yesterday's Acme call?"* | Fetches the raw metric payload for that single interaction |
 | *"Show me companies stuck in negotiation for 5+ days"* | Filters by stage and duration |
 
 ## Permissions & Security
