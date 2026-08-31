@@ -22,7 +22,7 @@ Connect your Arali workspace to AI assistants like Claude and ChatGPT. Query you
         Click **Connect**. Sign in with your Arali credentials. You'll be redirected back to Claude automatically.
       </Step>
       <Step title="Start using">
-        Open a new conversation. 36 Arali tools are now available.
+        Open a new conversation. 37 Arali tools are now available.
       </Step>
     </Steps>
   </Tab>
@@ -69,7 +69,8 @@ Connect your Arali workspace to AI assistants like Claude and ChatGPT. Query you
 | `get-interaction` | **Reading one call, thread or ticket in full** — the complete transcript or every message |
 | `get-metrics` | NPS, CSAT, BANT scores, meeting summaries |
 | `get-metric-value` | Raw JSON value for a single metric on one interaction (mirrors `/api/v1/metrics`) |
-| `get-billing-overview` | Subscriptions, plans, MRR, invoices |
+| `get-billing-overview` | Subscriptions, plans, MRR, invoices — or a renewal calendar across the whole book |
+| `get-usage` | Product usage — active users, seats, consumption volume, and which accounts are trending down |
 | `get-tickets` | Support tickets and resolution times |
 | `get-unanswered-threads` | Conversations awaiting a reply, and how long they have waited |
 | `get-portfolio-health-trend` | Health score trends over time |
@@ -127,6 +128,8 @@ Here are some things you can ask Claude once connected:
 | *"Read me the whole call with Acme yesterday"* | Finds the call, then returns its full transcript with speakers and timestamps |
 | *"Summarize the entire email thread with Acme"* | Returns every message in the thread, not just matching snippets |
 | *"Which threads are waiting on a reply?"* | Lists conversations awaiting a response, oldest first |
+| *"What renews in the next 90 days?"* | Returns a renewal calendar ordered by date, with contract value and MRR |
+| *"Which accounts have declining usage?"* | Sweeps product usage per account and reports the change vs the preceding period |
 | *"How did our calls go last week?"* | Returns the disposition breakdown — connects, voicemails, no-answers — with each one's share |
 | *"Who isn't logging call outcomes?"* | Groups dispositions by rep and reports the percentage logged |
 | *"What was the BANT score on yesterday's Acme call?"* | Fetches the raw metric payload for that single interaction |
