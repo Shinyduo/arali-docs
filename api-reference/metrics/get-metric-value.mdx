@@ -1,0 +1,53 @@
+---
+title: 'Get Metric Value'
+api: 'GET /api/v1/metrics'
+description: 'Fetch a single metric value JSON by metric key and interaction ID'
+---
+
+## Query Parameters
+
+<ParamField query="metricKey" type="string" required>
+  Metric key to look up. Alias: `key`.
+</ParamField>
+
+<ParamField query="interactionId" type="string" required>
+  Interaction UUID. Alias: `interaction_id`.
+</ParamField>
+
+## Authentication
+
+Use a static integration API key via the `Authorization` header.
+
+```bash
+Authorization: Bearer <integration_api_key>
+```
+
+The key's metadata must include a `permissions` array containing `read` (e.g. `["read", "write", "update"]`).
+
+## Behavior
+
+- Returns the most recent `valueJson` for the requested metric and interaction.
+- Metrics with a matching `enterprise_id` take priority over global metrics (`enterprise_id = null`).
+- If no matching metric data is found, returns `404`.
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Object containing `metricKey` and `valueJson`
+</ResponseField>
+
+### Example Success Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "metricKey": "bant",
+    "valueJson": { ... }
+  }
+}
+```

@@ -288,6 +288,12 @@
             ]
         },
         {
+            "group": "Metrics",
+            "pages": [
+                "api-reference/metrics/get-metric-value"
+            ]
+        },
+        {
             "group": "Metric Definitions",
             "pages": [
                 "api-reference/metric-definitions/create-metric-definitions",
