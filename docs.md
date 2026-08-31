@@ -4,7 +4,7 @@ This document provides comprehensive documentation for all public APIs exposed u
 
 **Base URL:** `https://your-api-domain.com`  
 **API Version:** `1.0.0`  
-**Authentication:** Bearer JWT or Api-Key
+**Authentication:** Api-Key
 
 ---
 
@@ -23,24 +23,18 @@ This document provides comprehensive documentation for all public APIs exposed u
 
 ## Authentication
 
-All API endpoints require authentication via either JWT bearer tokens or static API keys.
+All API endpoints require authentication via static API keys.
 
 **Header Format:**
 ```
-Authorization: Bearer <JWT>
 Authorization: Api-Key <static_key>
 ```
 
 Authentication context:
-- JWT (`Bearer`): `enterpriseId` is read from JWT claims (`scopes` claim is optional).
 - Static key (`Api-Key`): `enterpriseId` and `scopes` are read from your public API key record.
 
-**Examples:**
+**Example:**
 ```bash
-# JWT
-curl -H 'Authorization: Bearer YOUR_JWT' 'https://your-api-domain.com/api/v1/companies'
-
-# Static API Key
 curl -H 'Authorization: Api-Key YOUR_STATIC_KEY' 'https://your-api-domain.com/api/v1/companies'
 ```
 

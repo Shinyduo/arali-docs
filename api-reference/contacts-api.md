@@ -12,10 +12,9 @@ The Contacts API allows you to create, read, and update contact records. Contact
 
 ## Authentication
 
-All endpoints require either a JWT bearer token or a static API key in the Authorization header:
+All endpoints require a static API key in the Authorization header:
 
 ```
-Authorization: Bearer <JWT>
 Authorization: Api-Key <static_key>
 ```
 
