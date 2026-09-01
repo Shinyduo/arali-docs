@@ -15,6 +15,16 @@ Authorization: Api-Key <api_key>
 
 - `Api-Key <api_key>`: `enterpriseId` and `scopes` are read from your public API key record.
 
+## Using the API Playground
+
+The docs playground uses Bearer auth so it can include a token input. Paste the **full header value** into the token field, including the `Api-Key ` prefix:
+
+```
+Api-Key <your_api_key>
+```
+
+This produces the correct `Authorization: Api-Key <your_api_key>` header in the copied curl.
+
 ## Available Scopes
 
 Scopes control what actions your API credentials can perform. When creating a key, select only the scopes you need.
