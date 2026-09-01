@@ -330,6 +330,10 @@
     },
     "api": {
         "baseUrl": "https://api.arali.ai",
+        "auth": {
+            "method": "bearer",
+            "inputLabel": "Api-Key"
+        },
         "playground": {
             "mode": "show"
         }
