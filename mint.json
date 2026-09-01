@@ -331,8 +331,7 @@
     "api": {
         "baseUrl": "https://api.arali.ai",
         "auth": {
-            "method": "bearer",
-            "inputLabel": "Api-Key"
+            "method": "bearer"
         },
         "playground": {
             "mode": "show"
