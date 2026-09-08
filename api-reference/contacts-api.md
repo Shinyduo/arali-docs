@@ -64,6 +64,39 @@ Batch create or update multiple contacts. Uses upsert behavior based on `externa
 | `phones` | array | No | Array of phone objects |
 | `attributes` | object | No | Custom key-value attributes |
 | `properties` | object | No | Custom field values (must match field_definitions) |
+| `touchpoint` | object | No | Marketing touchpoint (ad attribution) to record for this contact. See [Marketing Touchpoint Object](#marketing-touchpoint-object). |
+
+#### Marketing Touchpoint Object
+
+A `touchpoint` records one row in `marketing_touchpoint`, linking the contact to ad spend.
+When `touchpoint` is omitted, the API can still derive attribution from legacy keys:
+`attributes.meta_*` (Meta webhook), or `properties` containing `ad_id`, `utm_*`, `fbclid`/`gclid`/`ttclid`, `landing_page_url`, etc.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `provider` | string \| null | Ad network: `meta`, `google`, `tiktok`, `website`, `whatsapp`. Default: `website`. |
+| `lead_id` | string \| null | Network's own lead id (e.g. Meta leadgen id). Used with `provider` as the unique key. |
+| `external_id_kind` | string \| null | `leadgen_id`, `google_lead_id`, `tiktok_lead_id`. Inferred from `provider` when absent. |
+| `ad_id` | string \| null | Numeric network ad id. Non-numeric values are stored as `utm.content`, never as an ad id. |
+| `adset_id` | string \| null | Ad set / ad group id. |
+| `campaign_id` | string \| null | Campaign id. |
+| `ad_account_id` | string \| null | Ad account id. |
+| `ad_name` | string \| null | Human-readable ad name. |
+| `adset_name` | string \| null | Human-readable ad set name. |
+| `campaign_name` | string \| null | Human-readable campaign name. |
+| `form_id` | string \| null | Lead-form id (Meta instant forms). |
+| `platform` | string \| null | Placement: `fb`, `ig`, `placement`. |
+| `is_organic` | boolean \| null | Whether the touch was organic. |
+| `click_id` | string \| null | Click id: `fbclid`, `gclid`, `ttclid`, `ctwa_clid`. |
+| `click_id_kind` | string \| null | Inferred from `click_id` / `provider` when absent. |
+| `utm` | object \| null | UTM parameters: `{ source, medium, campaign, term, content }`. |
+| `landing_url` | string \| null | Landing page URL. |
+| `referrer` | string \| null | Referrer URL. |
+| `visitor_id` | string \| null | Anonymous visitor id. |
+| `session_id` | string \| null | Session id. |
+| `touch_type` | string \| null | `lead_form`, `web_form`, `wa_message`, `ad_click`. Default: `web_form` for explicit blocks. |
+| `occurred_at` | string \| null | ISO 8601 timestamp of the touch. Defaults to contact `createdAt`. |
+| `ingest_source` | string \| null | `meta_webhook`, `contacts_api`, `backfill_attributes`, `backfill_field_values`, `snippet`. Default: `contacts_api`. |
 
 #### Email Object
 
@@ -134,6 +167,56 @@ curl -X POST https://api.arali.ai/api/v1/contacts \
   ]
 }
 ```
+
+#### Example Request with Marketing Touchpoint
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/contacts \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contacts": [
+      {
+        "externalContactId": "meta_lead_1234567890",
+        "fullName": "John Smith",
+        "title": "Product Manager",
+        "emails": [
+          { "email": "john@acme.com", "isPrimary": true, "label": "Work" }
+        ],
+        "phones": [
+          { "phone": "+1234567890", "isPrimary": true, "label": "Mobile" }
+        ],
+        "touchpoint": {
+          "provider": "meta",
+          "lead_id": "1234567890",
+          "ad_id": "123456789",
+          "adset_id": "987654321",
+          "campaign_id": "555555555",
+          "ad_account_id": "act_123456789",
+          "form_id": "form_987654321",
+          "platform": "fb",
+          "is_organic": false,
+          "utm": {
+            "source": "facebook",
+            "medium": "paid_social",
+            "campaign": "summer_2026",
+            "term": "sales",
+            "content": "carousel_v1"
+          },
+          "landing_url": "https://arali.ai/sales",
+          "referrer": "https://facebook.com",
+          "visitor_id": "vis_abc123",
+          "session_id": "sess_xyz789",
+          "touch_type": "lead_form",
+          "occurred_at": "2026-09-05T14:30:00Z",
+          "ingest_source": "contacts_api"
+        }
+      }
+    ]
+  }'
+```
+
+A replay of the same `provider` + `lead_id` (or a minted key when no `lead_id` exists) will not create a duplicate `marketing_touchpoint` row; later writes only fill in missing ids.
 
 ---
 

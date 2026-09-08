@@ -752,6 +752,111 @@ components:
           format: date-time
           nullable: true
           description: Override creation timestamp (optional, for backfills)
+        touchpoint:
+          $ref: '#/components/schemas/MarketingTouchpoint'
+
+    MarketingTouchpoint:
+      type: object
+      nullable: true
+      description: Ad attribution / marketing touchpoint recorded alongside the contact write. When omitted, attribution can be derived from legacy keys in attributes (attributes.meta_*) or properties (ad_id, utm_*, fbclid/gclid/ttclid, landing_page_url).
+      properties:
+        provider:
+          type: string
+          nullable: true
+          description: Ad network. Values meta, google, tiktok, website, whatsapp.
+          example: meta
+        lead_id:
+          type: string
+          nullable: true
+          description: Network's own lead id (e.g. Meta leadgen id). Used with provider as the unique key.
+        external_id_kind:
+          type: string
+          nullable: true
+          description: leadgen_id, google_lead_id, tiktok_lead_id. Inferred from provider when absent.
+        ad_id:
+          type: string
+          nullable: true
+          description: Numeric network ad id. Non-numeric values are stored as utm.content.
+          example: "123456789"
+        adset_id:
+          type: string
+          nullable: true
+        campaign_id:
+          type: string
+          nullable: true
+        ad_account_id:
+          type: string
+          nullable: true
+        ad_name:
+          type: string
+          nullable: true
+        adset_name:
+          type: string
+          nullable: true
+        campaign_name:
+          type: string
+          nullable: true
+        form_id:
+          type: string
+          nullable: true
+          description: Lead-form id (Meta instant forms).
+        platform:
+          type: string
+          nullable: true
+          description: Placement. Values fb, ig, placement.
+        is_organic:
+          type: boolean
+          nullable: true
+        click_id:
+          type: string
+          nullable: true
+          description: Click id. Values fbclid, gclid, ttclid, ctwa_clid.
+        click_id_kind:
+          type: string
+          nullable: true
+          description: Inferred from click_id / provider when absent.
+        utm:
+          type: object
+          nullable: true
+          description: UTM parameters (source, medium, campaign, term, content).
+          properties:
+            source:
+              type: string
+            medium:
+              type: string
+            campaign:
+              type: string
+            term:
+              type: string
+            content:
+              type: string
+        landing_url:
+          type: string
+          nullable: true
+        referrer:
+          type: string
+          nullable: true
+        visitor_id:
+          type: string
+          nullable: true
+        session_id:
+          type: string
+          nullable: true
+        touch_type:
+          type: string
+          nullable: true
+          description: lead_form, web_form, wa_message, ad_click.
+          example: lead_form
+        occurred_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: ISO 8601 timestamp of the touch. Defaults to contact createdAt.
+        ingest_source:
+          type: string
+          nullable: true
+          description: meta_webhook, contacts_api, backfill_attributes, backfill_field_values, snippet.
+          example: contacts_api
 
     ContactUpdate:
       type: object

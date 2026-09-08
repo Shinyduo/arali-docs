@@ -58,6 +58,36 @@ description: 'Batch create or update contact records'
       ISO 8601 creation timestamp override
     </ParamField>
 
+    <ParamField body="touchpoint" type="object">
+      Marketing touchpoint (ad attribution) to record for this contact. When omitted, attribution can still be derived from legacy keys in <code>attributes.meta_*</code> or <code>properties</code> (e.g. <code>ad_id</code>, <code>utm_*</code>, <code>fbclid</code>/<code>gclid</code>/<code>ttclid</code>).
+
+      <Expandable title="Touchpoint Object">
+        <ParamField body="provider" type="string">Ad network: <code>meta</code>, <code>google</code>, <code>tiktok</code>, <code>website</code>, <code>whatsapp</code>. Default: <code>website</code>.</ParamField>
+        <ParamField body="lead_id" type="string">Network's own lead id (e.g. Meta leadgen id). Used with <code>provider</code> as the unique key.</ParamField>
+        <ParamField body="external_id_kind" type="string"><code>leadgen_id</code>, <code>google_lead_id</code>, <code>tiktok_lead_id</code>. Inferred from <code>provider</code> when absent.</ParamField>
+        <ParamField body="ad_id" type="string">Numeric network ad id. Non-numeric values become <code>utm.content</code>.</ParamField>
+        <ParamField body="adset_id" type="string">Ad set / ad group id.</ParamField>
+        <ParamField body="campaign_id" type="string">Campaign id.</ParamField>
+        <ParamField body="ad_account_id" type="string">Ad account id.</ParamField>
+        <ParamField body="ad_name" type="string">Human-readable ad name.</ParamField>
+        <ParamField body="adset_name" type="string">Human-readable ad set name.</ParamField>
+        <ParamField body="campaign_name" type="string">Human-readable campaign name.</ParamField>
+        <ParamField body="form_id" type="string">Lead-form id (Meta instant forms).</ParamField>
+        <ParamField body="platform" type="string">Placement: <code>fb</code>, <code>ig</code>, <code>placement</code>.</ParamField>
+        <ParamField body="is_organic" type="boolean">Whether the touch was organic.</ParamField>
+        <ParamField body="click_id" type="string">Click id: <code>fbclid</code>, <code>gclid</code>, <code>ttclid</code>, <code>ctwa_clid</code>.</ParamField>
+        <ParamField body="click_id_kind" type="string">Inferred from <code>click_id</code> / <code>provider</code> when absent.</ParamField>
+        <ParamField body="utm" type="object">UTM parameters: <code>{ source, medium, campaign, term, content }</code>.</ParamField>
+        <ParamField body="landing_url" type="string">Landing page URL.</ParamField>
+        <ParamField body="referrer" type="string">Referrer URL.</ParamField>
+        <ParamField body="visitor_id" type="string">Anonymous visitor id.</ParamField>
+        <ParamField body="session_id" type="string">Session id.</ParamField>
+        <ParamField body="touch_type" type="string"><code>lead_form</code>, <code>web_form</code>, <code>wa_message</code>, <code>ad_click</code>. Default: <code>web_form</code> for explicit blocks.</ParamField>
+        <ParamField body="occurred_at" type="string">ISO 8601 timestamp of the touch. Defaults to contact <code>createdAt</code>.</ParamField>
+        <ParamField body="ingest_source" type="string"><code>meta_webhook</code>, <code>contacts_api</code>, <code>backfill_attributes</code>, <code>backfill_field_values</code>, <code>snippet</code>. Default: <code>contacts_api</code>.</ParamField>
+      </Expandable>
+    </ParamField>
+
     <ParamField body="key_roles" type="array">
       Array of key role assignments.
       
