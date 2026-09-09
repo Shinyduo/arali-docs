@@ -1,0 +1,194 @@
+---
+title: 'CSV Bulk Import'
+api: 'POST /api/v1/crm/bulk-import'
+description: 'Validate and import companies, contacts, and accounts from CSV'
+---
+
+The CSV Bulk Import endpoint accepts a CSV file (or CSV text) and either validates it (`action=validate`) or performs the import (`action=import`).
+
+<Note>
+  This endpoint requires a session JWT via the `auth_token` cookie or an `Authorization: Bearer <token>` header. The static API key used by the public API does **not** work here.
+</Note>
+
+## Request
+
+`POST /api/v1/crm/bulk-import`
+
+| Form field | Type     | Required | Description                                                    |
+|------------|----------|----------|----------------------------------------------------------------|
+| `entity`   | string   | Yes      | `companies`, `contacts`, or `accounts`                         |
+| `action`   | string   | Yes      | `validate` or `import`                                         |
+| `file`     | File     | Yes*     | CSV file. Use `file` for multipart, `csvText` for JSON body.  |
+| `csvText`  | string   | Yes*     | Raw CSV string when not using multipart.                       |
+| `tz`       | string   | No       | Browser timezone (IANA), e.g. `Asia/Kolkata`, `America/Chicago`. Defaults to `UTC`. |
+
+Download a sample CSV with `GET /api/v1/crm/bulk-import?entity=<entity>`.
+
+## CSV format
+
+### Contacts
+
+Required headers are marked with `*`.
+
+| Header              | Required | Description                                                                 |
+|---------------------|----------|-------------------------------------------------------------------------------|
+| `external_contact_id` |          | Your external unique ID. Used for idempotent upserts.                       |
+| `full_name` *       | Yes      | Contact full name.                                                            |
+| `email`             |          | One or more emails separated by `;` or `,`. At least one email or phone is required. |
+| `phone`             |          | One or more phones separated by `;` or `,`. Digits only.                      |
+| `title`             |          | Job title.                                                                    |
+| `stage`             |          | Stage name. Must match an active contact stage.                               |
+
+#### Custom fields
+
+Every custom field is addressed through the `properties.` dotted namespace using the field's `field_key`:
+
+```csv
+properties.lead_status,properties.country,properties.arr
+Hot,United States,120000
+```
+
+Multi-select values are separated with `;`. Boolean fields accept `true`/`1`/`yes`/`y`/`on` or `false`/`0`/`no`/`n`/`off`. Date and datetime parsing follows the uploader's browser timezone (`tz`).
+
+#### Ad attribution (`touchpoint.*`)
+
+Ad attribution is passed as flat dotted headers under the `touchpoint.` namespace. These values are forwarded to the public Contacts API as an explicit `touchpoint` object.
+
+| Header                    | Maps to                 | Example                                  |
+|---------------------------|-------------------------|-------------------------------------------|
+| `touchpoint.provider`     | `provider`              | `meta`, `google`, `tiktok`, `website`     |
+| `touchpoint.lead_id`      | `lead_id`               | Meta leadgen id                           |
+| `touchpoint.ad_id`        | `ad_id`                 | `120249169269440390`                      |
+| `touchpoint.adset_id`     | `adset_id`              | `120248872742790390`                      |
+| `touchpoint.campaign_id`  | `campaign_id`           | `120238605989040390`                      |
+| `touchpoint.ad_account_id`| `ad_account_id`         | `act_123456789`                           |
+| `touchpoint.ad_name`      | `ad_name`               | Human-readable ad name                    |
+| `touchpoint.adset_name`   | `adset_name`            | Human-readable ad set name                |
+| `touchpoint.campaign_name`| `campaign_name`         | Human-readable campaign name              |
+| `touchpoint.form_id`      | `form_id`               | Meta instant form id                      |
+| `touchpoint.platform`     | `platform`              | `fb`, `ig`, `placement`                   |
+| `touchpoint.is_organic`   | `is_organic`            | `true` / `false`                          |
+| `touchpoint.click_id`     | `click_id`              | `fbclid`, `gclid`, `ttclid`               |
+| `touchpoint.utm_source`   | `utm.source`            | `facebook`, `google`, `tiktok`            |
+| `touchpoint.utm_medium`   | `utm.medium`            | `cpc`, `organic`, `paid_social`           |
+| `touchpoint.utm_campaign` | `utm.campaign`          | Campaign name                             |
+| `touchpoint.utm_term`     | `utm.term`              | Keyword / ad set id                       |
+| `touchpoint.utm_content`  | `utm.content`           | Creative label                            |
+| `touchpoint.landing_url`  | `landing_url`           | Landing page URL                          |
+| `touchpoint.referrer`     | `referrer`              | Referrer URL                              |
+| `touchpoint.visitor_id`   | `visitor_id`            | Anonymous visitor id                      |
+| `touchpoint.session_id`   | `session_id`            | Session id                                |
+| `touchpoint.touch_type`   | `touch_type`            | `lead_form`, `web_form`, `wa_message`, `ad_click` |
+| `touchpoint.occurred_at`  | `occurred_at`           | ISO 8601 timestamp of the touch           |
+
+<Note>
+  Legacy flat headers such as `ad_id`, `utm_source`, `fbclid`, etc. are **no longer accepted** in the bulk CSV. Use the `touchpoint.*` dotted namespace instead.
+</Note>
+
+### Companies
+
+| Header              | Required | Description                                                                 |
+|---------------------|----------|-------------------------------------------------------------------------------|
+| `external_company_id` |          | External unique ID for idempotent upserts.                                  |
+| `name` *            | Yes      | Company name.                                                                 |
+| `domain`            |          | Website domain.                                                               |
+| `stage`             |          | Company stage name.                                                           |
+| `arr`               |          | Annual recurring revenue (number).                                            |
+
+Custom fields use `properties.<field_key>`.
+
+Embedded contacts can be imported in the same company row using the `contact_` prefix:
+
+| Header                        | Description                          |
+|-------------------------------|--------------------------------------|
+| `contact_external_contact_id` | External ID for the embedded contact |
+| `contact_full_name`           | Contact full name                    |
+| `contact_email`               | Contact emails                       |
+| `contact_phone`               | Contact phones                       |
+| `contact_title`               | Job title                            |
+| `contact_stage`               | Contact stage name                   |
+
+Embedded contact custom fields use `contact_<field_key>`.
+
+### Accounts
+
+| Header              | Required | Description                                                                 |
+|---------------------|----------|-------------------------------------------------------------------------------|
+| `external_account_id` |          | External unique ID for idempotent upserts.                                  |
+| `name` *            | Yes      | Account name.                                                                 |
+| `domain`            |          | Website domain.                                                               |
+| `account_type`      |          | Account type.                                                                 |
+| `external_company_id` | Yes    | Parent company external ID. Must already exist.                             |
+| `arr`               |          | Annual recurring revenue (number).                                            |
+| `stage`             |          | Account stage name.                                                           |
+
+Custom fields use `properties.<field_key>`.
+
+## Example Request (contacts with ad attribution)
+
+```bash
+curl -X POST https://app.arali.ai/api/v1/crm/bulk-import \
+  -H "Authorization: Bearer $ARALI_SESSION_JWT" \
+  -H "Content-Type: multipart/form-data" \
+  -F entity=contacts \
+  -F action=validate \
+  -F tz=Asia/Kolkata \
+  -F file=@contacts.csv
+```
+
+Where `contacts.csv` contains:
+
+```csv
+external_contact_id,full_name,email,phone,title,stage,touchpoint.provider,touchpoint.ad_id,touchpoint.adset_id,touchpoint.campaign_id,touchpoint.ad_name,touchpoint.adset_name,touchpoint.campaign_name,touchpoint.click_id,touchpoint.utm_source,touchpoint.utm_medium,touchpoint.utm_campaign,touchpoint.utm_term,touchpoint.touch_type,touchpoint.occurred_at
+META-LEAD-001,Ramya,Vasireddyramya83@gmail.com,+14029601597,,,meta,120249169269440390,120248872742790390,120238605989040390,20260902CT01_MarchSAT_Telugu_Video_CatalystTestPrep_US_02092026,US_CatalystTestPrep_Broad_Web_15082026,US_CatalystTestPrep_Open_18012026,PAcGRvZgJleHRuA2FlbQEwAGFkaWQBqzX7kwZZZnNydGMGYXBwX2lkDzU2NzA2NzM0MzM1MjQyNwABpx6rEZB7Lv2gML5JmZs1X7qevoD6IYwoQR1IGPCKSqZqIcLPV_rnDs3FLpGa_aem_lmfbE5GXYw4ELV0S5eumpg,facebook,cpc,20260902CT01_MarchSAT_Telugu_Video_CatalystTestPrep_US_02092026_120249169269440390,120248872742790390,web_form,2026-09-03T06:20:48.686Z
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "entity": "contacts",
+  "headers": ["external_contact_id", "full_name", ...],
+  "rows": [
+    {
+      "rowNumber": 2,
+      "original": { ... },
+      "values": { ... },
+      "customValues": { ... },
+      "presentFieldIds": [ ... ],
+      "keyRoles": { },
+      "errors": [],
+      "action": "create",
+      "status": "valid",
+      "touchpointValues": { ... }
+    }
+  ],
+  "displayedRows": 1,
+  "rowsTruncated": false,
+  "summary": {
+    "total": 1,
+    "valid": 1,
+    "invalid": 0,
+    "created": 0,
+    "updated": 0,
+    "failed": 0,
+    "contacts_created": 0,
+    "contacts_updated": 0
+  },
+  "payloads": [
+    {
+      "rowNumber": 2,
+      "fullName": "Ramya",
+      "emails": [{ "email": "Vasireddyramya83@gmail.com", "isPrimary": true, "label": "work" }],
+      "phones": [{ "phone": "+14029601597", "isPrimary": true, "label": "work" }],
+      "externalContactId": "META-LEAD-001",
+      "properties": {},
+      "key_roles": [],
+      "touchpoint": { ... }
+    }
+  ]
+}
+```
+
+For `entity=contacts`, the `validate` response includes a `payloads` array containing the exact JSON bodies that the UI will send to the public Contacts API when `action=import` is used.

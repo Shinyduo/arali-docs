@@ -60,6 +60,12 @@
             ]
         },
         {
+            "group": "CSV Bulk Import",
+            "pages": [
+                "api-reference/csv-bulk-import"
+            ]
+        },
+        {
             "group": "Companies",
             "pages": [
                 "api-reference/companies/create-companies",
