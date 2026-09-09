@@ -2796,6 +2796,45 @@ paths:
           schema:
             type: string
           description: Filter by key role key. Supports comma-separated values.
+        - name: fields[fieldKey]
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Custom field filter. Replace fieldKey with a custom field key, for example fields[jenga]=Flexcar. Multiple field filters are AND-combined.
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Sort field. Supported core fields are id, fullName, title, externalContactId, createdAt, updatedAt, lastActivityAt, lastAssignedAt. Use field:<fieldKey> for custom fields, key_role:<roleKey> for key-role user name, or key_role_assigned_at:<roleKey> for key-role assignment start time.
+        - name: order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Sort direction for sort.
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Alias for sort.
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: Alias for order.
+        - name: sorts
+          in: query
+          required: false
+          schema:
+            type: string
+          description: HubSpot-style sort value. Prefix with - for descending order, for example sorts=-createdate. Aliases include createdate for createdAt and lastmodifieddate for updatedAt.
       responses:
         '200':
           description: List of contacts
@@ -2833,6 +2872,24 @@ paths:
                       enterpriseId:
                         type: string
                         format: uuid
+                      sort:
+                        type: object
+                        nullable: true
+                        description: Present when a sort parameter is provided.
+                        properties:
+                          field:
+                            type: string
+                            example: field:jenga
+                          kind:
+                            type: string
+                            enum: [column, field, key_role, key_role_assigned_at]
+                          key:
+                            type: string
+                            nullable: true
+                            example: jenga
+                          direction:
+                            type: string
+                            enum: [asc, desc]
         '401':
           description: Unauthorized
         '403':

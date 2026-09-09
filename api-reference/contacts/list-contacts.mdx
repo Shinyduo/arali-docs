@@ -46,6 +46,83 @@ description: 'Get all contacts for your enterprise with optional filtering'
   Filter by key role key. Supports comma-separated values.
 </ParamField>
 
+<ParamField query="fields[fieldKey]" type="string">
+  Filter by custom field value. Replace `fieldKey` with the custom field key, for example `fields[jenga]=Flexcar`.
+  Multiple field filters are AND-combined.
+</ParamField>
+
+<ParamField query="sort" type="string">
+  Sort field. Supported core fields are `id`, `fullName`, `title`, `externalContactId`, `createdAt`, `updatedAt`,
+  `lastActivityAt`, and `lastAssignedAt`.
+</ParamField>
+
+<ParamField query="order" type="string" default="desc">
+  Sort direction for `sort`. Use `asc` or `desc`.
+</ParamField>
+
+<ParamField query="sort_by" type="string">
+  Alias for `sort`.
+</ParamField>
+
+<ParamField query="sort_order" type="string">
+  Alias for `order`.
+</ParamField>
+
+<ParamField query="sorts" type="string">
+  HubSpot-style sort value. Prefix with `-` for descending order, for example `sorts=-createdate`.
+  Supported aliases include `createdate` for `createdAt` and `lastmodifieddate` for `updatedAt`.
+</ParamField>
+
+## Sorting Custom Fields and Key Roles
+
+Use `field:<fieldKey>` to sort by a custom field value:
+
+```bash
+GET /api/v1/contacts?sort=field:jenga&order=asc
+```
+
+Use `key_role:<roleKey>` to sort by the active assigned user's name for a key role:
+
+```bash
+GET /api/v1/contacts?sort=key_role:manager&order=asc
+```
+
+Use `key_role_assigned_at:<roleKey>` to sort by when the active key role assignment started:
+
+```bash
+GET /api/v1/contacts?sort=key_role_assigned_at:manager&order=desc
+```
+
+## Examples
+
+Filter by a core contact column and sort by a core column:
+
+```bash
+curl "https://arali-backend-production.up.railway.app/api/v1/contacts?search=akshat&sort=createdAt&order=desc&limit=10" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Filter and sort by a custom field:
+
+```bash
+curl "https://arali-backend-production.up.railway.app/api/v1/contacts?fields%5Bjenga%5D=Flexcar&sort=field:jenga&order=asc&limit=10" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Filter by key role user and sort by key role assignment time:
+
+```bash
+curl "https://arali-backend-production.up.railway.app/api/v1/contacts?key_role_user_id=USER_ID&key_role_key=manager&sort=key_role_assigned_at:manager&order=desc&limit=10" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Use HubSpot-style sorting:
+
+```bash
+curl "https://arali-backend-production.up.railway.app/api/v1/contacts?sorts=-createdate&limit=10" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
 ## Response
 
 <ResponseField name="success" type="boolean">
@@ -65,6 +142,7 @@ description: 'Get all contacts for your enterprise with optional filtering'
     <ResponseField name="totalPages" type="integer">Total number of pages for the current filters</ResponseField>
     <ResponseField name="hasMore" type="boolean">Whether another page is available</ResponseField>
     <ResponseField name="enterpriseId" type="string">Enterprise UUID used to scope the request</ResponseField>
+    <ResponseField name="sort" type="object">Present only when a sort parameter is provided</ResponseField>
   </Expandable>
 </ResponseField>
 
