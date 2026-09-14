@@ -6,6 +6,9 @@
         "light": "/logo.png"
     },
     "favicon": "/favicon.ico",
+    "metadata": {
+        "robots": "noindex, nofollow"
+    },
     "colors": {
         "primary": "#6366F1",
         "light": "#818CF8",
