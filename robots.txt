@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Keep the favicon crawlable so it shows in search results
+Allow: /favicon.ico
+
+# Infrastructure
+Disallow: /cdn-cgi/
+Disallow: /_next/
+
+# Asset files: images, specs, raw markdown copies of pages
+Disallow: /*.png$
+Disallow: /*.jpg$
+Disallow: /*.jpeg$
+Disallow: /*.gif$
+Disallow: /*.webp$
+Disallow: /*.svg$
+Disallow: /*.ico$
+Disallow: /*.yaml$
+Disallow: /*.yml$
+Disallow: /*.json$
+Disallow: /*.md$
+
+Sitemap: https://docs.arali.ai/sitemap.xml
