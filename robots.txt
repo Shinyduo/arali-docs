@@ -4,6 +4,9 @@ Allow: /
 # Keep the favicon crawlable so it shows in search results
 Allow: /favicon.ico
 
+# Alias of / that 308-redirects to /introduction
+Disallow: /index$
+
 # Infrastructure
 Disallow: /cdn-cgi/
 Disallow: /_next/
