@@ -1,0 +1,71 @@
+---
+title: 'Create Project'
+api: 'POST /api/v1/projects'
+description: 'Create a new project from scratch'
+---
+
+Requires scope `projects:write`. Returns `201 Created` with the project row.
+
+## Request Body
+
+<ParamField body="companyId" type="string" required>
+  UUID of the company (customer) this project belongs to. Must belong to your enterprise.
+</ParamField>
+
+<ParamField body="name" type="string" required>
+  Project name
+</ParamField>
+
+<ParamField body="description" type="string">
+  Longer description
+</ParamField>
+
+<ParamField body="status" type="string" default="planning">
+  One of: `planning`, `active`, `on_hold`, `completed`, `cancelled`
+</ParamField>
+
+<ParamField body="ownerUserId" type="string">
+  UUID of the owning user
+</ParamField>
+
+<ParamField body="accountId" type="string">
+  UUID of a linked account (must belong to your enterprise)
+</ParamField>
+
+<ParamField body="dealId" type="string">
+  UUID of a linked deal (must belong to your enterprise)
+</ParamField>
+
+<ParamField body="taskBoardPipelineId" type="string">
+  UUID of the board (`action_items_pipeline`) for this project's tasks
+</ParamField>
+
+<ParamField body="sourceKey" type="string">
+  Bulk-run dedupe key, e.g. `"mbr-ent:2026-09"`. Repeating a key returns `409 duplicate_source_key`.
+</ParamField>
+
+<ParamField body="startedAt" type="string">
+  Start date in ISO 8601 format
+</ParamField>
+
+<ParamField body="targetEndAt" type="string">
+  Target end date in ISO 8601 format
+</ParamField>
+
+<ParamField body="signalId" type="string">
+  UUID of the signal that opened this project
+</ParamField>
+
+<ParamField body="templateId" type="string">
+  Not accepted here — returns `400`. Use [Create Project From Template](/api-reference/projects/create-project-from-template) instead.
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="string" />
+<ResponseField name="enterpriseId" type="string" />
+<ResponseField name="companyId" type="string" />
+<ResponseField name="companyName" type="string" />
+<ResponseField name="name" type="string" />
+<ResponseField name="status" type="string" />
+<ResponseField name="sourceKey" type="string" />

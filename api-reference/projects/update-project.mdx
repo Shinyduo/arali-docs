@@ -1,0 +1,49 @@
+---
+title: 'Update Project'
+api: 'PATCH /api/v1/projects/:id'
+description: 'Update an existing project'
+---
+
+Requires scope `projects:write` (strict). Partial update — only sent fields change. The `:id` path parameter must be a UUID. Returns `200` with the updated row and fires a `project.updated` workflow trigger (with a `previous` snapshot; trigger failures never fail the request).
+
+## Request Body
+
+<ParamField body="name" type="string">
+  Project name
+</ParamField>
+
+<ParamField body="description" type="string">
+  Longer description (nullable)
+</ParamField>
+
+<ParamField body="status" type="string">
+  One of: `planning`, `active`, `on_hold`, `completed`, `cancelled`
+</ParamField>
+
+<ParamField body="ownerUserId" type="string">
+  UUID of the owning user (nullable)
+</ParamField>
+
+<ParamField body="accountId" type="string">
+  UUID of a linked account (nullable, enterprise-checked)
+</ParamField>
+
+<ParamField body="dealId" type="string">
+  UUID of a linked deal (nullable, enterprise-checked)
+</ParamField>
+
+<ParamField body="taskBoardPipelineId" type="string">
+  UUID of the board (`action_items_pipeline`) for this project's tasks (nullable)
+</ParamField>
+
+<ParamField body="startedAt" type="string">
+  Start date in ISO 8601 format (nullable)
+</ParamField>
+
+<ParamField body="targetEndAt" type="string">
+  Target end date in ISO 8601 format (nullable)
+</ParamField>
+
+<ParamField body="actualEndAt" type="string">
+  Actual end date in ISO 8601 format (nullable)
+</ParamField>

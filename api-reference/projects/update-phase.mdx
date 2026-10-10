@@ -1,0 +1,21 @@
+---
+title: 'Update Phase'
+api: 'PATCH /api/v1/projects/phases/:phaseId'
+description: 'Rename or redate a project phase'
+---
+
+Requires scope `projects:write` (strict). The `:phaseId` path parameter must be a UUID. Name and planned dates only — never touches the project's `target_end_at`. Returns `200` with the phase row.
+
+## Request Body
+
+<ParamField body="name" type="string">
+  Phase name (non-empty)
+</ParamField>
+
+<ParamField body="plannedStartAt" type="string">
+  Planned start in ISO 8601 format (nullable). Also accepts `planned_start_at`.
+</ParamField>
+
+<ParamField body="plannedEndAt" type="string">
+  Planned end in ISO 8601 format (nullable). Also accepts `planned_end_at`.
+</ParamField>

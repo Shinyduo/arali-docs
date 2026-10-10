@@ -278,6 +278,23 @@
             ]
         },
         {
+            "group": "Projects",
+            "pages": [
+                "api-reference/projects/create-project",
+                "api-reference/projects/list-projects",
+                "api-reference/projects/get-project",
+                "api-reference/projects/update-project",
+                "api-reference/projects/cancel-project",
+                "api-reference/projects/list-project-tasks",
+                "api-reference/projects/create-project-from-template",
+                "api-reference/projects/list-phases",
+                "api-reference/projects/create-phase",
+                "api-reference/projects/update-phase",
+                "api-reference/projects/delete-phase",
+                "api-reference/projects/get-project-activity"
+            ]
+        },
+        {
             "group": "Notes",
             "pages": [
                 "api-reference/notes/create-note",

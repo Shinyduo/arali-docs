@@ -1,0 +1,13 @@
+---
+title: 'Get Project Activity'
+api: 'GET /api/v1/projects/:id/activity'
+description: 'Project timeline feed (project, phase, task and subtask events)'
+---
+
+Requires scope `projects:read` (or `action_items:read`). The `:id` path parameter must be a UUID. Read-only Postgres union, newest first, `LIMIT 500`.
+
+## Response
+
+Returns `{ data: [...] }` with `type`, `at`, `phaseId`, `taskId`, `subtaskId`, `label`. `type` is one of: `project_created`, `project_started`, `phase_created`, `phase_started`, `phase_finished`, `task_created`, `subtask_completed`.
+
+Note: task completion is not an event — tasks carry no completion timestamp (done is derived from the pipeline stage), so completions surface via phase/task state, not this feed.

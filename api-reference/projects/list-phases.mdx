@@ -1,0 +1,11 @@
+---
+title: 'List Phases'
+api: 'GET /api/v1/projects/:id/phases'
+description: 'List the phases of a project, with task counts'
+---
+
+Requires scope `projects:read` (or `action_items:read`). The `:id` path parameter must be a UUID. Ordered by `sort_order`.
+
+## Response
+
+Returns `{ data: [...] }` with `id`, `enterpriseId`, `projectId`, `name`, `sortOrder`, `plannedStartAt`, `plannedEndAt`, `actualStartAt`, `actualEndAt`, `fromTemplatePhaseId`, `taskCount`, `doneCount`, `createdAt`, `updatedAt`.

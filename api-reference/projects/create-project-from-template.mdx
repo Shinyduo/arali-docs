@@ -1,0 +1,61 @@
+---
+title: 'Create Project From Template'
+api: 'POST /api/v1/projects/from-template'
+description: 'Create a project by instantiating a template (phases, tasks, ticks)'
+---
+
+Requires scope `projects:write` (strict). Runs in a single transaction: inserts the project, copies template phases (with planned-date math including `starts_with_previous`), creates `task` lines as action items and `tick` lines as subtasks, and links company/project entities (plus an optional signal link).
+
+The task board resolves as: explicit `taskBoardPipelineId` → template board → enterprise default pipeline. If no board exists, returns `400 enterprise_has_no_board`.
+
+Returns `201 Created` with the project plus `template_stats: { phases, tasks, ticks }`.
+
+## Request Body
+
+<ParamField body="companyId" type="string" required>
+  UUID of the company (customer) this project belongs to
+</ParamField>
+
+<ParamField body="name" type="string" required>
+  Project name
+</ParamField>
+
+<ParamField body="templateId" type="string" required>
+  UUID of the project template to instantiate (must belong to your enterprise, else `404`)
+</ParamField>
+
+<ParamField body="ownerUserId" type="string">
+  UUID of the owning user
+</ParamField>
+
+<ParamField body="accountId" type="string">
+  UUID of a linked account
+</ParamField>
+
+<ParamField body="dealId" type="string">
+  UUID of a linked deal
+</ParamField>
+
+<ParamField body="description" type="string">
+  Longer description
+</ParamField>
+
+<ParamField body="sourceKey" type="string">
+  Bulk-run dedupe key. Repeating a key returns `409 duplicate_source_key`.
+</ParamField>
+
+<ParamField body="startedAt" type="string">
+  Start date in ISO 8601 format
+</ParamField>
+
+<ParamField body="targetEndAt" type="string">
+  Target end date in ISO 8601 format
+</ParamField>
+
+<ParamField body="taskBoardPipelineId" type="string">
+  Overrides the template's board for this project's tasks
+</ParamField>
+
+<ParamField body="signalId" type="string">
+  UUID of the signal that opened this project
+</ParamField>

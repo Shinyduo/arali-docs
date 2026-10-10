@@ -1,0 +1,11 @@
+---
+title: 'Get Project'
+api: 'GET /api/v1/projects/:id'
+description: 'Get a single project by ID, with per-stage task counts'
+---
+
+Requires scope `projects:read` (or `action_items:read`). The `:id` path parameter must be a UUID (else `400`). Projects from other enterprises return `404 not_found` (no cross-tenant leak).
+
+## Response
+
+The project object plus `taskCountsByBucket`, e.g. `{ "open": 2, "in_progress": 1 }`.

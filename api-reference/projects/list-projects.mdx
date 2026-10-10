@@ -1,0 +1,25 @@
+---
+title: 'List Projects'
+api: 'GET /api/v1/projects'
+description: 'List projects for your enterprise'
+---
+
+Requires scope `projects:read` (or `action_items:read`). No pagination — fixed `LIMIT 500`, newest first.
+
+## Query Parameters
+
+<ParamField query="companyId" type="string">
+  Filter by company UUID
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by status. One of: `planning`, `active`, `on_hold`, `completed`, `cancelled`
+</ParamField>
+
+<ParamField query="ownerUserId" type="string">
+  Filter by owner user UUID
+</ParamField>
+
+## Response
+
+Returns `{ data: [...] }` with one object per project, including `companyName`, `ownerName`, `ownerEmail`, `taskTotal` and `taskDone` counts.

@@ -1,0 +1,9 @@
+---
+title: 'Cancel Project'
+api: 'DELETE /api/v1/projects/:id'
+description: 'Cancel a project (soft delete)'
+---
+
+Requires scope `projects:write` (strict). The `:id` path parameter must be a UUID.
+
+Soft-cancel only: sets `status` to `cancelled` and `actual_end_at` to now. The project row is kept. Cancelling freezes the phase engine for this project. Returns `200` with the updated row.

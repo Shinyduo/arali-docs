@@ -1,0 +1,11 @@
+---
+title: 'List Project Tasks'
+api: 'GET /api/v1/projects/:id/tasks'
+description: 'List the tasks belonging to a project'
+---
+
+Requires scope `projects:read` (or `action_items:read`). The `:id` path parameter must be a UUID. No pagination — fixed `LIMIT 500`.
+
+## Response
+
+Returns `{ data: [...] }` with one object per task: `id`, `title`, `description`, `priority`, `dueAt`, `stageId`, `stageName`, `stageBucket`, owner fields, plus `subtaskTotal` / `subtaskDone` counts.

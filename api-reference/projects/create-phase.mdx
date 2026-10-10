@@ -1,0 +1,25 @@
+---
+title: 'Create Phase'
+api: 'POST /api/v1/projects/:id/phases'
+description: 'Add a phase to a live project'
+---
+
+Requires scope `projects:write` (strict). The `:id` path parameter must be a UUID. Never touches the project's `target_end_at`. Returns `201 Created` with `{ data: phase }`.
+
+## Request Body
+
+<ParamField body="name" type="string" required>
+  Phase name (non-empty, max 255 characters)
+</ParamField>
+
+<ParamField body="sortOrder" type="number">
+  Integer position. Defaults to `MAX(sort_order) + 1`. Also accepts `sort_order`.
+</ParamField>
+
+<ParamField body="plannedStartAt" type="string">
+  Planned start in ISO 8601 format (nullable). Also accepts `planned_start_at`.
+</ParamField>
+
+<ParamField body="plannedEndAt" type="string">
+  Planned end in ISO 8601 format (nullable, must not be before the start). Also accepts `planned_end_at`.
+</ParamField>

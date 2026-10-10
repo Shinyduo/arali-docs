@@ -1,0 +1,9 @@
+---
+title: 'Delete Phase'
+api: 'DELETE /api/v1/projects/phases/:phaseId'
+description: 'Delete an empty project phase'
+---
+
+Requires scope `projects:write` (strict). The `:phaseId` path parameter must be a UUID. No request body.
+
+Returns `409 { error: 'phase_has_tasks' }` when any task references the phase — only empty phases can be deleted, otherwise the phase is hard-deleted. Returns `200 { data: { id, deleted: true } }`.

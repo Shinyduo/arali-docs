@@ -30,6 +30,10 @@ description: 'Create a new action item linked to an interaction'
   Optional array of explicit entity mappings (e.g. `[{"entityType": "company", "entityId": "uuid"}]`). Allowed types are `company`, `contact`, `interaction`, and `account`.
 </ParamField>
 
+<ParamField body="projectId" type="string">
+  UUID of the project to link this action item to. Must belong to your enterprise (else `404`). A `project` entity mapping is created automatically. Note: tasks attach at project level only — there is no phase-level assignment.
+</ParamField>
+
 <ParamField body="stageId" type="string">
   UUID of the pipeline stage to assign this action item to. Optional — defaults to the first stage of the enterprise's default pipeline.
 </ParamField>
