@@ -29,24 +29,32 @@ Connect your Arali workspace to AI assistants like Claude and ChatGPT. Query you
 
   <Tab title="ChatGPT">
     <Note>
-    MCP support in ChatGPT is currently rolling out to select users. If you don't see the option, it may not be available for your account yet.
+    Custom MCP servers depend on your ChatGPT plan, and on Business, Enterprise and Edu workspaces an admin can turn them off or limit them. If you don't see the options below, ask your ChatGPT workspace admin.
     </Note>
     <Steps>
-      <Step title="Open Settings">
-        Go to [chatgpt.com](https://chatgpt.com) → **Settings** → **Connected apps** → **Add connection**.
+      <Step title="Open Plugins">
+        Go to [chatgpt.com/plugins](https://chatgpt.com/plugins), click **+** and choose **Add custom MCP server**.
       </Step>
-      <Step title="Enter MCP URL">
+      <Step title="Name it and enter the MCP URL">
+        Name it **Arali**. Under **Connection**, choose the public endpoint and enter:
         ```
         https://mcp.arali.ai/mcp
         ```
+        If ChatGPT asks for a transport or protocol, choose **Streamable HTTP** (not SSE).
+      </Step>
+      <Step title="Authentication">
+        Choose **OAuth**. Read the warning, tick **I understand and want to continue**, then select **Create as a plugin**. ChatGPT shows the Arali tools it found.
       </Step>
       <Step title="Authorize">
-        Click **Connect**. Sign in with your Arali credentials when prompted.
+        Install the plugin and click **Connect**. Sign in with your Arali credentials. You'll be redirected back to ChatGPT.
       </Step>
       <Step title="Start using">
-        Open a new conversation. Arali tools will be available.
+        Open a **new chat**, type **@** in the message box and pick **Arali**. ChatGPT asks for confirmation before running tools that change data.
       </Step>
     </Steps>
+    <Tip>
+    Older ChatGPT accounts may not have the Plugins page yet. In that case, turn on **Developer mode** in **Settings** (under **Apps** / **Connectors** → **Advanced**, or **Security and login**), then use **Create** / **Add custom connector** with the same URL, **Streamable HTTP** and **OAuth**. In a chat, enable it from **+** → **More** → **Developer mode**.
+    </Tip>
   </Tab>
 
 </Tabs>
@@ -139,7 +147,7 @@ Here are some things you can ask Claude once connected:
 
 - **Your data, your permissions.** All queries respect your Arali RBAC permissions. You only see data you have access to in the Arali dashboard.
 - **No additional AI cost.** The tools query your database directly — Claude handles the reasoning. No separate AI API calls are made.
-- **Authentication.** Your session is secured with an API token valid for 1 year. You can disconnect the connector at any time from Claude's settings.
+- **Authentication.** Your session is secured with an API token valid for 1 year. You can disconnect the connector at any time from Claude's connector settings or ChatGPT's Plugins page.
 
 ## Troubleshooting
 
@@ -151,10 +159,14 @@ Here are some things you can ask Claude once connected:
     Try removing the connector and re-adding it. If you're redirected to Arali but end up on the dashboard instead of back to Claude, clear your browser cookies for `app.arali.ai` and try again.
   </Accordion>
   <Accordion title="Tools not appearing">
-    After connecting, start a **new conversation** in Claude. Tools from connectors are loaded per-conversation.
+    After connecting, start a **new conversation** in Claude or ChatGPT (in ChatGPT, also pick Arali with **@**). Tools from connectors are loaded per conversation.
   </Accordion>
   <Accordion title="New tools or options not showing up">
-    Claude and ChatGPT keep their own copy of the connector's tool list and don't always fetch it again. When we release new tools or options, open the Arali connector's **⋯** menu in your connector settings and choose **Refresh tools list**, then start a **new conversation** (conversations that are already open keep the old list). If they still don't appear, disconnect and reconnect the connector.
+    Claude and ChatGPT keep their own copy of the connector's tool list and don't always fetch it again. When we release new tools or options:
+    - **Claude:** open the Arali connector's **⋯** menu in your connector settings and choose **Refresh tools list**.
+    - **ChatGPT:** open Arali on the [Plugins](https://chatgpt.com/plugins) page (or **Settings → Apps / Connectors** on older accounts) and choose **Refresh**.
+
+    Then start a **new conversation** — conversations that are already open keep the old list. If they still don't appear, disconnect and reconnect the connector.
   </Accordion>
   <Accordion title="Empty results">
     Check that your Arali account has data and that your role has the appropriate permissions. The connector respects the same RBAC rules as the Arali dashboard.
