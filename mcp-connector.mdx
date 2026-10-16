@@ -22,7 +22,7 @@ Connect your Arali workspace to AI assistants like Claude and ChatGPT. Query you
         Click **Connect**. Sign in with your Arali credentials. You'll be redirected back to Claude automatically.
       </Step>
       <Step title="Start using">
-        Open a new conversation. 37 Arali tools are now available.
+        Open a new conversation. The Arali tools are now available.
       </Step>
     </Steps>
   </Tab>
@@ -152,6 +152,9 @@ Here are some things you can ask Claude once connected:
   </Accordion>
   <Accordion title="Tools not appearing">
     After connecting, start a **new conversation** in Claude. Tools from connectors are loaded per-conversation.
+  </Accordion>
+  <Accordion title="New tools or options not showing up">
+    Claude and ChatGPT keep their own copy of the connector's tool list and don't always fetch it again. When we release new tools or options, open the Arali connector's **⋯** menu in your connector settings and choose **Refresh tools list**, then start a **new conversation** (conversations that are already open keep the old list). If they still don't appear, disconnect and reconnect the connector.
   </Accordion>
   <Accordion title="Empty results">
     Check that your Arali account has data and that your role has the appropriate permissions. The connector respects the same RBAC rules as the Arali dashboard.
