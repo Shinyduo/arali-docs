@@ -1,0 +1,139 @@
+---
+title: 'Create Call with Transcript'
+api: 'POST /api/v1/calls/recording'
+description: 'Create calls together with their transcript'
+---
+
+## Overview
+
+Use this endpoint when you already have the call's transcript. Arali stores it as the call's transcript and uses it for AI analysis, without transcribing the recording itself. For calls without a transcript, use [Create Calls](/api-reference/calls/create-calls).
+
+- **Rep:** set `userEmail` to the rep's email.
+- **Team:** the call is placed in the rep's team automatically, else your workspace's top-level team. `orgUnitId` is only needed to override this.
+- **Duplicates:** a call with an existing `providerKey` + `externalCallId` is rejected. To add a transcript to a call you already sent, re-send it with `forceAnalyze: true`.
+
+Required scope: `calls:write`.
+
+## Request Body
+
+Send a single call as top-level fields, or several in `calls[]`.
+
+<ParamField body="providerKey" type="string" required>
+  Identifies the source of the calls (e.g. `manual`)
+</ParamField>
+
+<ParamField body="calls" type="array">
+  Array of call objects. Each accepts the fields below.
+
+  <Expandable title="Call Object">
+    <ParamField body="externalCallId" type="string" required>
+      Your unique ID for the call
+    </ParamField>
+
+    <ParamField body="transcript" type="string">
+      The call transcript as text. One turn per line as `Speaker: text` (e.g. `Agent: …` / `Customer: …`), or WEBVTT. Each turn is shown as a separate line on the call page.
+    </ParamField>
+
+    <ParamField body="language" type="string" default="en">
+      Language of the call (e.g. `en`, `hi`)
+    </ParamField>
+
+    <ParamField body="direction" type="string">
+      `inbound` or `outbound`
+    </ParamField>
+
+    <ParamField body="status" type="string">
+      Same values as [Create Calls](/api-reference/calls/create-calls), e.g. `connected`, `no_answer`, `busy`
+    </ParamField>
+
+    <ParamField body="startTimestamp" type="string">
+      Call start time, ISO 8601
+    </ParamField>
+
+    <ParamField body="endTimestamp" type="string">
+      Call end time, ISO 8601
+    </ParamField>
+
+    <ParamField body="durationSeconds" type="number">
+      Talk time in seconds
+    </ParamField>
+
+    <ParamField body="fromNumber" type="string">
+      Number the call came from (E.164)
+    </ParamField>
+
+    <ParamField body="toNumber" type="string">
+      Number the call went to (E.164)
+    </ParamField>
+
+    <ParamField body="recordingUrl" type="string">
+      Publicly reachable URL of the call recording
+    </ParamField>
+
+    <ParamField body="skipUpload" type="boolean" default="false">
+      Play the recording from your URL instead of copying it into Arali's storage
+    </ParamField>
+
+    <ParamField body="skipTranscription" type="boolean" default="false">
+      For a call sent without `transcript`: don't transcribe the recording
+    </ParamField>
+
+    <ParamField body="enqueuePreanalyze" type="boolean" default="true">
+      Set `false` to store the transcript without running AI analysis
+    </ParamField>
+
+    <ParamField body="forceAnalyze" type="boolean" default="false">
+      Update a call that was already sent (e.g. to add its transcript)
+    </ParamField>
+
+    <ParamField body="customer" type="object">
+      The other party: `{ phone?, email?, name? }`. Used to link the call to a contact.
+    </ParamField>
+
+    <ParamField body="contactId" type="string">
+      Arali contact UUID to link the call to
+    </ParamField>
+
+    <ParamField body="userEmail" type="string">
+      Email of the rep who made or took the call
+    </ParamField>
+
+    <ParamField body="orgUnitId" type="string">
+      Optional. Arali team (org unit) UUID, overriding the rep's team.
+    </ParamField>
+
+    <ParamField body="metadata" type="object">
+      Any extra fields you want stored with the call
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Example Request
+
+```bash
+curl -X POST https://api.arali.ai/api/v1/calls/recording \
+  -H "Authorization: Api-Key YOUR_STATIC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "providerKey": "manual",
+    "calls": [
+      {
+        "externalCallId": "call_12345",
+        "direction": "outbound",
+        "status": "connected",
+        "startTimestamp": "2026-10-22T10:15:00Z",
+        "endTimestamp": "2026-10-22T10:18:02Z",
+        "durationSeconds": 182,
+        "fromNumber": "+919800000000",
+        "toNumber": "+919811111111",
+        "recordingUrl": "https://recordings.example.com/call_12345.mp3",
+        "skipUpload": true,
+        "transcript": "Agent: Hi, this is Riya from Acme.\nCustomer: Hello, yes.\nAgent: Is now a good time to talk?",
+        "language": "en",
+        "customer": { "phone": "+919811111111" },
+        "userEmail": "rep@yourcompany.com",
+        "metadata": { "crmLeadId": "LEAD-789" }
+      }
+    ]
+  }'
+```
