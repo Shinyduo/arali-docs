@@ -4,78 +4,111 @@ api: 'POST /api/v1/calls'
 description: 'Batch create call records'
 ---
 
+## Overview
+
+Pushes call records from your dialer or CRM into Arali. Send one call or a batch (up to 100 per request is a good size).
+
+- **Rep:** set `assignedUserEmail` to the rep's email; it is matched to the Arali user with that email.
+- **Team:** the call is placed in the rep's team automatically. If the rep isn't found, it goes to your workspace's top-level team. You only need `orgUnitId` to override this.
+- **Contact:** the call is linked to a contact by `customer.phone` / `customer.email`, or exactly by `contactId`.
+- **Duplicates:** re-sending a call with the same `providerKey` + `externalCallId` does not create a duplicate.
+
+To send a call **with a transcript**, use [Create Call with Transcript](/api-reference/calls/create-call-with-transcript).
+
+Required scope: `calls:write`.
+
 ## Request Body
 
 <ParamField body="providerKey" type="string" required>
-  Integration provider key (e.g. `aircall`, `twilio`, `nooks`)
+  Identifies the source of the calls (e.g. `aircall`, `twilio`, or your own key such as `manual`). Together with `externalCallId` it de-duplicates calls.
+</ParamField>
+
+<ParamField body="skipWorkflows" type="boolean" default="false">
+  Don't trigger workflows for these calls. Use for bulk imports of historical calls.
 </ParamField>
 
 <ParamField body="calls" type="array" required>
   Array of call objects to create
-  
+
   <Expandable title="Call Object">
     <ParamField body="externalCallId" type="string" required>
-      External unique ID from call provider
+      Your unique ID for the call
     </ParamField>
 
     <ParamField body="direction" type="string" default="unknown">
-      Call direction. One of: `inbound`, `outbound`, `unknown`
+      `inbound` or `outbound`
     </ParamField>
 
-    <ParamField body="status" type="string" default="completed">
-      Call status. One of: `completed`, `missed`, `voicemail`, `failed`, `busy`, `cancelled`, `unknown`
-    </ParamField>
-
-    <ParamField body="fromNumber" type="string">
-      Phone number the call originated from
-    </ParamField>
-
-    <ParamField body="toNumber" type="string">
-      Phone number the call was made to
-    </ParamField>
-
-    <ParamField body="durationSeconds" type="number">
-      Call duration in seconds
-    </ParamField>
-
-    <ParamField body="ringDurationSeconds" type="number">
-      Ring duration before answer
+    <ParamField body="status" type="string">
+      Call outcome. Not connected: `no_answer`, `busy`, `failed`, `abandoned`. Connected: `connected` (Arali refines it to `conversation`, `voicemail`, `ivr` or `gatekeeper` when it analyses the recording).
     </ParamField>
 
     <ParamField body="startTimestamp" type="string">
-      Call start time (ISO 8601)
+      Call start time, ISO 8601 (e.g. `2026-10-22T10:15:00Z`). If omitted, the time the request is received is used.
     </ParamField>
 
     <ParamField body="endTimestamp" type="string">
-      Call end time (ISO 8601)
+      Call end time, ISO 8601
+    </ParamField>
+
+    <ParamField body="durationSeconds" type="number">
+      Talk time in seconds
+    </ParamField>
+
+    <ParamField body="ringDurationSeconds" type="number">
+      Ring time before answer, in seconds
+    </ParamField>
+
+    <ParamField body="fromNumber" type="string">
+      Number the call came from (E.164, e.g. `+919800000000`)
+    </ParamField>
+
+    <ParamField body="toNumber" type="string">
+      Number the call went to (E.164)
     </ParamField>
 
     <ParamField body="recordingUrl" type="string">
-      URL to call recording
+      Publicly reachable URL of the call recording
+    </ParamField>
+
+    <ParamField body="skipAnalysis" type="boolean" default="false">
+      Store `recordingUrl` as is and play it from your URL: no upload, transcription or AI analysis.
     </ParamField>
 
     <ParamField body="customer" type="object">
-      Customer info: `{ phone?, email?, name? }`
+      The other party: `{ phone?, email?, name? }`. Used to link the call to a contact.
     </ParamField>
 
-    <ParamField body="orgUnitIds" type="array">
-      Array of org unit IDs
+    <ParamField body="contactId" type="string">
+      Arali contact UUID to link the call to. Skips matching by phone/email.
+    </ParamField>
+
+    <ParamField body="assignedUserEmail" type="string">
+      Email of the rep who made or took the call
+    </ParamField>
+
+    <ParamField body="assignedUserId" type="string">
+      Arali user UUID of the rep. Takes priority over `assignedUserEmail`.
     </ParamField>
 
     <ParamField body="orgUnitId" type="string">
-      Single org unit ID
+      Optional. Arali team (org unit) UUID, overriding the rep's team.
     </ParamField>
 
-    <ParamField body="metadata" type="object">
-      Additional metadata
-    </ParamField>
-
-    <ParamField body="title" type="string">
-      Call title
+    <ParamField body="orgUnitIds" type="array">
+      Optional. Several team UUIDs.
     </ParamField>
 
     <ParamField body="dispositionId" type="string">
       UUID of the call disposition
+    </ParamField>
+
+    <ParamField body="title" type="string">
+      Call title (generated if omitted)
+    </ParamField>
+
+    <ParamField body="metadata" type="object">
+      Any extra fields you want stored with the call (e.g. your CRM record IDs)
     </ParamField>
   </Expandable>
 </ParamField>
@@ -83,7 +116,7 @@ description: 'Batch create call records'
 ## Response
 
 <ResponseField name="success" type="boolean">
-  Whether the operation was successful
+  Whether the request was processed
 </ResponseField>
 
 <ResponseField name="summary" type="object">
@@ -95,7 +128,7 @@ description: 'Batch create call records'
 </ResponseField>
 
 <ResponseField name="results" type="array">
-  Array of result objects
+  One result per call: `externalCallId`, `status` (`success` / `skipped` / `error`), and `callId` / `interactionId` or `reason`
 </ResponseField>
 
 ## Example Request
@@ -105,24 +138,23 @@ curl -X POST https://api.arali.ai/api/v1/calls \
   -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "providerKey": "aircall",
+    "providerKey": "manual",
     "calls": [
       {
         "externalCallId": "call_12345",
-        "direction": "inbound",
-        "status": "completed",
-        "fromNumber": "+1-555-123-4567",
-        "toNumber": "+1-555-987-6543",
-        "durationSeconds": 300,
-        "startTimestamp": "2024-01-15T10:00:00Z",
-        "endTimestamp": "2024-01-15T10:05:00Z",
+        "direction": "outbound",
+        "status": "connected",
+        "startTimestamp": "2026-10-22T10:15:00Z",
+        "endTimestamp": "2026-10-22T10:18:02Z",
+        "durationSeconds": 182,
+        "ringDurationSeconds": 12,
+        "fromNumber": "+919800000000",
+        "toNumber": "+919811111111",
         "recordingUrl": "https://recordings.example.com/call_12345.mp3",
-        "customer": {
-          "phone": "+1-555-123-4567",
-          "name": "John Doe",
-          "email": "john.doe@acme.com"
-        },
-        "title": "Sales Follow-up Call"
+        "skipAnalysis": true,
+        "customer": { "phone": "+919811111111", "name": "Jane Doe" },
+        "assignedUserEmail": "rep@yourcompany.com",
+        "metadata": { "crmLeadId": "LEAD-789" }
       }
     ]
   }'
