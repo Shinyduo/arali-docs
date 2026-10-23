@@ -109,7 +109,6 @@
             "group": "Calls",
             "pages": [
                 "api-reference/calls/create-calls",
-                "api-reference/calls/create-call-with-transcript",
                 "api-reference/calls/list-calls",
                 "api-reference/calls/get-call"
             ]

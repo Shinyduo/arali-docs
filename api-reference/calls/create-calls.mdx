@@ -13,7 +13,7 @@ Pushes call records from your dialer or CRM into Arali. Send one call or a batch
 - **Contact:** the call is linked to a contact by `customer.phone` / `customer.email`, or exactly by `contactId`.
 - **Duplicates:** re-sending a call with the same `providerKey` + `externalCallId` does not create a duplicate.
 
-To send a call **with a transcript**, use [Create Call with Transcript](/api-reference/calls/create-call-with-transcript).
+- **Transcript:** if you have the call's transcript, send it in `transcript`. Arali stores it and analyses it instead of transcribing the recording. You can also send it later by re-sending the call with the same `externalCallId`.
 
 Required scope: `calls:write`.
 
@@ -72,7 +72,15 @@ Required scope: `calls:write`.
     </ParamField>
 
     <ParamField body="skipAnalysis" type="boolean" default="false">
-      Store `recordingUrl` as is and play it from your URL: no upload, transcription or AI analysis.
+      Store `recordingUrl` as is and play it from your URL: no upload, transcription or AI analysis (including of a provided `transcript`).
+    </ParamField>
+
+    <ParamField body="transcript" type="string">
+      The call transcript as text: one turn per line as `Speaker: text` (e.g. `Agent: …` / `Customer: …`), or WEBVTT. Each turn shows as a separate line on the call page. The recording is not transcribed when a transcript is sent.
+    </ParamField>
+
+    <ParamField body="language" type="string" default="en">
+      Language of the transcript (e.g. `en`, `hi`)
     </ParamField>
 
     <ParamField body="customer" type="object">
@@ -151,7 +159,8 @@ curl -X POST https://api.arali.ai/api/v1/calls \
         "fromNumber": "+919800000000",
         "toNumber": "+919811111111",
         "recordingUrl": "https://recordings.example.com/call_12345.mp3",
-        "skipAnalysis": true,
+        "transcript": "Agent: Hi, this is Riya from Acme.\nCustomer: Hello, yes.\nAgent: Is now a good time to talk?",
+        "language": "en",
         "customer": { "phone": "+919811111111", "name": "Jane Doe" },
         "assignedUserEmail": "rep@yourcompany.com",
         "metadata": { "crmLeadId": "LEAD-789" }
