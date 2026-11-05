@@ -59,7 +59,7 @@ description: 'Batch create or update contact records in Arali. Learn request fie
     </ParamField>
 
     <ParamField body="touchpoint" type="object">
-      Marketing touchpoint (ad attribution) to record for this contact. When omitted, attribution can still be derived from legacy keys in <code>attributes.meta_*</code> or <code>properties</code> (e.g. <code>ad_id</code>, <code>utm_*</code>, <code>fbclid</code>/<code>gclid</code>/<code>ttclid</code>).
+      Marketing touchpoint (ad attribution) to record for this contact. When omitted, attribution can still be derived from legacy keys in `attributes.meta_*` or `properties` (e.g. `ad_id`, `utm_*`, `fbclid`/`gclid`/`ttclid`).
 
       <Expandable title="Touchpoint Object">
         <ParamField body="provider" type="string">Ad network: <code>meta</code>, <code>google</code>, <code>tiktok</code>, <code>website</code>, <code>whatsapp</code>. Default: <code>website</code>.</ParamField>
