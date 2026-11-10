@@ -7,16 +7,21 @@ description: 'Delete a specific role assignment'
 ## Path Parameters
 
 <ParamField path="assignmentId" type="string" required>
-  The unique ID of the role assignment to delete
+  The unique ID of the role assignment to delete. Must be a valid UUID.
 </ParamField>
 
 ## Example Request
 
 ```bash
-curl -X DELETE https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
+curl -X DELETE https://api.arali.ai/api/v1/key-role-assignments/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
   -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
 ## Response
 
 Returns a success confirmation upon deletion.
+
+## Errors
+
+- `400` — Invalid `assignmentId` (must be a valid UUID)
+- `404` — Assignment not found

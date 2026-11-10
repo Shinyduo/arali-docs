@@ -7,13 +7,13 @@ description: 'Retrieve a specific role assignment by ID'
 ## Path Parameters
 
 <ParamField path="assignmentId" type="string" required>
-  The unique ID of the role assignment to retrieve
+  The unique ID of the role assignment to retrieve. Must be a valid UUID.
 </ParamField>
 
 ## Example Request
 
 ```bash
-curl -X GET https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
+curl -X GET https://api.arali.ai/api/v1/key-role-assignments/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
   -H "Authorization: Api-Key YOUR_STATIC_KEY"
 ```
 
@@ -22,9 +22,14 @@ curl -X GET https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
 Returns the role assignment record with full details including:
 - Assignment ID
 - Role key
-- Entity type (company or account)
-- External entity ID
-- User email
+- Entity type (`company`, `account`, `contact`, or `deal`)
+- Internal entity ID
+- Assigned user ID
 - Tenure start date
 - Tenure end date (if applicable)
 - Created and updated timestamps
+
+## Errors
+
+- `400` — Invalid `assignmentId` (must be a valid UUID)
+- `404` — Assignment not found

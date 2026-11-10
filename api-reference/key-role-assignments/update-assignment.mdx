@@ -7,7 +7,7 @@ description: 'Update a specific internal team assignment'
 ## Path Parameters
 
 <ParamField path="assignmentId" type="string" required>
-  The unique ID of the role assignment to update
+  The unique ID of the role assignment to update. Must be a valid UUID.
 </ParamField>
 
 ## Request Body
@@ -42,7 +42,7 @@ description: 'Update a specific internal team assignment'
 
 ### End a CSM Assignment (Team Member Transition)
 ```bash
-curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
+curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
   -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -54,7 +54,7 @@ curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
 
 ### Change Assigned Team Member
 ```bash
-curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
+curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
   -H "Authorization: Api-Key YOUR_STATIC_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -68,6 +68,11 @@ curl -X PUT https://api.arali.ai/api/v1/key-role-assignments/{assignmentId} \
 ## Response
 
 Returns the updated role assignment record.
+
+## Errors
+
+- `400` — Invalid `assignmentId` (must be a valid UUID) or missing required fields
+- `404` — Assignment not found
 
 ## Notes
 
