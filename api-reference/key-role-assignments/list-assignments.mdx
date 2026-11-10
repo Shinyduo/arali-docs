@@ -1,17 +1,17 @@
 ---
 title: 'List Role Assignments'
 api: 'GET /api/v1/key-role-assignments'
-description: 'Retrieve all internal team assignments or filter by entity or role'
+description: 'Retrieve internal team assignments with optional filtering and pagination'
 ---
 
 ## Query Parameters
 
 <ParamField query="entityType" type="string">
-  Filter by entity type: `company`, `account`, or `contact`
+  Filter by entity type: `company`, `account`, `contact`, or `deal`
 </ParamField>
 
 <ParamField query="entityId" type="string">
-  Filter by the internal Arali UUID of the entity. Takes precedence over `externalEntityId` if both are provided.
+  Filter by the internal Arali UUID of the entity. Must be a valid UUID. Takes precedence over `externalEntityId` if both are provided.
 </ParamField>
 
 <ParamField query="externalEntityId" type="string">
@@ -23,7 +23,15 @@ description: 'Retrieve all internal team assignments or filter by entity or role
 </ParamField>
 
 <ParamField query="userId" type="string">
-  Filter by the internal Arali UUID of the assigned team member.
+  Filter by the internal Arali UUID of the assigned team member. Must be a valid UUID.
+</ParamField>
+
+<ParamField query="page" type="integer">
+  Page number for paginated results. Defaults to `1`.
+</ParamField>
+
+<ParamField query="limit" type="integer">
+  Number of results per page. Defaults to `50`, maximum `200`.
 </ParamField>
 
 ## Example Requests
@@ -66,10 +74,52 @@ curl -X GET "https://api.arali.ai/api/v1/key-role-assignments?roleKey=csm&userId
 
 ## Response
 
-Returns an array of role assignment records with:
+Returns a paginated list of role assignment records with:
 - Assignment ID
 - Key role definition ID (use `roleKey` filter to query by human-readable key)
 - Entity type and internal entity ID
 - Assigned user ID (internal team member)
 - Tenure start and end dates
 - Timestamps
+
+### Pagination Metadata
+
+The response `meta` object includes:
+
+- `total` — Total number of matching assignments
+- `count` — Number of assignments returned in the current page
+- `page` — Current page number
+- `limit` — Number of results per page
+- `totalPages` — Total number of pages available
+- `hasMore` — `true` if more pages exist
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "enterpriseId": "2f90d1c5-7141-446d-91c6-af0ff03e8b8a",
+      "keyRoleDefinitionId": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+      "entityType": "company",
+      "entityId": "00f65964-5129-4eac-b88e-285d4096fe83",
+      "userId": "888843a2-8d54-4716-a44b-718ebb6a00f2",
+      "startAt": "2024-01-01T00:00:00.000Z",
+      "endAt": null,
+      "reason": null,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-06-01T00:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "total": 42,
+    "count": 1,
+    "page": 1,
+    "limit": 50,
+    "totalPages": 1,
+    "hasMore": false
+  }
+}
+```
