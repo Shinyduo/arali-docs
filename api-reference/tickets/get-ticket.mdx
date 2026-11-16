@@ -1,0 +1,98 @@
+---
+title: 'Arali API: Get a Support Ticket with Its Message History'
+api: 'GET /api/v1/tickets/{id}'
+description: 'Get one Arali support ticket with the REST API, including its status, source system, participants and full message history with sender and direction.'
+---
+
+## Overview
+
+Returns a ticket, the people on it, and every message in order. Requires the `tickets:read` scope (`interactions:read` is also accepted).
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Ticket UUID. The ticket's `interaction_id` is also accepted.
+</ParamField>
+
+## Example Request
+
+```bash
+curl "https://api.arali.ai/api/v1/tickets/1c76d2e5-38f7-4f40-83d3-6243c9babddd" \
+  -H "Authorization: Api-Key YOUR_API_KEY"
+```
+
+## Response
+
+<ResponseField name="success" type="boolean" />
+
+<ResponseField name="data" type="object">
+  <Expandable title="Ticket detail">
+    <ResponseField name="ticket" type="object">
+      <Expandable title="Ticket Object">
+    <ResponseField name="id" type="string">Ticket UUID</ResponseField>
+    <ResponseField name="interaction_id" type="string">UUID of the ticket's interaction (links it to companies, contacts and the timeline)</ResponseField>
+    <ResponseField name="enterprise_id" type="string">Your enterprise UUID</ResponseField>
+    <ResponseField name="provider_key" type="string">Source system, e.g. `freshdesk`, `jira`, `tawk`</ResponseField>
+    <ResponseField name="provider_name" type="string | null">Display name of the source system</ResponseField>
+    <ResponseField name="integration_account_id" type="string | null">UUID of the connected integration account</ResponseField>
+    <ResponseField name="integration_account_name" type="string | null">Display name of the integration account</ResponseField>
+    <ResponseField name="external_ticket_id" type="string">Ticket ID in the source system</ResponseField>
+    <ResponseField name="subject" type="string">Ticket subject</ResponseField>
+    <ResponseField name="description" type="string | null">Ticket description</ResponseField>
+    <ResponseField name="status" type="string">`open`, `pending`, `resolved`, `closed`, `archived`, or `spam`</ResponseField>
+    <ResponseField name="provider_created_at" type="string | null">Created time in the source system</ResponseField>
+    <ResponseField name="provider_updated_at" type="string | null">Last-updated time in the source system</ResponseField>
+    <ResponseField name="last_activity_at" type="string | null">Time of the latest activity on the ticket</ResponseField>
+    <ResponseField name="metadata" type="object">Extra data from the source system</ResponseField>
+    <ResponseField name="interaction_start_at" type="string | null">Start time of the ticket's interaction</ResponseField>
+    <ResponseField name="created_at" type="string">ISO 8601 creation timestamp in Arali</ResponseField>
+    <ResponseField name="updated_at" type="string">ISO 8601 last-updated timestamp in Arali</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="participants" type="array">
+      People on the ticket
+      <Expandable title="Participant">
+        <ResponseField name="user_id" type="string | null">UUID of the Arali user, for your team members</ResponseField>
+        <ResponseField name="user_name" type="string | null">User name</ResponseField>
+        <ResponseField name="user_email" type="string | null">User email</ResponseField>
+        <ResponseField name="contact_id" type="string | null">UUID of the contact, for customers</ResponseField>
+        <ResponseField name="contact_name" type="string | null">Contact name</ResponseField>
+        <ResponseField name="contact_email" type="string | null">Contact primary email</ResponseField>
+        <ResponseField name="email_id" type="string | null">Raw email address on the ticket</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="messages" type="array">
+      Messages, oldest first
+      <Expandable title="Message Object">
+        <ResponseField name="id" type="string">Message UUID</ResponseField>
+        <ResponseField name="external_message_id" type="string">Message ID in the source system</ResponseField>
+        <ResponseField name="message_type" type="string">`reply`, `note` (internal note), or `system`</ResponseField>
+        <ResponseField name="direction" type="string">`inbound` (from the customer), `outbound` (from your team), or `internal`</ResponseField>
+        <ResponseField name="from_user_id" type="string | null">UUID of the sending user, for your team</ResponseField>
+        <ResponseField name="from_user_name" type="string | null">Sending user's name</ResponseField>
+        <ResponseField name="from_user_email" type="string | null">Sending user's email</ResponseField>
+        <ResponseField name="from_contact_id" type="string | null">UUID of the sending contact, for customers</ResponseField>
+        <ResponseField name="from_contact_name" type="string | null">Sending contact's name</ResponseField>
+        <ResponseField name="from_contact_email" type="string | null">Sending contact's email</ResponseField>
+        <ResponseField name="from_email" type="string | null">Raw sender email</ResponseField>
+        <ResponseField name="to_emails" type="string[]">Recipients</ResponseField>
+        <ResponseField name="cc_emails" type="string[]">CC recipients</ResponseField>
+        <ResponseField name="subject" type="string | null">Message subject</ResponseField>
+        <ResponseField name="text_body" type="string | null">Plain-text body, with quoted replies removed</ResponseField>
+        <ResponseField name="html_body" type="string | null">HTML body, with quoted replies removed</ResponseField>
+        <ResponseField name="attachments" type="array">Attachment metadata</ResponseField>
+        <ResponseField name="sent_at" type="string | null">When the message was sent</ResponseField>
+        <ResponseField name="ai_analysis_status" type="string | null">Status of Arali's AI analysis of this message</ResponseField>
+        <ResponseField name="created_at" type="string">ISO 8601 timestamp when Arali stored the message</ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `tickets:read` or `interactions:read`) |
+| `404`  | Ticket not found, or not visible to this API key |

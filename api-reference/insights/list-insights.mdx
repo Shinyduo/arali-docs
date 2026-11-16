@@ -1,0 +1,106 @@
+---
+title: 'Arali API: List Meeting Insights from Calls and Meetings'
+api: 'GET /api/v1/insights'
+description: 'List AI-extracted Arali insights with the REST API: feature asks, objections, appreciations and competitor mentions, filtered by company, cluster and date.'
+---
+
+## Overview
+
+Arali reads every conversation and extracts **insights**: feature requests and reactions, objections, moments of appreciation, and competitor mentions. Similar insights are grouped into **clusters** (for example, every mention of the same competitor). Use this endpoint for the individual insights, newest first. To get counts per cluster, use [List Insight Clusters](/api-reference/insights/list-insight-clusters).
+
+Requires the `insights:read` scope (`companies:read` is also accepted). If the API key's creator only has access to some companies, only insights from interactions with those companies are returned. Insights from **private** interactions are never returned.
+
+## Query Parameters
+
+<ParamField query="metricKey" type="string">
+  One or more insight types, comma-separated: `feature_reception` (feature asks and reactions), `objections_handling`, `appreciation_moments`, `competitor_mentions`
+</ParamField>
+
+<ParamField query="companyId" type="string">
+  Only insights from interactions linked to this company (UUID)
+</ParamField>
+
+<ParamField query="interactionId" type="string">
+  Only insights from this call, meeting or thread (UUID)
+</ParamField>
+
+<ParamField query="clusterId" type="string">
+  Only insights in this cluster
+</ParamField>
+
+<ParamField query="clusterName" type="string">
+  Case-insensitive partial match on the cluster name (e.g. `salesforce` matches the "Salesforce" competitor cluster)
+</ParamField>
+
+<ParamField query="startDate" type="string">
+  Only insights extracted on or after this date (`YYYY-MM-DD`)
+</ParamField>
+
+<ParamField query="endDate" type="string">
+  Only insights extracted on or before this date (`YYYY-MM-DD`)
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page (1–200)
+</ParamField>
+
+## Example Request
+
+```bash
+curl "https://api.arali.ai/api/v1/insights?companyId=eea7ade2-7470-4134-844c-11a0934f9cb2&metricKey=feature_reception,competitor_mentions" \
+  -H "Authorization: Api-Key YOUR_API_KEY"
+```
+
+## Response
+
+<ResponseField name="success" type="boolean" />
+
+<ResponseField name="data" type="array">
+  Insights, newest first
+
+  <Expandable title="Insight Object">
+    <ResponseField name="id" type="string">Insight UUID</ResponseField>
+    <ResponseField name="metricKey" type="string">Insight type: `feature_reception`, `objections_handling`, `appreciation_moments`, or `competitor_mentions`</ResponseField>
+    <ResponseField name="details" type="object | null">The extracted insight — quotes, sentiment, the feature or competitor named. Shape depends on `metricKey`.</ResponseField>
+    <ResponseField name="transcriptTimestamp" type="string | null">Where in the recording the insight was said, when available</ResponseField>
+    <ResponseField name="cluster" type="object | null">
+      Cluster the insight belongs to, or `null` if not yet clustered
+      <Expandable title="Cluster">
+        <ResponseField name="id" type="string">Cluster ID</ResponseField>
+        <ResponseField name="name" type="string | null">Cluster name (e.g. a competitor or feature name)</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="interaction" type="object | null">
+      The call, meeting or thread the insight came from
+      <Expandable title="Interaction">
+        <ResponseField name="id" type="string">Interaction UUID</ResponseField>
+        <ResponseField name="kind" type="string">`meeting`, `call`, `thread`, `note`, `ticket`, or `sequence`</ResponseField>
+        <ResponseField name="title" type="string | null">Interaction title</ResponseField>
+        <ResponseField name="startAt" type="string | null">ISO 8601 start time</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="companyIds" type="string[]">UUIDs of the companies linked to the interaction</ResponseField>
+    <ResponseField name="createdAt" type="string">ISO 8601 timestamp when the insight was extracted</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  <Expandable title="Pagination">
+    <ResponseField name="total" type="integer">Total number of matching insights</ResponseField>
+    <ResponseField name="page" type="integer">Current page</ResponseField>
+    <ResponseField name="limit" type="integer">Results per page</ResponseField>
+    <ResponseField name="hasMore" type="boolean">Whether more pages are available</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400`  | Malformed UUID or date |
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `insights:read` or `companies:read`) |

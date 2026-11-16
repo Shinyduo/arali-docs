@@ -1,0 +1,140 @@
+---
+title: 'Arali API: List Company Signals for Risks and Opportunities'
+api: 'GET /api/v1/signals'
+description: 'List Arali company signals with the REST API. Filter churn risks, opportunities and alerts by company, status, severity, owner, due date and first-seen date.'
+---
+
+## Overview
+
+Arali watches your calls, meetings, emails and tickets and raises **signals** on companies: churn and contraction **risks**, expansion **opportunities**, and **info** alerts. Each signal has a type, category, severity, status and owner.
+
+Requires the `signals:read` scope (`companies:read` is also accepted). If the API key's creator only has access to some companies, only signals on those companies are returned.
+
+<Note>
+Arali creates a separate signal row each time it detects the same issue again. Rows describing the same issue share a `dedupeKey` — group by it to show one issue with a "×N" count.
+</Note>
+
+## Query Parameters
+
+<ParamField query="companyId" type="string">
+  Only signals on this company (UUID)
+</ParamField>
+
+<ParamField query="accountId" type="string">
+  Only signals on this account (UUID)
+</ParamField>
+
+<ParamField query="status" type="string">
+  One or more of `open`, `in_progress`, `resolved`, `dismissed`, `reopened` (comma-separated). Returns all statuses if omitted.
+</ParamField>
+
+<ParamField query="type" type="string">
+  One or more of `risk`, `opportunity`, `info` (comma-separated)
+</ParamField>
+
+<ParamField query="severity" type="string">
+  One or more of `low`, `medium`, `high`, `critical` (comma-separated)
+</ParamField>
+
+<ParamField query="categoryKey" type="string">
+  One or more category keys, comma-separated (e.g. `churn`, `contraction`, `expansion`)
+</ParamField>
+
+<ParamField query="ownerUserId" type="string">
+  Only signals owned by this user (UUID)
+</ParamField>
+
+<ParamField query="unassigned" type="boolean">
+  `true` returns only signals with no owner; `false` returns only signals with an owner
+</ParamField>
+
+<ParamField query="overdue" type="boolean">
+  `true` returns only signals past their `dueAt` that are not resolved or dismissed
+</ParamField>
+
+<ParamField query="firstSeenAfter" type="string">
+  Only signals first seen on or after this date (`YYYY-MM-DD`)
+</ParamField>
+
+<ParamField query="firstSeenBefore" type="string">
+  Only signals first seen on or before this date (`YYYY-MM-DD`)
+</ParamField>
+
+<ParamField query="lastSeenAfter" type="string">
+  Only signals last seen on or after this date (`YYYY-MM-DD`)
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page (1–200)
+</ParamField>
+
+## Example Request
+
+```bash
+curl "https://api.arali.ai/api/v1/signals?companyId=eea7ade2-7470-4134-844c-11a0934f9cb2&status=open,in_progress,reopened" \
+  -H "Authorization: Api-Key YOUR_API_KEY"
+```
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Signals, most recently seen first
+
+  <Expandable title="Signal Object">
+    <ResponseField name="id" type="string">Signal UUID</ResponseField>
+    <ResponseField name="companyId" type="string">UUID of the company the signal is on</ResponseField>
+    <ResponseField name="companyName" type="string">Company name</ResponseField>
+    <ResponseField name="accountId" type="string | null">UUID of the account, when the signal is account-specific</ResponseField>
+    <ResponseField name="type" type="string">`risk`, `opportunity`, or `info`</ResponseField>
+    <ResponseField name="categoryKey" type="string">Category, e.g. `churn`, `contraction`, `expansion`</ResponseField>
+    <ResponseField name="title" type="string">One-line description of the signal</ResponseField>
+    <ResponseField name="status" type="string">`open`, `in_progress`, `resolved`, `dismissed`, or `reopened`</ResponseField>
+    <ResponseField name="severity" type="string">`low`, `medium`, `high`, or `critical`</ResponseField>
+    <ResponseField name="owner" type="object | null">
+      Owner of the signal, or `null` when unassigned
+      <Expandable title="Owner">
+        <ResponseField name="id" type="string">User UUID</ResponseField>
+        <ResponseField name="name" type="string">User name</ResponseField>
+        <ResponseField name="email" type="string">User email</ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="dueAt" type="string | null">ISO 8601 due date, if one is set</ResponseField>
+    <ResponseField name="isOverdue" type="boolean">`true` when `dueAt` has passed and the signal is not resolved or dismissed</ResponseField>
+    <ResponseField name="dedupeKey" type="string">Identifies the underlying issue. Signals with the same key are repeat detections of the same issue.</ResponseField>
+    <ResponseField name="occurrenceCount" type="integer">Number of times evidence was recorded for this signal</ResponseField>
+    <ResponseField name="firstSeenAt" type="string">ISO 8601 timestamp of first detection</ResponseField>
+    <ResponseField name="lastSeenAt" type="string">ISO 8601 timestamp of the latest detection</ResponseField>
+    <ResponseField name="inProgressAt" type="string | null">When the signal moved to `in_progress`</ResponseField>
+    <ResponseField name="resolvedAt" type="string | null">When the signal was resolved</ResponseField>
+    <ResponseField name="dismissedAt" type="string | null">When the signal was dismissed</ResponseField>
+    <ResponseField name="reopenedAt" type="string | null">When the signal was reopened</ResponseField>
+    <ResponseField name="metadata" type="object">Additional data attached to the signal</ResponseField>
+    <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
+    <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  <Expandable title="Pagination">
+    <ResponseField name="total" type="integer">Total number of matching signals</ResponseField>
+    <ResponseField name="page" type="integer">Current page</ResponseField>
+    <ResponseField name="limit" type="integer">Results per page</ResponseField>
+    <ResponseField name="hasMore" type="boolean">Whether more pages are available</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400`  | Invalid filter value (unknown enum, malformed UUID or date) |
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `signals:read` or `companies:read`) |

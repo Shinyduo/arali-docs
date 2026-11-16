@@ -1,0 +1,83 @@
+---
+title: 'Arali API: Get a Signal with Its Evidence and Root Cause'
+api: 'GET /api/v1/signals/{id}'
+description: 'Get one Arali company signal with the REST API, including each occurrence''s root cause, urgency, recoverability, evidence and the interaction it came from.'
+---
+
+## Overview
+
+Returns a signal plus its **occurrences**: every time Arali recorded evidence for it. Each occurrence includes the root-cause classification (`triggerType`), urgency, recoverability, the extracted evidence, and the interaction it came from. Use this to show *why* a company is at risk.
+
+Requires the `signals:read` scope (`companies:read` is also accepted).
+
+<Note>
+For interactions marked **private**, the interaction's `title`, `summary` and transcript are returned as `null`. The occurrence and its evidence are still returned.
+</Note>
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  Signal UUID
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="includeTranscripts" type="boolean" default="false">
+  If `true`, include the first 1,000 characters of each linked interaction's transcript
+</ParamField>
+
+<ParamField query="occurrenceLimit" type="integer" default="20">
+  Maximum occurrences to return, most recent first (1–100)
+</ParamField>
+
+## Example Request
+
+```bash
+curl "https://api.arali.ai/api/v1/signals/0fd50a03-664c-440a-894e-3c64cdb72e48?includeTranscripts=true" \
+  -H "Authorization: Api-Key YOUR_API_KEY"
+```
+
+## Response
+
+<ResponseField name="success" type="boolean" />
+
+<ResponseField name="data" type="object">
+  Every field from the [Signal Object](/api-reference/signals/list-signals), plus:
+
+  <Expandable title="Additional fields">
+    <ResponseField name="occurrences" type="array">
+      Evidence recorded for this signal, most recent first
+      <Expandable title="Occurrence Object">
+        <ResponseField name="id" type="string">Occurrence UUID</ResponseField>
+        <ResponseField name="detectedAt" type="string">ISO 8601 detection timestamp</ResponseField>
+        <ResponseField name="source" type="string">How it was detected: `llm`, `rule`, `manual`, or `integration`</ResponseField>
+        <ResponseField name="triggerType" type="string | null">Root-cause classification, e.g. `explicit_cancellation_intent`, `budget_removed_or_blocked`, `competitor_switch_decision`, `seat_reduction`, `new_team_rollout`</ResponseField>
+        <ResponseField name="severity" type="string | null">Severity of this occurrence</ResponseField>
+        <ResponseField name="timelineUrgency" type="string | null">`immediate`, `short_term`, `at_renewal`, or `unspecified`</ResponseField>
+        <ResponseField name="recoverability" type="string | null">`likely_recoverable`, `uncertain`, or `unlikely_recoverable`</ResponseField>
+        <ResponseField name="evidence" type="object">Extracted evidence — quotes, dates, and reasoning. Shape depends on the category.</ResponseField>
+        <ResponseField name="interaction" type="object | null">
+          The interaction the evidence came from
+          <Expandable title="Interaction">
+            <ResponseField name="id" type="string">Interaction UUID</ResponseField>
+            <ResponseField name="kind" type="string">`meeting`, `call`, `thread`, `note`, `ticket`, or `sequence`</ResponseField>
+            <ResponseField name="visibility" type="string">`public`, `org`, or `private`</ResponseField>
+            <ResponseField name="title" type="string | null">Title (`null` for private interactions)</ResponseField>
+            <ResponseField name="startAt" type="string | null">ISO 8601 start time</ResponseField>
+            <ResponseField name="summary" type="string | null">AI summary (`null` for private interactions)</ResponseField>
+            <ResponseField name="transcriptExcerpt" type="string | null">First 1,000 characters of the transcript. Only present when `includeTranscripts=true`.</ResponseField>
+          </Expandable>
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400`  | `id` is not a UUID |
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `signals:read` or `companies:read`) |
+| `404`  | Signal not found, or not visible to this API key |
