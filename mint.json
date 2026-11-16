@@ -306,6 +306,27 @@
             ]
         },
         {
+            "group": "Signals",
+            "pages": [
+                "api-reference/signals/list-signals",
+                "api-reference/signals/get-signal"
+            ]
+        },
+        {
+            "group": "Insights",
+            "pages": [
+                "api-reference/insights/list-insights",
+                "api-reference/insights/list-insight-clusters"
+            ]
+        },
+        {
+            "group": "Tickets",
+            "pages": [
+                "api-reference/tickets/list-tickets",
+                "api-reference/tickets/get-ticket"
+            ]
+        },
+        {
             "group": "Interactions",
             "pages": [
                 "api-reference/interactions/link-interaction-contact"

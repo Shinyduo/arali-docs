@@ -1,0 +1,131 @@
+---
+title: 'Arali API: List Support Tickets by Company and Status'
+api: 'GET /api/v1/tickets'
+description: 'List Arali support tickets with the REST API. Filter by company, status, provider, team or date, and see who replied last to find tickets waiting on you.'
+---
+
+## Overview
+
+Returns support tickets synced into Arali from your helpdesk (Freshdesk, Jira, tawk.to and others), most recently active first.
+
+Requires the `tickets:read` scope (`interactions:read` is also accepted). If the API key's creator only has access to some teams, only tickets in those teams are returned.
+
+<Tip>
+To find tickets **waiting on your team**, look for open or pending tickets where `last_message_direction` is `inbound` — the customer wrote last.
+</Tip>
+
+## Query Parameters
+
+<ParamField query="company_id" type="string">
+  Only tickets linked to this company (UUID). Repeat or comma-separate for several companies.
+</ParamField>
+
+<ParamField query="status" type="string">
+  One of `open`, `pending`, `resolved`, `closed`, `archived`, `spam`
+</ParamField>
+
+<ParamField query="search" type="string">
+  Case-insensitive match on subject or description. Also accepts `q`.
+</ParamField>
+
+<ParamField query="provider_key" type="string">
+  Only tickets from this source system, e.g. `freshdesk`. Also accepts `providerKey`.
+</ParamField>
+
+<ParamField query="start_date" type="string">
+  Start of the activity window (ISO 8601). Must be used with `end_date`.
+</ParamField>
+
+<ParamField query="end_date" type="string">
+  End of the activity window (ISO 8601). Must be used with `start_date`.
+</ParamField>
+
+<ParamField query="date_range" type="string">
+  Shortcut for recent activity, e.g. `7d` or `30d`. Ignored when `start_date` and `end_date` are set.
+</ParamField>
+
+<ParamField query="org_unit_id" type="string">
+  Only tickets in these teams (UUIDs). Repeat or comma-separate.
+</ParamField>
+
+<ParamField query="user_id" type="string">
+  Only tickets where these users participate (UUIDs). Repeat or comma-separate.
+</ParamField>
+
+<ParamField query="participant_only" type="boolean">
+  If `true`, only tickets where the API key's creator is a participant
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page (1–100)
+</ParamField>
+
+## Example Request
+
+```bash
+curl "https://api.arali.ai/api/v1/tickets?company_id=eea7ade2-7470-4134-844c-11a0934f9cb2&status=open" \
+  -H "Authorization: Api-Key YOUR_API_KEY"
+```
+
+## Response
+
+<ResponseField name="success" type="boolean" />
+
+<ResponseField name="data" type="array">
+  Tickets, most recently active first
+
+  <Expandable title="Ticket Object">
+    <ResponseField name="id" type="string">Ticket UUID</ResponseField>
+    <ResponseField name="interaction_id" type="string">UUID of the ticket's interaction (links it to companies, contacts and the timeline)</ResponseField>
+    <ResponseField name="enterprise_id" type="string">Your enterprise UUID</ResponseField>
+    <ResponseField name="provider_key" type="string">Source system, e.g. `freshdesk`, `jira`, `tawk`</ResponseField>
+    <ResponseField name="provider_name" type="string | null">Display name of the source system</ResponseField>
+    <ResponseField name="integration_account_id" type="string | null">UUID of the connected integration account</ResponseField>
+    <ResponseField name="integration_account_name" type="string | null">Display name of the integration account</ResponseField>
+    <ResponseField name="external_ticket_id" type="string">Ticket ID in the source system</ResponseField>
+    <ResponseField name="subject" type="string">Ticket subject</ResponseField>
+    <ResponseField name="description" type="string | null">Ticket description</ResponseField>
+    <ResponseField name="status" type="string">`open`, `pending`, `resolved`, `closed`, `archived`, or `spam`</ResponseField>
+    <ResponseField name="provider_created_at" type="string | null">Created time in the source system</ResponseField>
+    <ResponseField name="provider_updated_at" type="string | null">Last-updated time in the source system</ResponseField>
+    <ResponseField name="last_activity_at" type="string | null">Time of the latest activity on the ticket</ResponseField>
+    <ResponseField name="metadata" type="object">Extra data from the source system</ResponseField>
+    <ResponseField name="interaction_start_at" type="string | null">Start time of the ticket's interaction</ResponseField>
+    <ResponseField name="created_at" type="string">ISO 8601 creation timestamp in Arali</ResponseField>
+    <ResponseField name="updated_at" type="string">ISO 8601 last-updated timestamp in Arali</ResponseField>
+    <ResponseField name="last_message_direction" type="string | null">Direction of the latest reply: `inbound` (customer wrote last), `outbound` (your team wrote last), or `internal`. `null` when the ticket has no replies.</ResponseField>
+    <ResponseField name="last_message_at" type="string | null">Time of the latest reply</ResponseField>
+    <ResponseField name="participants" type="array">
+      People on the ticket
+      <Expandable title="Participant">
+        <ResponseField name="user_id" type="string | null">UUID of the Arali user, for your team members</ResponseField>
+        <ResponseField name="user_name" type="string | null">User name</ResponseField>
+        <ResponseField name="user_email" type="string | null">User email</ResponseField>
+        <ResponseField name="contact_id" type="string | null">UUID of the contact, for customers</ResponseField>
+        <ResponseField name="contact_name" type="string | null">Contact name</ResponseField>
+        <ResponseField name="contact_email" type="string | null">Contact primary email</ResponseField>
+        <ResponseField name="email_id" type="string | null">Raw email address on the ticket</ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  <Expandable title="Pagination">
+    <ResponseField name="total" type="integer">Total number of matching tickets</ResponseField>
+    <ResponseField name="page" type="integer">Current page</ResponseField>
+    <ResponseField name="limit" type="integer">Results per page</ResponseField>
+    <ResponseField name="hasMore" type="boolean">Whether more pages are available</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `tickets:read` or `interactions:read`) |

@@ -1,0 +1,92 @@
+---
+title: 'Arali API: List Insight Clusters with Mention Counts'
+api: 'GET /api/v1/insights/clusters'
+description: 'Group Arali meeting insights into clusters with the REST API to rank top competitors, feature asks and objections by count, filtered by company and date.'
+---
+
+## Overview
+
+Groups [insights](/api-reference/insights/list-insights) by cluster and type, with counts, most frequent first. Use it for questions like "which competitors come up most for this company?" or "what are the top feature asks this quarter?". Accepts the same filters as List Insights.
+
+Requires the `insights:read` scope (`companies:read` is also accepted). Insights from **private** interactions are not counted.
+
+## Query Parameters
+
+<ParamField query="metricKey" type="string">
+  One or more insight types, comma-separated: `feature_reception` (feature asks and reactions), `objections_handling`, `appreciation_moments`, `competitor_mentions`
+</ParamField>
+
+<ParamField query="companyId" type="string">
+  Only insights from interactions linked to this company (UUID)
+</ParamField>
+
+<ParamField query="interactionId" type="string">
+  Only insights from this call, meeting or thread (UUID)
+</ParamField>
+
+<ParamField query="clusterId" type="string">
+  Only insights in this cluster
+</ParamField>
+
+<ParamField query="clusterName" type="string">
+  Case-insensitive partial match on the cluster name (e.g. `salesforce` matches the "Salesforce" competitor cluster)
+</ParamField>
+
+<ParamField query="startDate" type="string">
+  Only insights extracted on or after this date (`YYYY-MM-DD`)
+</ParamField>
+
+<ParamField query="endDate" type="string">
+  Only insights extracted on or before this date (`YYYY-MM-DD`)
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page (1–200)
+</ParamField>
+
+## Example Request
+
+```bash
+curl "https://api.arali.ai/api/v1/insights/clusters?metricKey=competitor_mentions&startDate=2026-08-01" \
+  -H "Authorization: Api-Key YOUR_API_KEY"
+```
+
+## Response
+
+<ResponseField name="success" type="boolean" />
+
+<ResponseField name="data" type="array">
+  Clusters, highest `insightCount` first
+
+  <Expandable title="Cluster Object">
+    <ResponseField name="clusterId" type="string | null">Cluster ID, or `null` for insights not yet clustered</ResponseField>
+    <ResponseField name="clusterName" type="string | null">Cluster name; `Unclustered` when `clusterId` is `null`</ResponseField>
+    <ResponseField name="clusterDescription" type="string | null">AI-written description of the cluster</ResponseField>
+    <ResponseField name="metricKey" type="string">Insight type</ResponseField>
+    <ResponseField name="insightCount" type="integer">Number of matching insights in the cluster</ResponseField>
+    <ResponseField name="interactionCount" type="integer">Number of distinct calls, meetings and threads they came from</ResponseField>
+    <ResponseField name="firstSeenAt" type="string">ISO 8601 timestamp of the earliest matching insight</ResponseField>
+    <ResponseField name="lastSeenAt" type="string">ISO 8601 timestamp of the latest matching insight</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  <Expandable title="Pagination">
+    <ResponseField name="total" type="integer">Total number of clusters</ResponseField>
+    <ResponseField name="page" type="integer">Current page</ResponseField>
+    <ResponseField name="limit" type="integer">Results per page</ResponseField>
+    <ResponseField name="hasMore" type="boolean">Whether more pages are available</ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400`  | Malformed UUID or date |
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `insights:read` or `companies:read`) |
