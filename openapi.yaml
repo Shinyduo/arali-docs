@@ -3155,6 +3155,61 @@ paths:
         - Calls
       security:
         - ApiKeyAuth: []
+      parameters:
+        - name: accountId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only calls linked to this account (UUID). Comma-separate for several.
+        - name: accountExternalId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only calls linked to the account with this external ID (case-insensitive).
+        - name: companyId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only calls linked to this company (UUID). Comma-separate for several.
+        - name: companyExternalId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only calls linked to the company with this external ID (case-insensitive).
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+          description: On or after this ISO 8601 date or timestamp.
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+          description: On or before this ISO 8601 date or timestamp; a date-only value includes the whole day.
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Results per page (default 20, max 100).
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Page number (default 1).
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Results to skip; takes precedence over page.
       responses:
         '200':
           description: List of calls
@@ -3237,6 +3292,85 @@ paths:
         - Meetings
       security:
         - ApiKeyAuth: []
+      parameters:
+        - name: accountId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only meetings linked to this account (UUID). Comma-separate for several.
+        - name: accountExternalId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only meetings linked to the account with this external ID (case-insensitive).
+        - name: companyId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only meetings linked to this company (UUID). Comma-separate for several.
+        - name: companyExternalId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only meetings linked to the company with this external ID (case-insensitive).
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+          description: On or after this ISO 8601 date or timestamp.
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+          description: On or before this ISO 8601 date or timestamp; a date-only value includes the whole day.
+        - name: participantEmail
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only meetings with a participant with this email.
+        - name: hostEmail
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only meetings hosted by the user with this email.
+        - name: externalMeetingId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Meeting ID in the source system.
+        - name: recurringMeetingId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Only occurrences of this recurring meeting.
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Results per page (default 20, max 100).
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Page number (default 1).
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Results to skip; takes precedence over page.
       responses:
         '200':
           description: List of meetings

@@ -16,6 +16,18 @@ Requires the `insights:read` scope (`companies:read` is also accepted). If the A
   One or more insight types, comma-separated: `feature_reception` (feature asks and reactions), `objections_handling`, `appreciation_moments`, `competitor_mentions`
 </ParamField>
 
+<ParamField query="accountId" type="string">
+  Only insights from interactions linked to this account (UUID). Comma-separate for several.
+</ParamField>
+
+<ParamField query="accountExternalId" type="string">
+  Same, by your own account ID (matched case-insensitively)
+</ParamField>
+
+<ParamField query="companyExternalId" type="string">
+  Only insights from interactions linked to the company with this external ID
+</ParamField>
+
 <ParamField query="companyId" type="string">
   Only insights from interactions linked to this company (UUID)
 </ParamField>
@@ -84,6 +96,9 @@ curl "https://api.arali.ai/api/v1/insights?companyId=eea7ade2-7470-4134-844c-11a
       </Expandable>
     </ResponseField>
     <ResponseField name="companyIds" type="string[]">UUIDs of the companies linked to the interaction</ResponseField>
+    <ResponseField name="accountIds" type="string[]">UUIDs of the accounts linked to the interaction</ResponseField>
+    <ResponseField name="companies" type="array">`{ id, name, externalId }` for each linked company</ResponseField>
+    <ResponseField name="accounts" type="array">`{ id, name, externalId, companyId }` for each linked account</ResponseField>
     <ResponseField name="createdAt" type="string">ISO 8601 timestamp when the insight was extracted</ResponseField>
   </Expandable>
 </ResponseField>

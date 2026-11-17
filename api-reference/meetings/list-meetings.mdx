@@ -6,65 +6,110 @@ description: 'Get all meetings for your enterprise with optional filtering'
 
 ## Overview
 
-Returns a paginated list of meetings for your enterprise with optional filtering by status, channel, type, host, participants, company, account, date range, and more.
+Returns a paginated list of meetings for your enterprise, newest first, with optional filtering by company, account, date range, status, participants and more. Each meeting includes the companies and accounts it is linked to.
 
 ## Query Parameters
 
-<ParamField query="limit" type="integer" default="100">
-  Number of results per page. Maximum is 200.
+### Company and account
+
+<ParamField query="accountId" type="string">
+  Only meetings linked to this account (UUID). Comma-separate or repeat for several. Also accepts `account_id`.
 </ParamField>
 
-<ParamField query="offset" type="integer" default="0">
-  Number of results to skip for pagination.
-</ParamField>
-
-<ParamField query="status" type="string">
-  Filter by status. One of: `scheduled`, `skip`, `in_progress`, `cancelled`, `completed`, `deleted`, `error`
-</ParamField>
-
-<ParamField query="channel" type="string">
-  Filter by channel. One of: `gmeet`, `zoom`, `teams`, `offline`
-</ParamField>
-
-<ParamField query="type" type="string">
-  Filter by type. One of: `external`, `internal`
-</ParamField>
-
-<ParamField query="hostEmail" type="string">
-  Filter by host email address
-</ParamField>
-
-<ParamField query="participantEmail" type="string">
-  Filter by participant email address
+<ParamField query="accountExternalId" type="string">
+  Only meetings linked to the account with this external ID (your own ID, matched case-insensitively). Comma-separate or repeat for several. Also accepts `externalAccountId`.
 </ParamField>
 
 <ParamField query="companyId" type="string">
-  Filter by company UUID
+  Only meetings linked to this company (UUID). Comma-separate or repeat for several. Also accepts `company_id`.
 </ParamField>
 
-<ParamField query="accountId" type="string">
-  Filter by account UUID
+<ParamField query="companyExternalId" type="string">
+  Only meetings linked to the company with this external ID (matched case-insensitively). Also accepts `externalCompanyId`.
 </ParamField>
+
+<Note>
+`accountId` and `accountExternalId` together match either. Company and account filters together must both match. A malformed UUID returns `400`; an external ID that matches nothing returns an empty list.
+</Note>
+
+### Date
 
 <ParamField query="startDate" type="string">
-  Filter meetings starting on or after this date (ISO 8601)
+  Meetings scheduled to start on or after this date or timestamp (ISO 8601). Also accepts `start_date`.
 </ParamField>
 
 <ParamField query="endDate" type="string">
-  Filter meetings ending on or before this date (ISO 8601)
+  Meetings scheduled to start on or before this date or timestamp (ISO 8601). A date without a time (`2026-11-30`) includes that whole day. Also accepts `end_date`.
+</ParamField>
+
+<ParamField query="date_range" type="string">
+  Relative range instead of `startDate`/`endDate`, e.g. `7d`, `30d`.
+</ParamField>
+
+### Other filters
+
+<ParamField query="status" type="string">
+  One of: `scheduled`, `skip`, `in_progress`, `cancelled`, `completed`, `deleted`, `error`
+</ParamField>
+
+<ParamField query="channel" type="string">
+  One of: `gmeet`, `zoom`, `teams`, `offline`
+</ParamField>
+
+<ParamField query="type" type="string">
+  One of: `external`, `internal`
+</ParamField>
+
+<ParamField query="participantEmail" type="string">
+  Only meetings with a participant with this email (case-insensitive). Comma-separate for several.
+</ParamField>
+
+<ParamField query="hostEmail" type="string">
+  Only meetings hosted by the Arali user with this email
 </ParamField>
 
 <ParamField query="externalMeetingId" type="string">
-  Filter by external meeting ID
+  Only the meeting with this ID in the source system
 </ParamField>
 
 <ParamField query="recurringMeetingId" type="string">
-  Filter by recurring meeting ID
+  Only occurrences of this recurring meeting
 </ParamField>
 
 <ParamField query="search" type="string">
-  Search by meeting title (case-insensitive partial match)
+  Search titles and transcripts. Also accepts `q`.
 </ParamField>
+
+<ParamField query="org_unit_id" type="string">
+  Only meetings in this org unit (UUID)
+</ParamField>
+
+<ParamField query="user_id" type="string">
+  Only meetings this user (UUID) took part in
+</ParamField>
+
+### Pagination
+
+<ParamField query="limit" type="integer" default="20">
+  Results per page. Maximum is 100.
+</ParamField>
+
+<ParamField query="page" type="integer" default="1">
+  Page number.
+</ParamField>
+
+<ParamField query="offset" type="integer">
+  Number of results to skip. Takes precedence over `page`.
+</ParamField>
+
+## Example Request
+
+All meetings for one rooftop account since 1 October, by your own account ID:
+
+```bash
+curl "https://api.arali.ai/api/v1/meetings?accountExternalId=ROOFTOP-123&startDate=2026-10-01" \
+  -H "Authorization: Api-Key YOUR_API_KEY"
+```
 
 ## Response
 
@@ -73,9 +118,30 @@ Returns a paginated list of meetings for your enterprise with optional filtering
 </ResponseField>
 
 <ResponseField name="data" type="array">
-  Array of meeting objects
+  Meetings, most recent first. Each meeting also has:
+
+  <Expandable title="Company and account links">
+    <ResponseField name="companyIds" type="string[]">UUIDs of the companies the meeting is linked to</ResponseField>
+    <ResponseField name="accountIds" type="string[]">UUIDs of the accounts the meeting is linked to</ResponseField>
+    <ResponseField name="companies" type="array">`{ id, name, externalId }` for each linked company</ResponseField>
+    <ResponseField name="accounts" type="array">`{ id, name, externalId, companyId }` for each linked account</ResponseField>
+  </Expandable>
 </ResponseField>
 
 <ResponseField name="meta" type="object">
-  Pagination metadata
+  <Expandable title="Pagination">
+    <ResponseField name="total" type="integer">Total number of matching meetings</ResponseField>
+    <ResponseField name="page" type="integer">Current page</ResponseField>
+    <ResponseField name="limit" type="integer">Results per page</ResponseField>
+    <ResponseField name="offset" type="integer">Results skipped</ResponseField>
+    <ResponseField name="hasMore" type="boolean">Whether more results are available</ResponseField>
+  </Expandable>
 </ResponseField>
+
+## Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400`  | Malformed `companyId`/`accountId` UUID, or unparseable `startDate`/`endDate` |
+| `401`  | Missing or invalid authentication |
+| `403`  | Insufficient permissions (requires `meetings:read`) |

@@ -16,8 +16,20 @@ To find tickets **waiting on your team**, look for open or pending tickets where
 
 ## Query Parameters
 
-<ParamField query="company_id" type="string">
-  Only tickets linked to this company (UUID). Repeat or comma-separate for several companies.
+<ParamField query="accountId" type="string">
+  Only tickets linked to this account (UUID). Comma-separate or repeat for several. Also accepts `account_id`.
+</ParamField>
+
+<ParamField query="accountExternalId" type="string">
+  Only tickets linked to the account with this external ID (your own ID, matched case-insensitively). Also accepts `externalAccountId`.
+</ParamField>
+
+<ParamField query="companyId" type="string">
+  Only tickets linked to this company (UUID). Comma-separate or repeat for several. Also accepts `company_id`.
+</ParamField>
+
+<ParamField query="companyExternalId" type="string">
+  Only tickets linked to the company with this external ID (matched case-insensitively). Also accepts `externalCompanyId`.
 </ParamField>
 
 <ParamField query="status" type="string">
@@ -99,6 +111,10 @@ curl "https://api.arali.ai/api/v1/tickets?company_id=eea7ade2-7470-4134-844c-11a
     <ResponseField name="updated_at" type="string">ISO 8601 last-updated timestamp in Arali</ResponseField>
     <ResponseField name="last_message_direction" type="string | null">Direction of the latest reply: `inbound` (customer wrote last), `outbound` (your team wrote last), or `internal`. `null` when the ticket has no replies.</ResponseField>
     <ResponseField name="last_message_at" type="string | null">Time of the latest reply</ResponseField>
+    <ResponseField name="companyIds" type="string[]">UUIDs of the companies the ticket is linked to</ResponseField>
+    <ResponseField name="accountIds" type="string[]">UUIDs of the accounts the ticket is linked to</ResponseField>
+    <ResponseField name="companies" type="array">`{ id, name, externalId }` for each linked company</ResponseField>
+    <ResponseField name="accounts" type="array">`{ id, name, externalId, companyId }` for each linked account</ResponseField>
     <ResponseField name="participants" type="array">
       People on the ticket
       <Expandable title="Participant">
