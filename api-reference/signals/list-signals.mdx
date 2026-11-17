@@ -17,11 +17,19 @@ Arali creates a separate signal row each time it detects the same issue again. R
 ## Query Parameters
 
 <ParamField query="companyId" type="string">
-  Only signals on this company (UUID)
+  Only signals on this company (UUID). Comma-separate for several.
+</ParamField>
+
+<ParamField query="companyExternalId" type="string">
+  Only signals on the company with this external ID (matched case-insensitively)
 </ParamField>
 
 <ParamField query="accountId" type="string">
-  Only signals on this account (UUID)
+  Only signals attributed to this account (UUID) — see `accountIds` below. Comma-separate for several.
+</ParamField>
+
+<ParamField query="accountExternalId" type="string">
+  Same, by your own account ID (matched case-insensitively)
 </ParamField>
 
 <ParamField query="status" type="string">
@@ -92,7 +100,10 @@ curl "https://api.arali.ai/api/v1/signals?companyId=eea7ade2-7470-4134-844c-11a0
     <ResponseField name="id" type="string">Signal UUID</ResponseField>
     <ResponseField name="companyId" type="string">UUID of the company the signal is on</ResponseField>
     <ResponseField name="companyName" type="string">Company name</ResponseField>
-    <ResponseField name="accountId" type="string | null">UUID of the account, when the signal is account-specific</ResponseField>
+    <ResponseField name="companyExternalId" type="string | null">Your external ID for the company</ResponseField>
+    <ResponseField name="accountId" type="string | null">UUID of the account, when the signal was raised on one specific account</ResponseField>
+    <ResponseField name="accountIds" type="string[]">Accounts (of this company) the signal came from: `accountId` plus the accounts linked to the calls, meetings, emails or tickets that are the signal's evidence. A signal raised from a group-wide meeting lists every account on that meeting; an empty list means the evidence was not linked to any account.</ResponseField>
+    <ResponseField name="accounts" type="array">`{ id, name, externalId }` for each account in `accountIds`</ResponseField>
     <ResponseField name="type" type="string">`risk`, `opportunity`, or `info`</ResponseField>
     <ResponseField name="categoryKey" type="string">Category, e.g. `churn`, `contraction`, `expansion`</ResponseField>
     <ResponseField name="title" type="string">One-line description of the signal</ResponseField>
