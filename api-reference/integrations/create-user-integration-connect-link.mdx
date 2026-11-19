@@ -1,0 +1,34 @@
+---
+title: 'Create User Integration Connect Link'
+api: 'POST /api/v1/users/{userId}/integrations/connect-link'
+description: 'Create a browser URL for connecting a supported user integration'
+---
+
+**Required scope:** `integrations:write`
+
+## Path Parameters
+
+<ParamField path="userId" type="string" required>
+  UUID of an active workspace member.
+</ParamField>
+
+## Request Body
+
+```json
+{ "provider": "google_calendar" }
+```
+
+Supported providers are `google_calendar`, `google`, and `microsoft`.
+
+## Response
+
+Returns `201 Created`.
+
+```json
+{
+  "provider": "google_calendar",
+  "connect_url": "https://app.arali.ai/api/google/oauth?redirect=/settings/Integration"
+}
+```
+
+The user must open the URL in a browser to complete the provider consent flow. Common errors include `unsupported_connect_provider`, `user_not_found`, and `user_deactivated`.

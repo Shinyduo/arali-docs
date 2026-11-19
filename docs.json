@@ -1,0 +1,410 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Arali API Documentation",
+  "colors": {
+    "primary": "#6366F1",
+    "light": "#818CF8",
+    "dark": "#4F46E5"
+  },
+  "favicon": "/favicon.ico",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "mcp-connector"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "API Reference",
+            "pages": [
+              "api-reference/introduction"
+            ]
+          },
+          {
+            "group": "CSV Bulk Import",
+            "pages": [
+              "api-reference/csv-bulk-import"
+            ]
+          },
+          {
+            "group": "Companies",
+            "pages": [
+              "api-reference/companies/create-companies",
+              "api-reference/companies/list-companies",
+              "api-reference/companies/aggregate-companies",
+              "api-reference/companies/get-company",
+              "api-reference/companies/update-company",
+              "api-reference/companies/delete-company"
+            ]
+          },
+          {
+            "group": "Accounts",
+            "pages": [
+              "api-reference/accounts/create-accounts",
+              "api-reference/accounts/list-accounts",
+              "api-reference/accounts/aggregate-accounts",
+              "api-reference/accounts/get-account",
+              "api-reference/accounts/update-account",
+              "api-reference/accounts/delete-account"
+            ]
+          },
+          {
+            "group": "Contacts",
+            "pages": [
+              "api-reference/contacts/create-contacts",
+              "api-reference/contacts/list-contacts",
+              "api-reference/contacts/aggregate-contacts",
+              "api-reference/contacts/get-contact",
+              "api-reference/contacts/update-contact",
+              "api-reference/contacts/delete-contact"
+            ]
+          },
+          {
+            "group": "Associations",
+            "pages": [
+              "api-reference/associations/get-associations",
+              "api-reference/associations/create-associations"
+            ]
+          },
+          {
+            "group": "Calls",
+            "pages": [
+              "api-reference/calls/create-calls",
+              "api-reference/calls/list-calls",
+              "api-reference/calls/get-call"
+            ]
+          },
+          {
+            "group": "Meetings",
+            "pages": [
+              "api-reference/meetings/create-meeting",
+              "api-reference/meetings/list-meetings",
+              "api-reference/meetings/get-meeting",
+              "api-reference/meetings/delete-meeting"
+            ]
+          },
+          {
+            "group": "Deals",
+            "pages": [
+              "api-reference/deals/create-deals",
+              "api-reference/deals/list-deals",
+              "api-reference/deals/aggregate-deals",
+              "api-reference/deals/get-deal",
+              "api-reference/deals/update-deal",
+              "api-reference/deals/delete-deal",
+              "api-reference/deals/deal-contacts",
+              "api-reference/deals/deal-interactions"
+            ]
+          },
+          {
+            "group": "Pipelines",
+            "pages": [
+              "api-reference/pipelines/create-pipelines",
+              "api-reference/pipelines/list-pipelines",
+              "api-reference/pipelines/get-pipeline",
+              "api-reference/pipelines/update-pipeline",
+              "api-reference/pipelines/delete-pipeline"
+            ]
+          },
+          {
+            "group": "Pipeline Stages",
+            "pages": [
+              "api-reference/pipeline-stages/create-stages",
+              "api-reference/pipeline-stages/list-stages",
+              "api-reference/pipeline-stages/get-stage",
+              "api-reference/pipeline-stages/update-stage",
+              "api-reference/pipeline-stages/delete-stage"
+            ]
+          },
+          {
+            "group": "Conversations",
+            "pages": [
+              "api-reference/conversations/list-conversations",
+              "api-reference/conversations/create-conversation",
+              "api-reference/conversations/conversation-messages",
+              "api-reference/conversations/mark-conversation-read"
+            ]
+          },
+          {
+            "group": "Notifications",
+            "pages": [
+              "api-reference/notifications/list-notifications",
+              "api-reference/notifications/mark-all-read",
+              "api-reference/notifications/mark-notification-read"
+            ]
+          },
+          {
+            "group": "Fields",
+            "pages": [
+              "api-reference/fields/list-definitions",
+              "api-reference/fields/create-definition",
+              "api-reference/fields/delete-definition",
+              "api-reference/fields/get-values",
+              "api-reference/fields/set-values",
+              "api-reference/fields/batch-set-values"
+            ]
+          },
+          {
+            "group": "Billing & Usage",
+            "pages": [
+              "api-reference/billing-overview"
+            ]
+          },
+          {
+            "group": "Product Lines",
+            "pages": [
+              "api-reference/product-lines/create-product-lines",
+              "api-reference/product-lines/list-product-lines",
+              "api-reference/product-lines/get-product-line",
+              "api-reference/product-lines/update-product-line",
+              "api-reference/product-lines/delete-product-line"
+            ]
+          },
+          {
+            "group": "Products",
+            "pages": [
+              "api-reference/products/create-products",
+              "api-reference/products/list-products",
+              "api-reference/products/get-product",
+              "api-reference/products/update-product",
+              "api-reference/products/delete-product"
+            ]
+          },
+          {
+            "group": "Plans",
+            "pages": [
+              "api-reference/plans/create-plans",
+              "api-reference/plans/list-plans",
+              "api-reference/plans/get-plan",
+              "api-reference/plans/update-plan",
+              "api-reference/plans/delete-plan",
+              "api-reference/plans/add-product",
+              "api-reference/plans/remove-product"
+            ]
+          },
+          {
+            "group": "Subscriptions",
+            "pages": [
+              "api-reference/subscriptions/create-subscriptions",
+              "api-reference/subscriptions/list-subscriptions",
+              "api-reference/subscriptions/get-subscription",
+              "api-reference/subscriptions/update-subscription",
+              "api-reference/subscriptions/delete-subscription"
+            ]
+          },
+          {
+            "group": "Invoices",
+            "pages": [
+              "api-reference/invoices/get-invoices-schema",
+              "api-reference/invoices/create-invoices",
+              "api-reference/invoices/list-invoices",
+              "api-reference/invoices/get-invoice",
+              "api-reference/invoices/update-invoice",
+              "api-reference/invoices/delete-invoice"
+            ]
+          },
+          {
+            "group": "Usage",
+            "pages": [
+              "api-reference/usage/report-usage",
+              "api-reference/usage/query-usage"
+            ]
+          },
+          {
+            "group": "Key Role Assignments",
+            "pages": [
+              "api-reference/roles-overview",
+              "api-reference/key-role-assignments/create-assignments",
+              "api-reference/key-role-assignments/list-assignments",
+              "api-reference/key-role-assignments/get-assignment",
+              "api-reference/key-role-assignments/update-assignment",
+              "api-reference/key-role-assignments/delete-assignment"
+            ]
+          },
+          {
+            "group": "Users",
+            "pages": [
+              "api-reference/users/list-users",
+              "api-reference/users/get-user",
+              "api-reference/users/update-user",
+              "api-reference/users/update-user-role"
+            ]
+          },
+          {
+            "group": "Roles",
+            "pages": [
+              "api-reference/roles/list-roles"
+            ]
+          },
+          {
+            "group": "Organisation Units",
+            "pages": [
+              "api-reference/org-units/list-org-units",
+              "api-reference/org-units/create-org-unit",
+              "api-reference/org-units/update-org-unit",
+              "api-reference/org-units/delete-org-unit"
+            ]
+          },
+          {
+            "group": "Workspace Settings",
+            "pages": [
+              "api-reference/workspace-settings/get-workspace-preferences",
+              "api-reference/workspace-settings/update-workspace-preferences",
+              "api-reference/workspace-settings/get-notifications",
+              "api-reference/workspace-settings/update-notifications"
+            ]
+          },
+          {
+            "group": "User Integrations",
+            "pages": [
+              "api-reference/integrations/list-user-integrations",
+              "api-reference/integrations/create-user-integration-connect-link",
+              "api-reference/integrations/disconnect-user-integration"
+            ]
+          },
+          {
+            "group": "Action Items",
+            "pages": [
+              "api-reference/action-items/list-action-items",
+              "api-reference/action-items/get-action-item",
+              "api-reference/action-items/create-action-item",
+              "api-reference/action-items/update-action-item",
+              "api-reference/action-items/delete-action-item"
+            ]
+          },
+          {
+            "group": "Projects",
+            "pages": [
+              "api-reference/projects/create-project",
+              "api-reference/projects/list-projects",
+              "api-reference/projects/get-project",
+              "api-reference/projects/update-project",
+              "api-reference/projects/cancel-project",
+              "api-reference/projects/list-project-tasks",
+              "api-reference/projects/create-project-from-template",
+              "api-reference/projects/list-phases",
+              "api-reference/projects/create-phase",
+              "api-reference/projects/update-phase",
+              "api-reference/projects/delete-phase",
+              "api-reference/projects/get-project-activity"
+            ]
+          },
+          {
+            "group": "Notes",
+            "pages": [
+              "api-reference/notes/create-note",
+              "api-reference/notes/list-notes",
+              "api-reference/notes/get-note",
+              "api-reference/notes/update-note",
+              "api-reference/notes/delete-note"
+            ]
+          },
+          {
+            "group": "Interactions",
+            "pages": [
+              "api-reference/interactions/link-interaction-contact"
+            ]
+          },
+          {
+            "group": "Metrics",
+            "pages": [
+              "api-reference/metrics/get-metric-value"
+            ]
+          },
+          {
+            "group": "Metric Definitions",
+            "pages": [
+              "api-reference/metric-definitions/create-metric-definitions",
+              "api-reference/metric-definitions/list-metric-definitions",
+              "api-reference/metric-definitions/get-metric-definition",
+              "api-reference/metric-definitions/update-metric-definition",
+              "api-reference/metric-definitions/delete-metric-definition"
+            ]
+          },
+          {
+            "group": "Metric Computations",
+            "pages": [
+              "api-reference/metric-computations/ingest-metric-computations",
+              "api-reference/metric-computations/query-metric-computations"
+            ]
+          },
+          {
+            "group": "Metric Aggregates",
+            "pages": [
+              "api-reference/metric-aggregates/query-metric-aggregates"
+            ]
+          },
+          {
+            "group": "Product Events",
+            "pages": [
+              "api-reference/product-events/ingest-product-events",
+              "api-reference/product-events/query-product-events"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "API Status",
+          "href": "https://status.arali.ai",
+          "icon": "signal"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo.png",
+    "dark": "/dark_logo.png"
+  },
+  "api": {
+    "openapi": "openapi.yaml",
+    "playground": {
+      "display": "interactive"
+    },
+    "mdx": {
+      "server": "https://api.arali.ai",
+      "auth": {
+        "method": "bearer"
+      }
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:akshat@arali.ai"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://app.arali.ai"
+    }
+  },
+  "footer": {
+    "socials": {
+      "twitter": "https://twitter.com/arali_ai",
+      "linkedin": "https://linkedin.com/company/arali-ai"
+    }
+  }
+}

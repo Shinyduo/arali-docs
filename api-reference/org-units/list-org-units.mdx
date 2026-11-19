@@ -1,0 +1,22 @@
+---
+title: 'List Organisation Units'
+api: 'GET /api/v1/org-units'
+description: 'List teams and their parent relationships in the API key workspace'
+---
+
+**Required scope:** `org_units:read`
+
+## Response
+
+```json
+{
+  "teams": [
+    {
+      "team_id": "8c12d955-79c0-4edf-9b04-216d11a2901c",
+      "name": "Sales",
+      "parent_team_id": null,
+      "type": "sales"
+    }
+  ]
+}
+```

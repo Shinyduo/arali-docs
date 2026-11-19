@@ -4,10 +4,18 @@ api: 'GET /api/v1/users/{id}'
 description: 'Get a single user by their ID'
 ---
 
+**Required scope:** `users:read`
+
+The API key's enterprise determines which user can be retrieved. Deactivated users are not returned.
+
 ## Path Parameters
 
 <ParamField path="id" type="string" required>
   The UUID of the user to retrieve
+</ParamField>
+
+<ParamField query="roles" type="string">
+  Optional comma-separated role keys. When provided, the response includes `roleUsers`: matching users in the same org unit as the requested user. Repeated `roles` parameters are also accepted.
 </ParamField>
 
 ## Response
@@ -26,4 +34,5 @@ description: 'Get a single user by their ID'
     <ResponseField name="createdAt" type="string">ISO 8601 creation timestamp</ResponseField>
     <ResponseField name="updatedAt" type="string">ISO 8601 last-updated timestamp</ResponseField>
   </Expandable>
+  When the `roles` query parameter is supplied, the object also includes `roleUsers`, an array of matching users from the same org unit (`id`, `name`, `email`, and `role`).
 </ResponseField>

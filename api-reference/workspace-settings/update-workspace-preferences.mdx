@@ -1,0 +1,31 @@
+---
+title: 'Update Workspace Preferences'
+api: 'PUT /api/v1/settings/workspace-preferences'
+description: 'Update the workspace name, timezone, currency, or invite default'
+---
+
+**Required scope:** `settings:write`
+
+Include at least one field. Omitted fields are left unchanged.
+
+## Request Body
+
+```json
+{
+  "name": "Acme West",
+  "timezone": "America/Los_Angeles",
+  "currency": "USD",
+  "skip_calendar_login_for_invites": false
+}
+```
+
+- `name`: non-empty workspace name.
+- `timezone`: valid IANA timezone name.
+- `currency`: three uppercase letters, such as `USD`.
+- `skip_calendar_login_for_invites`: boolean.
+
+## Response
+
+Returns the updated workspace preferences using the same shape as [Get Workspace Preferences](/api-reference/workspace-settings/get-workspace-preferences).
+
+Common validation errors include `empty_patch`, `invalid_name`, `invalid_timezone`, `invalid_currency`, and `invalid_skip_calendar_login_for_invites`.

@@ -1,0 +1,28 @@
+---
+title: 'Create Organisation Unit'
+api: 'POST /api/v1/org-units'
+description: 'Create a team, optionally nested under a parent team'
+---
+
+**Required scope:** `org_units:write`
+
+## Request Body
+
+```json
+{
+  "name": "Sales",
+  "parent_team_id": null
+}
+```
+
+`name` is required. `parent_team_id` is optional and can be `null` for a root team. A parent must belong to the same workspace.
+
+## Response
+
+Returns `201 Created`.
+
+```json
+{ "team_id": "8c12d955-79c0-4edf-9b04-216d11a2901c" }
+```
+
+Common errors include `invalid_name` and `team_not_found`.

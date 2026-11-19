@@ -1,0 +1,27 @@
+---
+title: 'List Workspace Roles'
+api: 'GET /api/v1/roles'
+description: 'List the five standard workspace roles and their permission pairs'
+---
+
+**Required scope:** `roles:read`
+
+This read-only catalog contains `owner`, `admin`, `manager`, `member`, and `viewer`. Role assignment is handled by [Assign Workspace User Role](/api-reference/users/update-user-role).
+
+## Response
+
+```json
+{
+  "roles": [
+    {
+      "key": "admin",
+      "name": "Admin",
+      "permissions": [
+        { "resource": "user", "action": "read" }
+      ]
+    }
+  ]
+}
+```
+
+Each permission contains the resource and action values configured for that role in the workspace.

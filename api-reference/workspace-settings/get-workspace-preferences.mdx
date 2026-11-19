@@ -1,0 +1,24 @@
+---
+title: 'Get Workspace Preferences'
+api: 'GET /api/v1/settings/workspace-preferences'
+description: 'Read the workspace name, timezone, currency, and defaults'
+---
+
+**Required scope:** `settings:read`
+
+## Response
+
+```json
+{
+  "name": "Acme",
+  "timezone": "America/Los_Angeles",
+  "currency": "USD",
+  "defaults": {
+    "currency": "USD",
+    "timezone": "America/Los_Angeles",
+    "skip_calendar_login_for_invites": false
+  }
+}
+```
+
+Unset `name`, `timezone`, and `currency` values are returned as `null`.

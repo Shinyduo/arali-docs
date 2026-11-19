@@ -1,0 +1,29 @@
+---
+title: 'Disconnect User Integration'
+api: 'DELETE /api/v1/users/{userId}/integrations/{provider}'
+description: 'Disconnect a provider integration from a workspace user'
+---
+
+**Required scope:** `integrations:write`
+
+## Path Parameters
+
+<ParamField path="userId" type="string" required>
+  UUID of an active workspace member.
+</ParamField>
+
+<ParamField path="provider" type="string" required>
+  Provider key, such as `google_calendar`, `google`, or `microsoft`.
+</ParamField>
+
+## Response
+
+```json
+{
+  "provider": "google_calendar",
+  "user_id": "b4e14efb-7d7e-4f64-9659-dd1bd032808a",
+  "disconnected": true
+}
+```
+
+The endpoint deletes the provider connection and its stored tokens and calendar webhooks. If no matching connection exists, it returns `404 integration_not_found`.

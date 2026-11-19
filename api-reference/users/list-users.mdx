@@ -4,11 +4,17 @@ api: 'GET /api/v1/users'
 description: 'List all users in your enterprise with optional search filtering'
 ---
 
+All returned users are active members of the API key's enterprise. This endpoint returns the public user profile shape; role, status, and team membership are managed through the workspace update endpoints and are not included in this list response.
+
+**Required scope:** `users:read`
+
 ## Query Parameters
 
 <ParamField query="search" type="string">
   Optional. Case-insensitive partial match against the user's **name** or **email**. Leave blank to return all users.
 </ParamField>
+
+The endpoint is authenticated with `Authorization: Api-Key <api_key>`. The API key's enterprise determines which users are returned.
 
 ## Response
 

@@ -1,0 +1,51 @@
+---
+title: 'Update Workspace User'
+api: 'PATCH /api/v1/users/{userId}'
+description: 'Update a workspace member profile, team membership, or active status'
+---
+
+**Required scope:** `users:update`
+
+Only include fields to change. At least one field is required. Any successful update revokes the member's existing sessions.
+
+## Path Parameters
+
+<ParamField path="userId" type="string" required>
+  UUID of an existing workspace member.
+</ParamField>
+
+## Request Body
+
+```json
+{
+  "name": "Avery Chen",
+  "email": "avery@example.com",
+  "phone": "+14155550123",
+  "team_ids": ["8c12d955-79c0-4edf-9b04-216d11a2901c"],
+  "status": "active"
+}
+```
+
+<ParamField body="name" type="string">
+  Display name. Names are shared identity data; a user who belongs to another workspace cannot be renamed through this endpoint.
+</ParamField>
+<ParamField body="email" type="string">
+  Email address. Must be valid and unused. Email is shared identity data, so it cannot be changed here when the user belongs to another workspace.
+</ParamField>
+<ParamField body="phone" type="string | null">
+  E.164 phone number (for example, `+14155550123`) or `null` to clear it. Phone is shared identity data and cannot be changed here for a user in multiple workspaces.
+</ParamField>
+<ParamField body="team_ids" type="string[]">
+  Replace the user's team membership with these team UUIDs. Unknown teams return `404`.
+</ParamField>
+<ParamField body="status" type="string">
+  `active` or `deactivated`.
+</ParamField>
+
+## Response
+
+```json
+{ "user_id": "b4e14efb-7d7e-4f64-9659-dd1bd032808a" }
+```
+
+Common errors include `user_not_found`, `invalid_status`, `invalid_phone`, `invalid_email`, `email_in_use`, and `shared_identity_*_requires_user_update`.

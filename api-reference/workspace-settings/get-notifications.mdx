@@ -1,0 +1,17 @@
+---
+title: 'Get Workspace Notifications'
+api: 'GET /api/v1/settings/notifications'
+description: 'Read workspace notification settings'
+---
+
+**Required scope:** `settings:read`
+
+## Response
+
+```json
+{
+  "churn_email": null
+}
+```
+
+When configured, `churn_email` is an object containing the workspace's churn email notification settings. Its fields are returned as configured.

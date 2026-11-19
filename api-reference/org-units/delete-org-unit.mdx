@@ -1,0 +1,24 @@
+---
+title: 'Delete Organisation Unit'
+api: 'DELETE /api/v1/org-units/{teamId}'
+description: 'Delete an unused team'
+---
+
+**Required scope:** `org_units:delete`
+
+## Path Parameters
+
+<ParamField path="teamId" type="string" required>
+  UUID of the team to delete.
+</ParamField>
+
+## Response
+
+```json
+{
+  "team_id": "bd399c45-b83a-42b4-bfd1-d237d75bb3fd",
+  "deleted": true
+}
+```
+
+Deletion is rejected with `409 team_in_use` while the team is referenced by a child team, user membership, role assignment, pending invite, or another related record. The team must be empty and unused before it can be deleted.

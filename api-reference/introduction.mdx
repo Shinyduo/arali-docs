@@ -25,6 +25,8 @@ Authorization: Api-Key <api_key>
 
 See the [Authentication](/authentication) page for more details.
 
+Workspace administration endpoints also require the matching API key scope. Each endpoint page lists its required scope; keys without that scope receive `403 Forbidden`.
+
 ## Available APIs
 
 <CardGroup cols={2}>
@@ -83,7 +85,19 @@ See the [Authentication](/authentication) page for more details.
     Assign team members to customer entities
   </Card>
   <Card title="Users" icon="user" href="/api-reference/users/list-users">
-    List and view enterprise users
+    List, update, deactivate, and assign roles to workspace users
+  </Card>
+  <Card title="Roles" icon="user-shield" href="/api-reference/roles/list-roles">
+    List the standard workspace roles and their permissions
+  </Card>
+  <Card title="Organisation Units" icon="people-group" href="/api-reference/org-units/list-org-units">
+    List and manage workspace teams and their hierarchy
+  </Card>
+  <Card title="Workspace Settings" icon="gear" href="/api-reference/workspace-settings/get-workspace-preferences">
+    Read and update workspace preferences and notifications
+  </Card>
+  <Card title="User Integrations" icon="plug" href="/api-reference/integrations/list-user-integrations">
+    List, connect, and disconnect integrations for workspace users
   </Card>
   <Card title="Action Items" icon="check-circle" href="/api-reference/action-items/list-action-items">
     Manage action items and tasks

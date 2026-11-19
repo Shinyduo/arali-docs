@@ -1,0 +1,31 @@
+---
+title: 'Update Workspace Notifications'
+api: 'PUT /api/v1/settings/notifications'
+description: 'Replace the workspace churn email notification settings'
+---
+
+**Required scope:** `settings:write`
+
+## Request Body
+
+```json
+{
+  "churn_email": {
+    "enabled": true
+  }
+}
+```
+
+`churn_email` must be an object. The fields inside the object are stored as provided.
+
+## Response
+
+```json
+{
+  "churn_email": {
+    "enabled": true
+  }
+}
+```
+
+An absent or non-object `churn_email` value returns `400 invalid_churn_email`.

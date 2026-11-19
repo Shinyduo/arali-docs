@@ -1,0 +1,32 @@
+---
+title: 'Update Organisation Unit'
+api: 'PATCH /api/v1/org-units/{teamId}'
+description: 'Rename a team or move it under a different parent team'
+---
+
+**Required scope:** `org_units:update`
+
+## Path Parameters
+
+<ParamField path="teamId" type="string" required>
+  UUID of the team to update.
+</ParamField>
+
+## Request Body
+
+Send one or both fields. At least one field is required. Set `parent_team_id` to `null` to make the team a root team.
+
+```json
+{
+  "name": "Enterprise Sales",
+  "parent_team_id": "8c12d955-79c0-4edf-9b04-216d11a2901c"
+}
+```
+
+## Response
+
+```json
+{ "team_id": "bd399c45-b83a-42b4-bfd1-d237d75bb3fd" }
+```
+
+Common errors include `team_not_found` and `team_hierarchy_cycle`.

@@ -1437,6 +1437,122 @@ components:
           type: string
           format: date-time
 
+    WorkspaceMemberUpdate:
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+          pattern: '^\+[1-9][0-9]{7,14}$'
+        team_ids:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+            format: uuid
+        status:
+          type: string
+          enum: [active, deactivated]
+
+    WorkspaceRoleAssignment:
+      type: object
+      required: [role]
+      additionalProperties: false
+      properties:
+        role:
+          type: string
+          enum: [owner, admin, manager, member, viewer]
+        team_ids:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+            format: uuid
+
+    WorkspacePreferencesUpdate:
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        timezone:
+          type: string
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        skip_calendar_login_for_invites:
+          type: boolean
+
+    WorkspaceNotificationsUpdate:
+      type: object
+      required: [churn_email]
+      additionalProperties: false
+      properties:
+        churn_email:
+          type: object
+          additionalProperties: true
+
+    WorkspaceRole:
+      type: object
+      properties:
+        key:
+          type: string
+          enum: [owner, admin, manager, member, viewer]
+        name:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: object
+            properties:
+              resource:
+                type: string
+              action:
+                type: string
+
+    WorkspaceTeam:
+      type: object
+      properties:
+        team_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        parent_team_id:
+          type: string
+          format: uuid
+          nullable: true
+        type:
+          type: string
+
+    UserIntegration:
+      type: object
+      properties:
+        provider:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+          nullable: true
+        scope:
+          type: string
+        auth_mode:
+          type: string
+        display_name:
+          type: string
+          nullable: true
+        connected:
+          type: boolean
+
     ActionItem:
 
       type: object
@@ -3636,6 +3752,7 @@ paths:
         - Users
       security:
         - ApiKeyAuth: []
+      x-required-scope: users:read
       parameters:
         - name: search
           in: query
@@ -3676,6 +3793,7 @@ paths:
         - Users
       security:
         - ApiKeyAuth: []
+      x-required-scope: users:read
       parameters:
         - name: id
           in: path
@@ -3684,6 +3802,12 @@ paths:
             type: string
             format: uuid
           description: User UUID
+        - name: roles
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Comma-separated role keys. When provided, matching users in the same org unit are included as roleUsers.
       responses:
         '200':
           description: User details
@@ -3695,13 +3819,574 @@ paths:
                   success:
                     type: boolean
                   data:
-                    $ref: '#/components/schemas/User'
+                    allOf:
+                      - $ref: '#/components/schemas/User'
+                      - type: object
+                        properties:
+                          roleUsers:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                name:
+                                  type: string
+                                  nullable: true
+                                email:
+                                  type: string
+                                  nullable: true
+                                role:
+                                  type: string
         '404':
           description: User not found
         '401':
           description: Unauthorized
         '403':
           description: Forbidden - requires users:read scope
+    patch:
+      operationId: updateWorkspaceUser
+      summary: Update Workspace User
+      description: Update a workspace member profile, team membership, or active status. Name, email, and phone cannot be changed here when the identity belongs to multiple workspaces. Any successful update revokes the member's existing sessions.
+      tags:
+        - Users
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: users:update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceMemberUpdate'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user_id]
+                properties:
+                  user_id:
+                    type: string
+                    format: uuid
+        '400':
+          description: Invalid field, status, phone, email, or empty request body
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires users:update scope
+        '404':
+          description: User or team not found
+        '409':
+          description: Email already in use or shared identity field cannot be changed in this workspace
+
+  /api/v1/users/{id}/role:
+    put:
+      operationId: assignWorkspaceUserRole
+      summary: Assign Workspace User Role
+      description: Assign a standard role and optionally replace the user's team membership. If team_ids is omitted, current teams are retained. Manager and viewer roles require at least one team. The update revokes the user's existing sessions.
+      tags:
+        - Users
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: users:update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceRoleAssignment'
+      responses:
+        '200':
+          description: Role assigned
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user_id, role]
+                properties:
+                  user_id:
+                    type: string
+                    format: uuid
+                  role:
+                    type: string
+                    enum: [owner, admin, manager, member, viewer]
+        '400':
+          description: Invalid role, team IDs, or missing team for manager/viewer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires users:update scope
+        '404':
+          description: User or team not found
+        '409':
+          description: Requested role is not configured for the workspace
+
+  /api/v1/roles:
+    get:
+      operationId: listWorkspaceRoles
+      summary: List Workspace Roles
+      description: Return the five standard workspace roles and their permission pairs.
+      tags:
+        - Roles
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: roles:read
+      responses:
+        '200':
+          description: Standard roles and permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkspaceRole'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires roles:read scope
+        '409':
+          description: Standard roles are not configured
+
+  /api/v1/org-units:
+    get:
+      operationId: listOrgUnits
+      summary: List Organisation Units
+      description: List teams and their parent relationships in the API key workspace.
+      tags:
+        - Organisation Units
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: org_units:read
+      responses:
+        '200':
+          description: Workspace teams
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  teams:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkspaceTeam'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires org_units:read scope
+    post:
+      operationId: createOrgUnit
+      summary: Create Organisation Unit
+      description: Create a team, optionally nested under a parent team in the same workspace.
+      tags:
+        - Organisation Units
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: org_units:write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                parent_team_id:
+                  type: string
+                  format: uuid
+                  nullable: true
+      responses:
+        '201':
+          description: Team created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  team_id:
+                    type: string
+                    format: uuid
+        '400':
+          description: Invalid name or parent team ID
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires org_units:write scope
+        '404':
+          description: Parent team not found
+
+  /api/v1/org-units/{teamId}:
+    patch:
+      operationId: updateOrgUnit
+      summary: Update Organisation Unit
+      description: Rename a team or move it under a different parent team. Setting parent_team_id to null makes it a root team.
+      tags:
+        - Organisation Units
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: org_units:update
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                parent_team_id:
+                  type: string
+                  format: uuid
+                  nullable: true
+      responses:
+        '200':
+          description: Team updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  team_id:
+                    type: string
+                    format: uuid
+        '400':
+          description: Invalid team ID or empty patch
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires org_units:update scope
+        '404':
+          description: Team or parent team not found
+        '409':
+          description: Move would create a team hierarchy cycle
+    delete:
+      operationId: deleteOrgUnit
+      summary: Delete Organisation Unit
+      description: Delete a team only when it is not referenced by users, roles, child teams, invitations, or other related records.
+      tags:
+        - Organisation Units
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: org_units:delete
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Team deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  team_id:
+                    type: string
+                    format: uuid
+                  deleted:
+                    type: boolean
+                    enum: [true]
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires org_units:delete scope
+        '404':
+          description: Team not found
+        '409':
+          description: Team is still in use
+
+  /api/v1/settings/workspace-preferences:
+    get:
+      operationId: getWorkspacePreferences
+      summary: Get Workspace Preferences
+      description: Read workspace name, timezone, currency, and defaults.
+      tags:
+        - Workspace Settings
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: settings:read
+      responses:
+        '200':
+          description: Workspace preferences
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    nullable: true
+                  timezone:
+                    type: string
+                    nullable: true
+                  currency:
+                    type: string
+                    nullable: true
+                  defaults:
+                    type: object
+                    properties:
+                      currency:
+                        type: string
+                        nullable: true
+                      timezone:
+                        type: string
+                        nullable: true
+                      skip_calendar_login_for_invites:
+                        type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires settings:read scope
+    put:
+      operationId: updateWorkspacePreferences
+      summary: Update Workspace Preferences
+      description: Update one or more workspace preferences. Omitted fields remain unchanged.
+      tags:
+        - Workspace Settings
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: settings:write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspacePreferencesUpdate'
+      responses:
+        '200':
+          description: Updated preferences, using the same shape as the GET response
+        '400':
+          description: Invalid preference value or empty request body
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires settings:write scope
+
+  /api/v1/settings/notifications:
+    get:
+      operationId: getWorkspaceNotifications
+      summary: Get Workspace Notifications
+      description: Read workspace churn email notification settings.
+      tags:
+        - Workspace Settings
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: settings:read
+      responses:
+        '200':
+          description: Current workspace notification settings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  churn_email:
+                    type: object
+                    nullable: true
+                    additionalProperties: true
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires settings:read scope
+    put:
+      operationId: updateWorkspaceNotifications
+      summary: Update Workspace Notifications
+      description: Replace the workspace churn email notification settings object.
+      tags:
+        - Workspace Settings
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: settings:write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceNotificationsUpdate'
+      responses:
+        '200':
+          description: Updated workspace notification settings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  churn_email:
+                    type: object
+                    additionalProperties: true
+        '400':
+          description: churn_email must be an object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - requires settings:write scope
+
+  /api/v1/users/{userId}/integrations:
+    get:
+      operationId: listUserIntegrations
+      summary: List User Integrations
+      description: List integration connections for an active workspace user.
+      tags:
+        - User Integrations
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: integrations:read
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User integrations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  integrations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserIntegration'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden or user is deactivated
+        '404':
+          description: User not found
+
+  /api/v1/users/{userId}/integrations/connect-link:
+    post:
+      operationId: createUserIntegrationConnectLink
+      summary: Create User Integration Connect Link
+      description: Create a browser URL for connecting Google Calendar, Google, or Microsoft for an active workspace user.
+      tags:
+        - User Integrations
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: integrations:write
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider]
+              additionalProperties: false
+              properties:
+                provider:
+                  type: string
+                  enum: [google_calendar, google, microsoft]
+      responses:
+        '201':
+          description: Connect link created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  provider:
+                    type: string
+                  connect_url:
+                    type: string
+                    format: uri
+        '400':
+          description: Unsupported provider
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden or user is deactivated
+        '404':
+          description: User not found
+
+  /api/v1/users/{userId}/integrations/{provider}:
+    delete:
+      operationId: disconnectUserIntegration
+      summary: Disconnect User Integration
+      description: Remove a provider connection, stored tokens, and calendar webhooks for the specified active user.
+      tags:
+        - User Integrations
+      security:
+        - ApiKeyAuth: []
+      x-required-scope: integrations:write
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Integration disconnected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  provider:
+                    type: string
+                  user_id:
+                    type: string
+                    format: uuid
+                  disconnected:
+                    type: boolean
+                    enum: [true]
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden or user is deactivated
+        '404':
+          description: User or integration not found
 
   # Action Items
   /api/v1/action-items:
@@ -5162,7 +5847,15 @@ tags:
   - name: Usage
     description: Report and query usage data
   - name: Users
-    description: Fetch users within your enterprise
+    description: Fetch and manage workspace users
+  - name: Roles
+    description: List standard workspace roles and permissions
+  - name: Organisation Units
+    description: List and manage workspace teams and hierarchy
+  - name: Workspace Settings
+    description: Read and update workspace preferences and notifications
+  - name: User Integrations
+    description: List, connect, and disconnect integrations for workspace users
   - name: Action Items
     description: Task and action items linked to interactions
   - name: Notes

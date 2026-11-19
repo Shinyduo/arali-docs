@@ -1,0 +1,33 @@
+---
+title: 'List User Integrations'
+api: 'GET /api/v1/users/{userId}/integrations'
+description: 'List connected integrations for an active workspace user'
+---
+
+**Required scope:** `integrations:read`
+
+## Path Parameters
+
+<ParamField path="userId" type="string" required>
+  UUID of a workspace member.
+</ParamField>
+
+## Response
+
+```json
+{
+  "integrations": [
+    {
+      "provider": "google_calendar",
+      "name": "Google Calendar",
+      "category": "calendar",
+      "scope": "user",
+      "auth_mode": "oauth",
+      "display_name": null,
+      "connected": true
+    }
+  ]
+}
+```
+
+An unknown user returns `404 user_not_found`; a deactivated user returns `403 user_deactivated`.
