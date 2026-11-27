@@ -27,7 +27,7 @@ description: 'Batch create or update pipeline stage records in Arali. Learn requ
     </ParamField>
 
     <ParamField body="bucket" type="string" default="open">
-      Stage bucket. One of: `open`, `in_progress`, `blocked`, `done`, `archived`
+      Stage bucket. All pipelines support `open`, `in_progress`, and `blocked`. Deal pipelines also support `won` and `lost`. Action item pipelines also support `done` and `archived`.
     </ParamField>
 
     <ParamField body="color" type="string">

@@ -2162,7 +2162,8 @@ components:
           type: string
         bucket:
           type: string
-          enum: [open, in_progress, blocked, done, archived]
+          enum: [open, in_progress, blocked, won, lost, done, archived]
+          description: Deal pipelines use won and lost. Action item pipelines use done and archived.
           default: open
         color:
           type: string
